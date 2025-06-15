@@ -35,6 +35,17 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
     setIsDragOver(false);
   };
 
+  const handleSampleImageClick = async (src: string, index: number) => {
+    try {
+      const response = await fetch(src);
+      const blob = await response.blob();
+      const file = new File([blob], `sample-${index}.jpg`, { type: 'image/jpeg' });
+      onImageSelect(file);
+    } catch (error) {
+      console.error('Error loading sample image:', error);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-[60vh] px-4 py-8">
       <div className="w-full max-w-md animate-fadeInUp">
@@ -102,13 +113,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
                     key={index}
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Convert sample image to file for demo
-                      fetch(src)
-                        .then(res => res.blob())
-                        .then(blob => {
-                          const file = new File([blob], `sample-${index}.jpg`, { type: 'image/jpeg' });
-                          onImageSelect(file);
-                        });
+                      handleSampleImageClick(src, index);
                     }}
                     className="w-12 h-12 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-pink-400 transition-all duration-200 transform hover:scale-110"
                   >

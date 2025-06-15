@@ -1,5 +1,4 @@
 import React from 'react';
-import { Info } from 'lucide-react';
 import BottomSheet from './BottomSheet';
 import { MaterialOption, FrameCustomization } from '../types';
 
@@ -43,68 +42,48 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Material">
-      <div className="p-6">
-        <div className="grid grid-cols-1 gap-4">
-          {materials.map((material, index) => (
-            <button
-              key={material.id}
-              onClick={() => handleSelect(material.id)}
-              className={`relative group overflow-hidden rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
-                currentMaterial === material.id
-                  ? 'border-pink-500 ring-2 ring-pink-200 shadow-lg'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-              style={{
-                animationDelay: `${index * 100}ms`,
-                animation: isOpen ? 'slideInLeft 0.5s ease-out forwards' : 'none'
-              }}
-            >
-              <div className="flex items-center space-x-4 p-4">
-                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Material" height="compact">
+      <div className="px-4 pb-4">
+        {/* Horizontal Scrolling Material Grid */}
+        <div className="overflow-x-auto pb-2">
+          <div className="flex space-x-3 min-w-max">
+            {materials.map((material, index) => (
+              <button
+                key={material.id}
+                onClick={() => handleSelect(material.id)}
+                className={`flex-shrink-0 w-32 overflow-hidden rounded-lg border-2 transition-all duration-200 ${
+                  currentMaterial === material.id
+                    ? 'border-pink-500 ring-2 ring-pink-200'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="h-20 overflow-hidden">
                   <img
                     src={material.image}
                     alt={material.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                   />
                 </div>
                 
-                <div className="flex-1 text-left">
-                  <h3 className="font-semibold text-gray-900 text-lg mb-1">
+                <div className="p-3 bg-white">
+                  <h3 className="font-medium text-gray-900 text-sm mb-1">
                     {material.name}
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 text-xs">
                     {material.description}
                   </p>
                 </div>
 
                 {currentMaterial === material.id && (
-                  <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center animate-pulse">
-                    <div className="w-2 h-2 bg-white rounded-full" />
+                  <div className="absolute top-2 right-2 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-white rounded-full" />
                   </div>
                 )}
-
-                <button className="p-2 bg-gray-100 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <Info size={16} className="text-gray-600" />
-                </button>
-              </div>
-            </button>
-          ))}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
     </BottomSheet>
   );
 };

@@ -24,8 +24,6 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
   onBorderUpdate,
   uploadedImage,
 }) => {
-  const [selectedBorderType, setSelectedBorderType] = useState<'none' | 'solid' | 'pattern'>('none');
-
   const borderOptions: BorderOption[] = [
     { id: 'white', name: 'White', color: '#ffffff', width: 2, preview: 'bg-white border-2 border-gray-300' },
     { id: 'black', name: 'Black', color: '#000000', width: 2, preview: 'bg-gray-900' },
@@ -42,18 +40,12 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
 
   const handleBorderToggle = (enabled: boolean) => {
     onToggle(enabled);
-    if (enabled) {
-      setSelectedBorderType('solid');
-    } else {
-      setSelectedBorderType('none');
-    }
   };
 
   const handleColorSelect = (color: string) => {
     onBorderUpdate({ borderColor: color });
     if (!currentBorder) {
       onToggle(true);
-      setSelectedBorderType('solid');
     }
   };
 
@@ -61,17 +53,16 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
     onBorderUpdate({ borderWidth: width });
     if (!currentBorder) {
       onToggle(true);
-      setSelectedBorderType('solid');
     }
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Border" height="full">
-      <div className="p-6 space-y-6">
+    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Border" height="auto">
+      <div className="px-4 pb-4 space-y-4">
         {/* Preview */}
         <div className="flex justify-center">
           <div className="relative">
-            <div className="w-32 h-32 bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="w-20 h-20 bg-white rounded-lg shadow-lg overflow-hidden">
               <img
                 src={sampleImage}
                 alt="Preview"
@@ -89,87 +80,79 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
           </div>
         </div>
 
-        {/* Border Type Selection */}
-        <div className="space-y-3">
-          <h3 className="font-semibold text-gray-900">Border Style</h3>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => handleBorderToggle(false)}
-              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
-                !currentBorder
-                  ? 'border-pink-500 bg-pink-50'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              <div className="w-12 h-12 bg-gray-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                <div className="w-8 h-8 bg-gray-400 rounded-sm" />
-              </div>
-              <h4 className="font-medium text-gray-900">No Border</h4>
-              <p className="text-sm text-gray-500">Clean edge finish</p>
-            </button>
+        {/* Border Toggle */}
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleBorderToggle(false)}
+            className={`flex-1 p-3 rounded-lg border-2 transition-all duration-200 ${
+              !currentBorder
+                ? 'border-pink-500 bg-pink-50'
+                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            <div className="w-8 h-8 bg-gray-100 rounded mx-auto mb-1 flex items-center justify-center">
+              <div className="w-5 h-5 bg-gray-400 rounded-sm" />
+            </div>
+            <p className="text-xs font-medium text-gray-900">No Border</p>
+          </button>
 
-            <button
-              onClick={() => handleBorderToggle(true)}
-              className={`p-4 rounded-xl border-2 transition-all duration-200 ${
-                currentBorder
-                  ? 'border-pink-500 bg-pink-50'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              <div className="w-12 h-12 bg-gray-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                <div className="w-8 h-8 bg-gray-400 rounded-sm border-2 border-gray-600" />
-              </div>
-              <h4 className="font-medium text-gray-900">With Border</h4>
-              <p className="text-sm text-gray-500">Classic framed look</p>
-            </button>
-          </div>
+          <button
+            onClick={() => handleBorderToggle(true)}
+            className={`flex-1 p-3 rounded-lg border-2 transition-all duration-200 ${
+              currentBorder
+                ? 'border-pink-500 bg-pink-50'
+                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            <div className="w-8 h-8 bg-gray-100 rounded mx-auto mb-1 flex items-center justify-center">
+              <div className="w-5 h-5 bg-gray-400 rounded-sm border-2 border-gray-600" />
+            </div>
+            <p className="text-xs font-medium text-gray-900">With Border</p>
+          </button>
         </div>
 
         {/* Border Customization */}
         {currentBorder && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="space-y-4">
             {/* Border Colors */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-gray-900 flex items-center">
-                <Palette size={18} className="mr-2" />
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-gray-900 flex items-center">
+                <Palette size={14} className="mr-1" />
                 Border Colors
               </h3>
               
-              <div className="grid grid-cols-3 gap-3">
-                {borderOptions.map((option, index) => (
-                  <button
-                    key={option.id}
-                    onClick={() => handleColorSelect(option.color)}
-                    className={`relative group p-3 rounded-xl border-2 transition-all duration-200 transform hover:scale-105 ${
-                      borderColor === option.color
-                        ? 'border-pink-500 bg-pink-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    style={{
-                      animationDelay: `${index * 50}ms`,
-                      animation: 'fadeInScale 0.5s ease-out forwards'
-                    }}
-                  >
-                    <div className={`w-8 h-8 rounded-full mx-auto mb-2 ${option.preview} shadow-sm`} />
-                    <p className="text-xs font-medium text-gray-700">{option.name}</p>
-                    
-                    {borderColor === option.color && (
-                      <div className="absolute top-1 right-1 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                      </div>
-                    )}
-                  </button>
-                ))}
+              <div className="overflow-x-auto pb-2">
+                <div className="flex space-x-2 min-w-max">
+                  {borderOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => handleColorSelect(option.color)}
+                      className={`flex-shrink-0 w-12 p-2 rounded-lg border-2 transition-all duration-200 ${
+                        borderColor === option.color
+                          ? 'border-pink-500 bg-pink-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className={`w-6 h-6 rounded-full mx-auto mb-1 ${option.preview} shadow-sm`} />
+                      <p className="text-xs font-medium text-gray-700">{option.name}</p>
+                      
+                      {borderColor === option.color && (
+                        <div className="absolute top-1 right-1 w-3 h-3 bg-pink-500 rounded-full flex items-center justify-center">
+                          <div className="w-1 h-1 bg-white rounded-full" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Border Width */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-gray-900">Border Width</h3>
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-gray-900">Border Width</h3>
               
               <div className="space-y-2">
-                <div className="flex justify-between text-sm text-gray-600">
+                <div className="flex justify-between text-xs text-gray-600">
                   <span>Thin</span>
                   <span>{borderWidth}px</span>
                   <span>Thick</span>
@@ -183,44 +166,16 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 />
               </div>
-
-              {/* Width Preview */}
-              <div className="flex justify-center space-x-4">
-                {[1, 2, 4, 6, 8].map((width) => (
-                  <button
-                    key={width}
-                    onClick={() => handleWidthChange(width)}
-                    className={`w-8 h-8 rounded border-2 transition-all duration-200 ${
-                      borderWidth === width ? 'border-pink-500' : 'border-gray-300'
-                    }`}
-                    style={{ borderWidth: `${width}px` }}
-                  />
-                ))}
-              </div>
             </div>
           </div>
         )}
       </div>
 
       <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes fadeInScale {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-        
         .slider::-webkit-slider-thumb {
           appearance: none;
-          height: 20px;
-          width: 20px;
+          height: 16px;
+          width: 16px;
           border-radius: 50%;
           background: #ec4899;
           cursor: pointer;
@@ -228,8 +183,8 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
         }
         
         .slider::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
+          height: 16px;
+          width: 16px;
           border-radius: 50%;
           background: #ec4899;
           cursor: pointer;

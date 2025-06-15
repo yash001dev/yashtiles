@@ -42,59 +42,38 @@ const FrameBottomSheet: React.FC<FrameBottomSheetProps> = ({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Frame">
-      <div className="p-6">
-        <div className="space-y-3">
-          {frameColors.map((frame, index) => (
-            <button
-              key={frame.id}
-              onClick={() => handleSelect(frame.id)}
-              className={`w-full flex items-center space-x-4 p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
-                currentFrame === frame.id
-                  ? 'border-pink-500 bg-pink-50 shadow-lg'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-              }`}
-              style={{
-                animationDelay: `${index * 100}ms`,
-                animation: isOpen ? 'bounceIn 0.5s ease-out forwards' : 'none'
-              }}
-            >
-              <div className={`w-12 h-12 rounded-lg shadow-sm ${frame.color}`} />
-              
-              <div className="flex-1 text-left">
-                <h3 className="font-medium text-gray-900">{frame.name}</h3>
-                <p className="text-sm text-gray-500">{frame.description}</p>
-              </div>
-
-              {currentFrame === frame.id && (
-                <div className="w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center animate-pulse">
-                  <div className="w-2 h-2 bg-white rounded-full" />
+    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Frame" height="compact">
+      <div className="px-4 pb-4">
+        {/* Horizontal Scrolling Frame Grid */}
+        <div className="overflow-x-auto pb-2">
+          <div className="flex space-x-3 min-w-max">
+            {frameColors.map((frame, index) => (
+              <button
+                key={frame.id}
+                onClick={() => handleSelect(frame.id)}
+                className={`flex-shrink-0 w-28 p-3 rounded-lg border-2 transition-all duration-200 ${
+                  currentFrame === frame.id
+                    ? 'border-pink-500 bg-pink-50'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <div className={`w-12 h-12 rounded-lg shadow-sm mx-auto mb-2 ${frame.color}`} />
+                
+                <div className="text-center">
+                  <h3 className="font-medium text-gray-900 text-sm mb-1">{frame.name}</h3>
+                  <p className="text-xs text-gray-500">{frame.description}</p>
                 </div>
-              )}
-            </button>
-          ))}
+
+                {currentFrame === frame.id && (
+                  <div className="absolute top-2 right-2 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes bounceIn {
-          0% {
-            opacity: 0;
-            transform: scale(0.3);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.05);
-          }
-          70% {
-            transform: scale(0.9);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-      `}</style>
     </BottomSheet>
   );
 };

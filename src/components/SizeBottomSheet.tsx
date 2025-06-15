@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronRight } from 'lucide-react';
+import { Search } from 'lucide-react';
 import BottomSheet from './BottomSheet';
 import { SizeOption, FrameCustomization } from '../types';
 
@@ -45,102 +45,79 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Size" height="full">
-      <div className="p-6 space-y-4">
+    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Size" height="compact">
+      <div className="px-4 pb-4 space-y-4">
         {/* Search */}
         <div className="relative">
-          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search sizes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
+            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
           />
         </div>
 
         {/* Welcome Offer */}
-        <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-200">
+        <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg p-3 border border-pink-200">
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse" />
-            <span className="text-sm font-medium text-pink-700">WELCOME</span>
-            <span className="text-sm text-gray-600">8 for US$129 (36% OFF)</span>
+            <span className="text-xs font-medium text-pink-700">WELCOME</span>
+            <span className="text-xs text-gray-600">8 for US$129 (36% OFF)</span>
           </div>
         </div>
 
-        {/* Size Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {filteredSizes.map((size, index) => (
-            <button
-              key={size.id}
-              onClick={() => handleSelect(size.id)}
-              className={`relative group p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
-                currentSize === size.id
-                  ? 'border-pink-500 bg-pink-50 shadow-lg'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-              }`}
-              style={{
-                animationDelay: `${index * 50}ms`,
-                animation: isOpen ? 'fadeInUp 0.5s ease-out forwards' : 'none'
-              }}
-            >
-              {/* Size Preview */}
-              <div className="flex items-center justify-center mb-3 h-12">
-                <div 
-                  className={`bg-gray-300 rounded-sm shadow-sm transition-colors duration-200 ${
-                    currentSize === size.id ? 'bg-pink-300' : 'group-hover:bg-gray-400'
-                  }`}
-                  style={{
-                    width: size.aspectRatio >= 1 ? '32px' : `${32 * size.aspectRatio}px`,
-                    height: size.aspectRatio <= 1 ? '32px' : `${32 / size.aspectRatio}px`,
-                  }}
-                />
-              </div>
-              
-              {/* Size Info */}
-              <div className="text-center">
-                <h3 className="font-semibold text-gray-900 text-sm mb-1">{size.name}</h3>
-                <p className="text-xs text-gray-500 mb-2">{size.dimensions}</p>
-                <p className="text-sm font-medium text-pink-600">US${size.price} each</p>
-              </div>
-
-              {/* Selection Indicator */}
-              {currentSize === size.id && (
-                <div className="absolute top-2 right-2 w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center animate-pulse">
-                  <div className="w-2 h-2 bg-white rounded-full" />
-                </div>
-              )}
-
-              {/* Hover Arrow */}
-              <ChevronRight 
-                size={16} 
-                className={`absolute top-2 right-2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
-                  currentSize === size.id ? 'hidden' : ''
+        {/* Horizontal Scrolling Size Grid */}
+        <div className="overflow-x-auto pb-2">
+          <div className="flex space-x-3 min-w-max">
+            {filteredSizes.map((size, index) => (
+              <button
+                key={size.id}
+                onClick={() => handleSelect(size.id)}
+                className={`flex-shrink-0 w-24 p-3 rounded-lg border-2 transition-all duration-200 ${
+                  currentSize === size.id
+                    ? 'border-pink-500 bg-pink-50'
+                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
-              />
-            </button>
-          ))}
+              >
+                {/* Size Preview */}
+                <div className="flex items-center justify-center mb-2 h-8">
+                  <div 
+                    className={`rounded-sm transition-colors duration-200 ${
+                      currentSize === size.id ? 'bg-pink-400' : 'bg-gray-300'
+                    }`}
+                    style={{
+                      width: size.aspectRatio >= 1 ? '24px' : `${24 * size.aspectRatio}px`,
+                      height: size.aspectRatio <= 1 ? '24px' : `${24 / size.aspectRatio}px`,
+                    }}
+                  />
+                </div>
+                
+                {/* Size Info */}
+                <div className="text-center">
+                  <h3 className="font-medium text-gray-900 text-xs mb-1">{size.name}</h3>
+                  <p className="text-xs text-gray-500 mb-1">{size.dimensions}</p>
+                  <p className="text-xs font-medium text-pink-600">US${size.price} each</p>
+                </div>
+
+                {/* Selection Indicator */}
+                {currentSize === size.id && (
+                  <div className="absolute top-1 right-1 w-3 h-3 bg-pink-500 rounded-full flex items-center justify-center">
+                    <div className="w-1 h-1 bg-white rounded-full" />
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         {filteredSizes.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-500">No sizes found matching your search.</p>
+          <div className="text-center py-4">
+            <p className="text-gray-500 text-sm">No sizes found matching your search.</p>
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </BottomSheet>
   );
 };

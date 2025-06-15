@@ -6,7 +6,7 @@ interface BottomSheetProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  height?: 'auto' | 'half' | 'full';
+  height?: 'compact' | 'auto' | 'half' | 'full';
 }
 
 const BottomSheet: React.FC<BottomSheetProps> = ({
@@ -14,7 +14,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
   onClose,
   title,
   children,
-  height = 'auto'
+  height = 'compact'
 }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
 
@@ -32,12 +32,14 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 
   const getHeightClass = () => {
     switch (height) {
+      case 'compact':
+        return 'max-h-[40vh]';
       case 'half':
         return 'max-h-[50vh]';
       case 'full':
         return 'max-h-[90vh]';
       default:
-        return 'max-h-[80vh]';
+        return 'max-h-[60vh]';
     }
   };
 
@@ -69,12 +71,12 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={onClose}
-              className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-200"
+              className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-200 text-sm"
             >
               Done
             </button>
@@ -82,13 +84,13 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
               onClick={onClose}
               className="p-1 hover:bg-gray-100 rounded-full transition-colors duration-200"
             >
-              <X size={20} className="text-gray-500" />
+              <X size={18} className="text-gray-500" />
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto flex-1">
+        <div className="overflow-hidden">
           {children}
         </div>
       </div>
