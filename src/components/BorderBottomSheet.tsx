@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Palette } from 'lucide-react';
-import BottomSheet from './BottomSheet';
-import { BorderOption, FrameCustomization, UploadedImage } from '../types';
+import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
+import { BorderOption, UploadedImage } from '../types';
 
 interface BorderBottomSheetProps {
   isOpen: boolean;
@@ -21,8 +21,7 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
   borderColor = '#000000',
   borderWidth = 2,
   onToggle,
-  onBorderUpdate,
-  uploadedImage,
+  onBorderUpdate,  uploadedImage,
 }) => {
   const [selectedBorderType, setSelectedBorderType] = useState<'none' | 'solid' | 'pattern'>('none');
 
@@ -66,8 +65,13 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Border" height="full">
-      <div className="p-6 space-y-6">
+    <ResponsiveBottomSheet 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title="Select Border"
+      description="Add borders to enhance your photo"
+    >
+      <div className="space-y-6">
         {/* Preview */}
         <div className="flex justify-center">
           <div className="relative">
@@ -196,48 +200,11 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
                     style={{ borderWidth: `${width}px` }}
                   />
                 ))}
-              </div>
-            </div>
+              </div>            </div>
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes fadeInScale {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-        
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: #ec4899;
-          cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .slider::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: #ec4899;
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-      `}</style>
-    </BottomSheet>
+    </ResponsiveBottomSheet>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, ChevronRight } from 'lucide-react';
-import BottomSheet from './BottomSheet';
+import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
 import { SizeOption, FrameCustomization } from '../types';
 
 interface SizeBottomSheetProps {
@@ -43,10 +43,13 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
     onSelect(sizeId);
     onClose();
   };
-
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Size" height="full">
-      <div className="p-6 space-y-4">
+    <ResponsiveBottomSheet 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title="Select Size"
+      description="Choose the perfect size for your photo"    >
+      <div className="space-y-4">
         {/* Search */}
         <div className="relative">
           <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -70,7 +73,7 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
 
         {/* Size Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {filteredSizes.map((size, index) => (
+          {filteredSizes.map((size) => (
             <button
               key={size.id}
               onClick={() => handleSelect(size.id)}
@@ -79,10 +82,6 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
                   ? 'border-pink-500 bg-pink-50 shadow-lg'
                   : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
               }`}
-              style={{
-                animationDelay: `${index * 50}ms`,
-                animation: isOpen ? 'fadeInUp 0.5s ease-out forwards' : 'none'
-              }}
             >
               {/* Size Preview */}
               <div className="flex items-center justify-center mb-3 h-12">
@@ -128,20 +127,7 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
-    </BottomSheet>
+    </ResponsiveBottomSheet>
   );
 };
 

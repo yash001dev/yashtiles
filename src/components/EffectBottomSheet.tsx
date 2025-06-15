@@ -1,5 +1,5 @@
 import React from 'react';
-import BottomSheet from './BottomSheet';
+import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
 import { EffectOption, FrameCustomization } from '../types';
 
 interface EffectBottomSheetProps {
@@ -51,8 +51,12 @@ const EffectBottomSheet: React.FC<EffectBottomSheetProps> = ({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Effect" height="full">
-      <div className="p-6">
+    <ResponsiveBottomSheet 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title="Select Effect"
+      description="Add beautiful effects to your photo"    >
+      <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           {effects.map((effect, index) => (
             <button
@@ -86,26 +90,12 @@ const EffectBottomSheet: React.FC<EffectBottomSheetProps> = ({
               {currentEffect === effect.id && (
                 <div className="absolute top-3 right-3 w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center animate-bounce">
                   <div className="w-2 h-2 bg-white rounded-full" />
-                </div>
-              )}
+                </div>              )}
             </button>
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes zoomIn {
-          from {
-            opacity: 0;
-            transform: scale(0.5);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-      `}</style>
-    </BottomSheet>
+    </ResponsiveBottomSheet>
   );
 };
 
