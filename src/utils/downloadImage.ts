@@ -9,14 +9,24 @@ export const downloadFramedImage = async (
   
   if (!ctx) return;
 
-  // Set canvas size based on frame size
-  const sizes = {
+  // Set canvas size based on frame size with higher resolution
+  const sizeMap: Record<string, { width: number; height: number }> = {
     '8x8': { width: 800, height: 800 },
-    '8x11': { width: 800, height: 1100 },
-    '11x8': { width: 1100, height: 800 },
+    '8x10': { width: 800, height: 1000 },
+    '10x8': { width: 1000, height: 800 },
+    '9x12': { width: 900, height: 1200 },
+    '12x9': { width: 1200, height: 900 },
+    '12x12': { width: 1200, height: 1200 },
+    '12x18': { width: 1200, height: 1800 },
+    '18x12': { width: 1800, height: 1200 },
+    '18x18': { width: 1800, height: 1800 },
+    '18x24': { width: 1800, height: 2400 },
+    '24x18': { width: 2400, height: 1800 },
+    '24x32': { width: 2400, height: 3200 },
+    '32x24': { width: 3200, height: 2400 },
   };
 
-  const { width, height } = sizes[customization.size];
+  const { width, height } = sizeMap[customization.size] || { width: 800, height: 800 };
   canvas.width = width;
   canvas.height = height;
 
@@ -119,12 +129,17 @@ export const downloadFramedImage = async (
       // Restore context
       ctx.restore();
 
-      // Add border if enabled
-      if (customization.border && customization.material === 'classic') {
-        ctx.strokeStyle = '#6b7280';
-        ctx.lineWidth = 4;
-        const frameWidth = width * 0.1;
-        ctx.strokeRect(frameWidth, frameWidth, width - frameWidth * 2, height - frameWidth * 2);
+      // Add custom border if enabled
+      if (customization.border) {
+        ctx.strokeStyle = customization.borderColor || '#000000';
+        ctx.lineWidth = (customization.borderWidth || 2) * (width / 400); // Scale border width
+        
+        if (customization.material === 'classic') {
+          const frameWidth = width * 0.1;
+          ctx.strokeRect(frameWidth, frameWidth, width - frameWidth * 2, height - frameWidth * 2);
+        } else {
+          ctx.strokeRect(0, 0, width, height);
+        }
       }
 
       // Download the image
@@ -133,7 +148,7 @@ export const downloadFramedImage = async (
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `mixtiles-frame-${customization.size}-${customization.material}.png`;
+          a.download = `yashtiles-frame-${customization.size}-${customization.material}.png`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);

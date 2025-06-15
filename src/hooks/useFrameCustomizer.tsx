@@ -8,6 +8,8 @@ export const useFrameCustomizer = () => {
     size: '8x8',
     effect: 'original',
     border: true,
+    borderColor: '#000000',
+    borderWidth: 2,
   });
 
   const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
