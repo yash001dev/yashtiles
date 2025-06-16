@@ -19,19 +19,19 @@ const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, hasImage = false }) => {
   ];
 
   if (isLargeScreen) {
-    // Desktop layout - floating toolbar positioned in the center-right
+    // Desktop layout - center bottom toolbar
     return (
-      <div className="fixed right-8 top-1/2 transform -translate-y-1/2 z-40">
+      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-40">
         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 backdrop-blur-lg bg-opacity-95">
-          <div className="flex flex-col space-y-3">
+          <div className="flex items-center space-x-3">
             {tools.map((tool, index) => (
               <button
                 key={tool.id}
                 onClick={() => onToolClick(tool.id)}
-                className="group flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 active:scale-95 min-w-[140px]"
+                className="group flex flex-col items-center space-y-2 p-3 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 active:scale-95 min-w-[80px]"
                 style={{
                   animationDelay: `${index * 100}ms`,
-                  animation: hasImage ? 'slideInRight 0.5s ease-out forwards' : 'none'
+                  animation: hasImage ? 'slideUpToolbar 0.5s ease-out forwards' : 'none'
                 }}
                 title={tool.label}
               >
@@ -43,24 +43,24 @@ const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, hasImage = false }) => {
                   'group-hover:bg-red-50'
                 }`}>
                   <tool.icon 
-                    size={18} 
+                    size={20} 
                     className={`transition-all duration-300 group-hover:scale-110 ${
                       tool.color
                     } group-hover:drop-shadow-sm`}
                   />
                 </div>
-                <span className="text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors duration-300">
+                <span className="text-xs text-gray-700 group-hover:text-gray-900 font-medium transition-colors duration-300">
                   {tool.label}
                 </span>
               </button>
             ))}
             
             {/* Separator */}
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-2" />
+            <div className="w-px h-12 bg-gradient-to-b from-transparent via-gray-300 to-transparent mx-2" />
             
             {/* Add to Cart Button */}
             <button 
-              className="group flex items-center justify-center space-x-2 p-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl text-white"
+              className="group flex items-center justify-center space-x-2 p-4 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl text-white min-w-[100px]"
               style={{
                 animationDelay: '500ms',
                 animation: hasImage ? 'bounceIn 0.6s ease-out forwards' : 'none'
@@ -71,13 +71,13 @@ const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, hasImage = false }) => {
                 <Plus size={20} className="transition-transform duration-300 group-hover:rotate-90" />
                 <Sparkles size={10} className="absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
               </div>
-              <span className="text-sm font-medium">Add to Cart</span>
             </button>
           </div>
         </div>
       </div>
     );
   }
+
   // Mobile/tablet layout - bottom navigation
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl backdrop-blur-lg bg-opacity-95 z-40">

@@ -14,6 +14,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
+import DesktopPopover from './DesktopPopover';
 
 interface ResponsiveBottomSheetProps {
   isOpen: boolean;
@@ -34,23 +35,26 @@ export function ResponsiveBottomSheet({
 
   if (isLargeScreen) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>        <DialogContent className="sm:max-w-md max-h-[80vh] flex flex-col p-0">
-          <DialogHeader className="flex-shrink-0 px-6 py-4">
-            <DialogTitle>{title}</DialogTitle>
-            {description && <DialogDescription>{description}</DialogDescription>}
-          </DialogHeader>
-          <div className="flex-1 overflow-y-auto px-6 pb-6">
-            {children}
-          </div>
-        </DialogContent></Dialog>
+      <DesktopPopover
+        isOpen={isOpen}
+        onClose={onClose}
+        title={title}
+      >
+        {description && (
+          <p className="text-sm text-gray-600 mb-4">{description}</p>
+        )}
+        {children}
+      </DesktopPopover>
     );
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={onClose}>      <DrawerContent className="max-h-[80vh] flex flex-col">
+    <Drawer open={isOpen} onOpenChange={onClose}>
+      <DrawerContent className="max-h-[80vh] flex flex-col">
         <DrawerHeader className="flex-shrink-0 px-4 py-4">
           <DrawerTitle>{title}</DrawerTitle>
-          {description && <DrawerDescription>{description}</DrawerDescription>}        </DrawerHeader>
+          {description && <DrawerDescription>{description}</DrawerDescription>}
+        </DrawerHeader>
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           {children}
         </div>
