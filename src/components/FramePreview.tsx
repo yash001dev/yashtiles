@@ -13,13 +13,12 @@ const FramePreview: React.FC<FramePreviewProps> = ({
   onImageClick 
 }) => {
   const sampleImage = "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=800";
-
   const getFrameStyles = () => {
     const baseStyles = "relative transition-all duration-500 ease-in-out transform hover:scale-105";
     
     switch (customization.material) {
       case 'classic':
-        return `${baseStyles} p-6 bg-white shadow-2xl`;
+        return `${baseStyles} p-3 bg-black shadow-2xl`;
       case 'frameless':
         return `${baseStyles} shadow-lg`;
       case 'canvas':
@@ -79,57 +78,51 @@ const FramePreview: React.FC<FramePreviewProps> = ({
 
     return baseStyle;
   };
-
-  const getFrameColor = () => {
-    switch (customization.frameColor) {
-      case 'white':
-        return 'bg-white border-gray-200';
-      case 'oak':
-        return 'bg-amber-100 border-amber-200';
-      default:
-        return 'bg-gray-900 border-gray-800';
-    }
-  };
-
   const imageToShow = uploadedImage?.url || sampleImage;
-
   return (
     <div className="flex items-center justify-center min-h-[60vh] px-4 py-8">
       <div className="relative animate-fadeIn">
-        <div className={`${getFrameStyles()} ${customization.material === 'classic' ? getFrameColor() : ''} max-w-sm w-full`}>
-          <div 
-            className={`relative overflow-hidden rounded-sm ${uploadedImage ? 'cursor-pointer' : ''} group`}
-            onClick={uploadedImage ? onImageClick : undefined}
-          >
-            <img
-              src={imageToShow}
-              alt="Preview"
-              className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
-              style={getImageStyles()}
-            />
-            
-            {/* Custom Border */}
-            {customization.border && (
-              <div 
-                className="absolute inset-0 pointer-events-none transition-all duration-300"
-                style={{
-                  border: `${customization.borderWidth}px solid ${customization.borderColor}`,
-                }}
-              />
-            )}
-            
-            {uploadedImage && (
-              <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white bg-opacity-95 rounded-full px-4 py-2 transform scale-90 group-hover:scale-100">
-                  <span className="text-sm font-medium text-gray-800">Click to edit</span>
-                </div>
-              </div>
-            )}
-          </div>
+        {/* Outer frame with 3D shadow effect */}
+        <div className="relative">
+          {/* Shadow layers for 3D effect */}
+          <div className="absolute top-2 left-2 w-full h-full bg-gray-400 rounded-sm"></div>
+          <div className="absolute top-1 left-1 w-full h-full bg-gray-500 rounded-sm"></div>
           
-          {customization.material === 'classic' && (
-            <div className="absolute top-2 right-2 w-4 h-4 bg-gray-400 rounded-full opacity-30 animate-pulse" />
-          )}
+          {/* Main frame */}
+          <div className={`${getFrameStyles()} max-w-sm w-full relative bg-black rounded-sm`}>
+            {/* White matting/inner border */}
+            <div className="bg-white rounded-sm   shadow-inner">
+              <div 
+                className={`relative overflow-hidden ${uploadedImage ? 'cursor-pointer' : ''} group`}
+                onClick={uploadedImage ? onImageClick : undefined}
+              >
+                <img
+                  src={imageToShow}
+                  alt="Preview"
+                  className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                  style={getImageStyles()}
+                />
+                
+                {/* Custom Border */}
+                {customization.border && (
+                  <div 
+                    className="absolute inset-0 pointer-events-none transition-all duration-300"
+                    style={{
+                      border: `${customization.borderWidth}px solid ${customization.borderColor}`,
+                    }}
+                  />
+                )}
+                
+                {uploadedImage && (
+                  <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white bg-opacity-95 rounded-full px-4 py-2 transform scale-90 group-hover:scale-100">
+                      <span className="text-sm font-medium text-gray-800">Click to edit</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-gray-500 whitespace-nowrap animate-slideUp">
@@ -137,7 +130,7 @@ const FramePreview: React.FC<FramePreviewProps> = ({
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
