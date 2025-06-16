@@ -21,7 +21,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, hasImage = false }) => {
   if (isLargeScreen) {
     // Desktop layout - floating toolbar positioned in the center-right
     return (
-      <div className="fixed right-8 top-1/2 transform -translate-y-1/2 z-40">
+      <div className="fixed left-8 top-1/2 transform -translate-y-1/2 z-40">
         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 backdrop-blur-lg bg-opacity-95">
           <div className="flex flex-col space-y-3">
             {tools.map((tool, index) => (
