@@ -4,10 +4,11 @@ import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 interface ToolbarProps {
   onToolClick: (tool: string) => void;
+  onAddFrame?: () => void;
   hasImage?: boolean;
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, hasImage = false }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, onAddFrame, hasImage = false }) => {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   
   const tools = [
@@ -54,9 +55,21 @@ const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, hasImage = false }) => {
                 </span>
               </button>
             ))}
-            
-            {/* Separator */}
+              {/* Separator */}
             <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent my-2" />
+              {/* Add Frame Button */}
+            <button 
+              onClick={onAddFrame}
+              className="group flex items-center space-x-3 p-3 rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 active:scale-95 min-w-[140px]"
+              title="Add Frame"
+            >
+              <div className="p-2 rounded-lg transition-all duration-300 group-hover:shadow-md group-hover:bg-blue-100">
+                <Plus size={18} className="text-blue-600 transition-all duration-300 group-hover:scale-110" />
+              </div>
+              <span className="text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors duration-300">
+                Add Frame
+              </span>
+            </button>
             
             {/* Add to Cart Button */}
             <button 
@@ -112,10 +125,10 @@ const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, hasImage = false }) => {
                   {tool.label}
                 </span>
               </button>
-            ))}
+            )            )}
             
             {/* Add to Cart Button */}
-            <button 
+            <button
               className="flex flex-col items-center space-y-1 p-2 sm:p-3 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl group ml-2 flex-shrink-0"
               style={{
                 animationDelay: '500ms',

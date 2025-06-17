@@ -8,6 +8,18 @@ export interface FrameCustomization {
   borderWidth?: number;
 }
 
+export interface FrameItem {
+  id: string;
+  image: UploadedImage;
+  customization: FrameCustomization;
+  createdAt: Date;
+}
+
+export interface FrameCollection {
+  frames: FrameItem[];
+  activeFrameId: string | null;
+}
+
 export interface MaterialOption {
   id: 'classic' | 'frameless' | 'canvas';
   name: string;
