@@ -34,7 +34,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-pink-50">
         <div className="flex">
           {/* Main content area - offset by left sidebar */}
-          <div className="flex-1 pl-20 pr-6">
+          <div className="flex-1 pl-20 ">
             {children}
             
             {/* Multi-frame slider for desktop */}
