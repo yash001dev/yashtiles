@@ -28,14 +28,13 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
   children
 }) => {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
-
   if (isLargeScreen) {
-    // Desktop layout with sidebar
+    // Desktop layout with left sidebar and right panel
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-pink-50">
         <div className="flex">
-          {/* Main content area */}
-          <div className="flex-1 pr-6">
+          {/* Main content area - offset by left sidebar */}
+          <div className="flex-1 pl-20 pr-6">
             {children}
             
             {/* Multi-frame slider for desktop */}
@@ -50,7 +49,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
                 />
               </div>
             )}
-          </div>          {/* Right sidebar for frame details */}
+          </div>{/* Right sidebar for frame details */}
           {hasUploadedImage && (
             <div className="w-80 bg-white border-l border-gray-200 p-6 min-h-screen">
               <FrameDetails

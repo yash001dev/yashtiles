@@ -130,18 +130,16 @@ function App() {
         )}
       </main>
 
-      {uploadedImage && <Toolbar onToolClick={handleToolClick} onAddFrame={handleAddFrame} hasImage={!!uploadedImage} />}
-
-      {/* Bottom Sheets */}
+      {uploadedImage && <Toolbar onToolClick={handleToolClick} onAddFrame={handleAddFrame} hasImage={!!uploadedImage} />}      {/* Bottom Sheets */}
       <MaterialBottomSheet
-        isOpen={activeModal === 'material'}
+        isOpen={activeModal === 'frame'}
         onClose={closeModal}
         currentMaterial={customization.material}
         onSelect={(material) => updateCustomization({ material })}
       />
 
       <FrameBottomSheet
-        isOpen={activeModal === 'frame'}
+        isOpen={activeModal === 'material'}
         onClose={closeModal}
         currentFrame={customization.frameColor}
         onSelect={(frameColor) => updateCustomization({ frameColor })}
