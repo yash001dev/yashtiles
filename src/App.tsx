@@ -103,32 +103,35 @@ function App() {
   const handleCloseTutorial = () => {
     setShowTutorial(false);
     localStorage.setItem('tutorialSeen', 'true');
-  };
-  return (
-    <ResponsiveLayout
-      customization={customization}
-      frames={frameCollection.frames}
-      activeFrameId={frameCollection.activeFrameId}
-      onFrameSelect={selectFrame}
-      onFrameRemove={removeFrameFromCollection}
-      onAddFrame={handleAddFrame}
-      onAddToCart={handleAddToCart}
-      hasUploadedImage={!!uploadedImage}
-    >
+  };  return (
+    <div className="min-h-screen">
+      {/* Header takes full width */}
       <Header />
+      
+      {/* Content area starts after header */}
+      <ResponsiveLayout
+        customization={customization}
+        frames={frameCollection.frames}
+        activeFrameId={frameCollection.activeFrameId}
+        onFrameSelect={selectFrame}
+        onFrameRemove={removeFrameFromCollection}
+        onAddFrame={handleAddFrame}
+        onAddToCart={handleAddToCart}
+        hasUploadedImage={!!uploadedImage}
+      >
         <main className="pb-2 relative">
-        {!uploadedImage ? (
-          <PhotoUpload onImageSelect={handleImageUpload} />
-        ) : (
-          <FramePreview 
-            customization={customization} 
-            uploadedImage={uploadedImage}
-            onImageClick={handleImageClick}
-            frameCount={frameCollection.frames.length}
-            currentFrameIndex={frameCollection.frames.findIndex(f => f.id === frameCollection.activeFrameId)}
-          />
-        )}
-      </main>
+          {!uploadedImage ? (
+            <PhotoUpload onImageSelect={handleImageUpload} />
+          ) : (
+            <FramePreview 
+              customization={customization} 
+              uploadedImage={uploadedImage}
+              onImageClick={handleImageClick}
+              frameCount={frameCollection.frames.length}
+              currentFrameIndex={frameCollection.frames.findIndex(f => f.id === frameCollection.activeFrameId)}
+            />
+          )}
+        </main>
 
       {uploadedImage && <Toolbar onToolClick={handleToolClick} onAddFrame={handleAddFrame} hasImage={!!uploadedImage} />}      {/* Bottom Sheets */}
       <MaterialBottomSheet
@@ -186,14 +189,13 @@ function App() {
         onAddFrame={handleAddFrame}
         hasFrames={frameCollection.frames.length > 0}
         hasImage={!!uploadedImage}
-      />
-
-      {/* Tutorial Tooltip */}
+      />      {/* Tutorial Tooltip */}
       <TutorialTooltip 
         show={showTutorial} 
         onClose={handleCloseTutorial} 
       />
-    </ResponsiveLayout>
+      </ResponsiveLayout>
+    </div>
   );
 }
 

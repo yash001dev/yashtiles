@@ -27,14 +27,13 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
   hasUploadedImage,
   children
 }) => {
-  const isLargeScreen = useMediaQuery('(min-width: 1024px)');
-  if (isLargeScreen) {
-    // Desktop layout with left sidebar and right panel
+  const isLargeScreen = useMediaQuery('(min-width: 1024px)');  if (isLargeScreen) {
+    // Desktop layout with left sidebar and right panel - starts after header
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-pink-50">
+      <div className="bg-gradient-to-br from-gray-50 via-white to-pink-50 min-h-[calc(100vh-4rem)]">
         <div className="flex">
-          {/* Main content area - offset by left sidebar */}
-          <div className="flex-1 pl-20 ">
+          {/* Main content area - offset by left sidebar, positioned after header */}
+          <div className="flex-1 pl-20">
             {children}
             
             {/* Multi-frame slider for desktop */}
@@ -49,9 +48,11 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
                 />
               </div>
             )}
-          </div>{/* Right sidebar for frame details */}
+          </div>
+          
+          {/* Right sidebar for frame details */}
           {hasUploadedImage && (
-            <div className="w-80 bg-white border-l border-gray-200 p-6 min-h-screen">
+            <div className="w-80 bg-white border-l border-gray-200 p-6 min-h-[calc(100vh-4rem)]">
               <FrameDetails
                 customization={customization}
                 onAddToCart={onAddToCart}
@@ -61,10 +62,9 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
         </div>
       </div>
     );
-  }
-  // Mobile/tablet layout
+  }  // Mobile/tablet layout
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-pink-50">
+    <div className="bg-gradient-to-br from-gray-50 via-white to-pink-50 min-h-[calc(100vh-4rem)]">
       {children}
       
       {/* Multi-frame slider for mobile - placed before frame details */}
@@ -79,7 +79,8 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
           />
         </div>
       )}
-        {/* Frame details as a card for mobile */}
+      
+      {/* Frame details as a card for mobile */}
       {hasUploadedImage && (
         <div className="px-4 pb-24">
           <FrameDetails
