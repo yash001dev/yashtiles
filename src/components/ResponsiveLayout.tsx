@@ -12,6 +12,7 @@ interface ResponsiveLayoutProps {
   onFrameRemove: (frameId: string) => void;
   onAddFrame: () => void;
   onAddToCart?: () => void;
+  hasUploadedImage: boolean;
   children: React.ReactNode;
 }
 
@@ -23,6 +24,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
   onFrameRemove,
   onAddFrame,
   onAddToCart,
+  hasUploadedImage,
   children
 }) => {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
@@ -48,15 +50,15 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
                 />
               </div>
             )}
-          </div>
-
-          {/* Right sidebar for frame details */}
-          <div className="w-80 bg-white border-l border-gray-200 p-6 min-h-screen">
-            <FrameDetails
-              customization={customization}
-              onAddToCart={onAddToCart}
-            />
-          </div>
+          </div>          {/* Right sidebar for frame details */}
+          {hasUploadedImage && (
+            <div className="w-80 bg-white border-l border-gray-200 p-6 min-h-screen">
+              <FrameDetails
+                customization={customization}
+                onAddToCart={onAddToCart}
+              />
+            </div>
+          )}
         </div>
       </div>
     );
@@ -78,14 +80,15 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
           />
         </div>
       )}
-      
-      {/* Frame details as a card for mobile */}
-      <div className="px-4 pb-24">
-        <FrameDetails
-          customization={customization}
-          onAddToCart={onAddToCart}
-        />
-      </div>
+        {/* Frame details as a card for mobile */}
+      {hasUploadedImage && (
+        <div className="px-4 pb-24">
+          <FrameDetails
+            customization={customization}
+            onAddToCart={onAddToCart}
+          />
+        </div>
+      )}
     </div>
   );
 };

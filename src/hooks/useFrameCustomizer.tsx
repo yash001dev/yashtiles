@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { FrameCustomization, UploadedImage, ImageTransform, FrameItem, FrameCollection } from '../types';
 
 export const useFrameCustomizer = () => {
@@ -104,8 +104,7 @@ export const useFrameCustomizer = () => {
       setCustomization(frame.customization);
     }
   };
-
-  const updateActiveFrame = () => {
+  const updateActiveFrame = useCallback(() => {
     if (frameCollection.activeFrameId && uploadedImage) {
       setFrameCollection(prev => ({
         ...prev,
@@ -116,7 +115,7 @@ export const useFrameCustomizer = () => {
         ),
       }));
     }
-  };
+  }, [frameCollection.activeFrameId, uploadedImage, customization]);
 
   const openModal = (modalName: string) => {
     setActiveModal(modalName);

@@ -104,7 +104,6 @@ function App() {
     setShowTutorial(false);
     localStorage.setItem('tutorialSeen', 'true');
   };
-
   return (
     <ResponsiveLayout
       customization={customization}
@@ -114,9 +113,10 @@ function App() {
       onFrameRemove={removeFrameFromCollection}
       onAddFrame={handleAddFrame}
       onAddToCart={handleAddToCart}
+      hasUploadedImage={!!uploadedImage}
     >
       <Header />
-        <main className="pb-24 relative">
+        <main className="pb-2 relative">
         {!uploadedImage ? (
           <PhotoUpload onImageSelect={handleImageUpload} />
         ) : (
