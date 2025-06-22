@@ -1,18 +1,20 @@
-import React from 'react';
-import Header from './components/Header';
-import PhotoUpload from './components/PhotoUpload';
-import FramePreview from './components/FramePreview';
-import Toolbar from './components/Toolbar';
-import ImageEditor from './components/ImageEditor';
-import MaterialBottomSheet from './components/MaterialBottomSheet';
-import FrameBottomSheet from './components/FrameBottomSheet';
-import SizeBottomSheet from './components/SizeBottomSheet';
-import EffectBottomSheet from './components/EffectBottomSheet';
-import BorderBottomSheet from './components/BorderBottomSheet';
-import { useFrameCustomizer } from './hooks/useFrameCustomizer';
-import { downloadFramedImage } from './utils/downloadImage';
+'use client'
 
-function App() {
+import React from 'react';
+import Header from '../../src/components/Header';
+import PhotoUpload from '../../src/components/PhotoUpload';
+import FramePreview from '../../src/components/FramePreview';
+import Toolbar from '../../src/components/Toolbar';
+import ImageEditor from '../../src/components/ImageEditor';
+import MaterialBottomSheet from '../../src/components/MaterialBottomSheet';
+import FrameBottomSheet from '../../src/components/FrameBottomSheet';
+import SizeBottomSheet from '../../src/components/SizeBottomSheet';
+import EffectBottomSheet from '../../src/components/EffectBottomSheet';
+import BorderBottomSheet from '../../src/components/BorderBottomSheet';
+import { useFrameCustomizer } from '../../src/hooks/useFrameCustomizer';
+import { downloadFramedImage } from '../../src/utils/downloadImage';
+
+export default function AppPage() {
   const {
     customization,
     updateCustomization,
@@ -117,6 +119,4 @@ function App() {
       )}
     </div>
   );
-}
-
-export default App;
+} 

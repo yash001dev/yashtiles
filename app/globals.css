@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --app-background: 0 0% 100%;
+    --app-foreground: 0 0% 3.9%;
+    --app-primary: 0 0% 9%;
+    --app-primary-foreground: 0 0% 98%;
+    --app-secondary: 0 0% 96.1%;
+    --app-secondary-foreground: 0 0% 9%;
+    --app-muted: 0 0% 96.1%;
+    --app-muted-foreground: 0 0% 45.1%;
+    --app-accent: 0 0% 96.1%;
+    --app-accent-foreground: 0 0% 9%;
+    --app-destructive: 0 84.2% 60.2%;
+    --app-destructive-foreground: 0 0% 98%;
+    --app-border: 0 0% 89.8%;
+    --app-input: 0 0% 89.8%;
+    --app-ring: 0 0% 3.9%;
+  }
+
+  .dark {
+    --app-background: 0 0% 3.9%;
+    --app-foreground: 0 0% 98%;
+    --app-primary: 0 0% 98%;
+    --app-primary-foreground: 0 0% 9%;
+    --app-secondary: 0 0% 14.9%;
+    --app-secondary-foreground: 0 0% 98%;
+    --app-muted: 0 0% 14.9%;
+    --app-muted-foreground: 0 0% 63.9%;
+    --app-accent: 0 0% 14.9%;
+    --app-accent-foreground: 0 0% 98%;
+    --app-destructive: 0 62.8% 30.6%;
+    --app-destructive-foreground: 0 0% 98%;
+    --app-border: 0 0% 14.9%;
+    --app-input: 0 0% 14.9%;
+    --app-ring: 0 0% 83.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-app-border;
+  }
+  body {
+    @apply bg-app-background text-app-foreground;
+  }
+}
+
+/* Custom animations for toolbar */
+@keyframes slideUpToolbar {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+} 
