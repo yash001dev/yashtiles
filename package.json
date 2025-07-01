@@ -4,9 +4,15 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "next dev",
+    "dev:staging": "next dev --env .env.staging",
     "build": "next build",
+    "build:staging": "next build --env .env.staging",
+    "build:production": "next build --env .env.production",
     "start": "next start",
-    "lint": "next lint"
+    "start:staging": "next start --env .env.staging",
+    "start:production": "next start --env .env.production",
+    "lint": "next lint",
+    "env:check": "node scripts/check-env.js"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
