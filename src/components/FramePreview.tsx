@@ -5,12 +5,16 @@ interface FramePreviewProps {
   customization: FrameCustomization;
   uploadedImage?: UploadedImage | null;
   onImageClick?: () => void;
+  frameCount?: number;
+  currentFrameIndex?: number;
 }
 
 const FramePreview: React.FC<FramePreviewProps> = ({ 
   customization, 
   uploadedImage, 
-  onImageClick 
+  onImageClick,
+  frameCount = 0,
+  currentFrameIndex = 0
 }) => {
   const sampleImage = "https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=800";
   const getFrameStyles = () => {
@@ -113,11 +117,19 @@ const FramePreview: React.FC<FramePreviewProps> = ({
                   />
                 )}
                 
-                {uploadedImage && (
-                  <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                {uploadedImage && (                  <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
                     <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white bg-opacity-95 rounded-full px-4 py-2 transform scale-90 group-hover:scale-100">
                       <span className="text-sm font-medium text-gray-800">Click to edit</span>
                     </div>
+                  </div>
+                )}
+                
+                {/* Frame counter */}
+                {frameCount > 1 && (
+                  <div className="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
+                    <span className="text-xs font-semibold text-gray-700">
+                      {currentFrameIndex + 1} of {frameCount}
+                    </span>
                   </div>
                 )}
               </div>
