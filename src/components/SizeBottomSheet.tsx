@@ -17,21 +17,20 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
   onSelect,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-
   const sizes: SizeOption[] = [
-    { id: '8x8', name: '8" × 8"', dimensions: 'Square format', aspectRatio: 1, price: 25 },
-    { id: '8x10', name: '8" × 10"', dimensions: 'Portrait format', aspectRatio: 8/10, price: 35 },
-    { id: '10x8', name: '10" × 8"', dimensions: 'Landscape format', aspectRatio: 10/8, price: 35 },
-    { id: '9x12', name: '9" × 12"', dimensions: 'Portrait format', aspectRatio: 9/12, price: 45 },
-    { id: '12x9', name: '12" × 9"', dimensions: 'Landscape format', aspectRatio: 12/9, price: 45 },
-    { id: '12x12', name: '12" × 12"', dimensions: 'Large square', aspectRatio: 1, price: 55 },
-    { id: '12x18', name: '12" × 18"', dimensions: 'Portrait format', aspectRatio: 12/18, price: 65 },
-    { id: '18x12', name: '18" × 12"', dimensions: 'Landscape format', aspectRatio: 18/12, price: 65 },
-    { id: '18x18', name: '18" × 18"', dimensions: 'Extra large square', aspectRatio: 1, price: 85 },
-    { id: '18x24', name: '18" × 24"', dimensions: 'Portrait format', aspectRatio: 18/24, price: 95 },
-    { id: '24x18', name: '24" × 18"', dimensions: 'Landscape format', aspectRatio: 24/18, price: 95 },
-    { id: '24x32', name: '24" × 32"', dimensions: 'Large portrait', aspectRatio: 24/32, price: 149 },
-    { id: '32x24', name: '32" × 24"', dimensions: 'Large landscape', aspectRatio: 32/24, price: 149 },
+    { id: '8x8', name: '8" × 8"', dimensions: 'Square format', aspectRatio: 1, price: 299 },
+    { id: '8x10', name: '8" × 10"', dimensions: 'Portrait format', aspectRatio: 8/10, price: 404 },
+    { id: '10x8', name: '10" × 8"', dimensions: 'Landscape format', aspectRatio: 10/8, price: 404 },
+    { id: '9x12', name: '9" × 12"', dimensions: 'Portrait format', aspectRatio: 9/12, price: 582 },
+    { id: '12x9', name: '12" × 9"', dimensions: 'Landscape format', aspectRatio: 12/9, price: 582 },
+    { id: '12x12', name: '12" × 12"', dimensions: 'Large square', aspectRatio: 1, price: 797 },
+    { id: '12x18', name: '12" × 18"', dimensions: 'Portrait format', aspectRatio: 12/18, price: 1218 },
+    { id: '18x12', name: '18" × 12"', dimensions: 'Landscape format', aspectRatio: 18/12, price: 1218 },
+    { id: '18x18', name: '18" × 18"', dimensions: 'Extra large square', aspectRatio: 1, price: 1900 },
+    { id: '18x24', name: '18" × 24"', dimensions: 'Portrait format', aspectRatio: 18/24, price: 2400 },
+    { id: '24x18', name: '24" × 18"', dimensions: 'Landscape format', aspectRatio: 24/18, price: 2400 },
+    { id: '24x32', name: '24" × 32"', dimensions: 'Large portrait', aspectRatio: 24/32, price: 4200 },
+    { id: '32x24', name: '32" × 24"', dimensions: 'Large landscape', aspectRatio: 32/24, price: 4200 },
   ];
 
   const filteredSizes = sizes.filter(size =>
@@ -61,12 +60,11 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
           />
         </div>
 
-        {/* Welcome Offer */}
-        <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-200">
+        {/* Welcome Offer */}        <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-200">
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse" />
             <span className="text-sm font-medium text-pink-700">WELCOME</span>
-            <span className="text-sm text-gray-600">8 for US$129 (36% OFF)</span>
+            <span className="text-sm text-gray-600">8 for ₹2000 (36% OFF)</span>
           </div>
         </div>
 
@@ -95,11 +93,10 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
                 />
               </div>
               
-              {/* Size Info */}
-              <div className="text-center">
+              {/* Size Info */}              <div className="text-center">
                 <h3 className="font-semibold text-gray-900 text-sm mb-1">{size.name}</h3>
                 <p className="text-xs text-gray-500 mb-2">{size.dimensions}</p>
-                <p className="text-sm font-medium text-pink-600">US${size.price} each</p>
+                <p className="text-sm font-medium text-pink-600">₹{size.price} each</p>
               </div>
 
               {/* Selection Indicator */}

@@ -13,22 +13,21 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
   customization, 
   onAddToCart,
   className = '' 
-}) => {
-  const getSizePrice = (size: string) => {
+}) => {  const getSizePrice = (size: string) => {
     const prices: Record<string, number> = {
       '8x8': 299,
-      '8x10': 329,
-      '10x8': 329,
-      '9x12': 399,
-      '12x9': 399,
-      '12x12': 499,
-      '12x18': 599,
-      '18x12': 599,
-      '18x18': 799,
-      '18x24': 899,
-      '24x18': 899,
-      '24x32': 1299,
-      '32x24': 1299,
+      '8x10': 404,
+      '10x8': 404,
+      '9x12': 582,
+      '12x9': 582,
+      '12x12': 797,
+      '12x18': 1218,
+      '18x12': 1218,
+      '18x18': 1900,
+      '18x24': 2400,
+      '24x18': 2400,
+      '24x32': 4200,
+      '32x24': 4200,
     };
     return prices[size] || 399;
   };
