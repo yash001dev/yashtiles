@@ -13,6 +13,9 @@ import BorderBottomSheet from '../../src/components/BorderBottomSheet';
 import ResponsiveLayout from '../../src/components/ResponsiveLayout';
 import FloatingAddButton from '../../src/components/FloatingAddButton';
 import TutorialTooltip from '../../src/components/TutorialTooltip';
+import ToastContainer from '../../src/components/ui/ToastContainer';
+import { AuthProvider } from '../../src/contexts/AuthContext';
+import { NotificationProvider } from '../../src/contexts/NotificationContext';
 import { useFrameCustomizer } from '../../src/hooks/useFrameCustomizer';
 import { downloadFramedImage } from '../../src/utils/downloadImage';
 
@@ -105,98 +108,103 @@ function App() {
     setShowTutorial(false);
     localStorage.setItem('tutorialSeen', 'true');
   };  return (
-    <div className="min-h-screen">
-      {/* Header takes full width */}
-      <Header />
-      
-      {/* Content area starts after header */}
-      <ResponsiveLayout
-        customization={customization}
-        frames={frameCollection.frames}
-        activeFrameId={frameCollection.activeFrameId}
-        onFrameSelect={selectFrame}
-        onFrameRemove={removeFrameFromCollection}
-        onAddFrame={handleAddFrame}
-        onAddToCart={handleAddToCart}
-        hasUploadedImage={!!uploadedImage}
-      >
-        <main className="pb-2 relative">
-          {!uploadedImage ? (
-            <PhotoUpload onImageSelect={handleImageUpload} />
-          ) : (
-            <FramePreview 
-              customization={customization} 
-              uploadedImage={uploadedImage}
-              onImageClick={handleImageClick}
-              frameCount={frameCollection.frames.length}
-              currentFrameIndex={frameCollection.frames.findIndex(f => f.id === frameCollection.activeFrameId)}
-            />
-          )}
-        </main>
+    <NotificationProvider>
+      <AuthProvider>
+        <div className="min-h-screen">
+          {/* Header takes full width */}
+          <Header />
+          
+          {/* Content area starts after header */}
+          <ResponsiveLayout
+            customization={customization}
+            frames={frameCollection.frames}
+            activeFrameId={frameCollection.activeFrameId}
+            onFrameSelect={selectFrame}
+            onFrameRemove={removeFrameFromCollection}
+            onAddFrame={handleAddFrame}
+            onAddToCart={handleAddToCart}
+            hasUploadedImage={!!uploadedImage}
+          >
+          <main className="pb-2 relative">
+            {!uploadedImage ? (
+              <PhotoUpload onImageSelect={handleImageUpload} />
+            ) : (
+              <FramePreview 
+                customization={customization} 
+                uploadedImage={uploadedImage}
+                onImageClick={handleImageClick}
+                frameCount={frameCollection.frames.length}
+                currentFrameIndex={frameCollection.frames.findIndex(f => f.id === frameCollection.activeFrameId)}
+              />
+            )}
+          </main>
 
-      {uploadedImage && <Toolbar onToolClick={handleToolClick} onAddFrame={handleAddFrame} hasImage={!!uploadedImage} />}      {/* Bottom Sheets */}
-      <MaterialBottomSheet
-        isOpen={activeModal === 'frame'}
-        onClose={closeModal}
-        currentMaterial={customization.material}
-        onSelect={(material) => updateCustomization({ material })}
-      />
-
-      <FrameBottomSheet
-        isOpen={activeModal === 'material'}
-        onClose={closeModal}
-        currentFrame={customization.frameColor}
-        onSelect={(frameColor) => updateCustomization({ frameColor })}
-      />
-
-      <SizeBottomSheet
-        isOpen={activeModal === 'size'}
-        onClose={closeModal}
-        currentSize={customization.size}
-        onSelect={(size) => updateCustomization({ size })}
-      />
-
-      <EffectBottomSheet
-        isOpen={activeModal === 'effect'}
-        onClose={closeModal}
-        currentEffect={customization.effect}
-        onSelect={(effect) => updateCustomization({ effect })}
-      />
-
-      <BorderBottomSheet
-        isOpen={activeModal === 'border'}
-        onClose={closeModal}
-        currentBorder={customization.border}
-        borderColor={customization.borderColor}
-        borderWidth={customization.borderWidth}
-        onToggle={(border) => updateCustomization({ border })}
-        onBorderUpdate={handleBorderUpdate}
-        uploadedImage={uploadedImage}
-      />
-
-      {uploadedImage && (
-        <ImageEditor
-          isOpen={activeModal === 'imageEditor'}
+        {uploadedImage && <Toolbar onToolClick={handleToolClick} onAddFrame={handleAddFrame} hasImage={!!uploadedImage} />}        {/* Bottom Sheets */}
+        <MaterialBottomSheet
+          isOpen={activeModal === 'frame'}
           onClose={closeModal}
-          image={uploadedImage}
-          customization={customization}
-          onTransformUpdate={updateImageTransform}
-          onDownload={handleDownload}          onImageReplace={replaceImage}
+          currentMaterial={customization.material}
+          onSelect={(material) => updateCustomization({ material })}
         />
-      )}
 
-      {/* Floating Add Button for mobile */}
-      <FloatingAddButton
-        onAddFrame={handleAddFrame}
-        hasFrames={frameCollection.frames.length > 0}
-        hasImage={!!uploadedImage}
-      />      {/* Tutorial Tooltip */}
-      <TutorialTooltip 
-        show={showTutorial} 
-        onClose={handleCloseTutorial} 
-      />
-      </ResponsiveLayout>
-    </div>
+        <FrameBottomSheet
+          isOpen={activeModal === 'material'}
+          onClose={closeModal}
+          currentFrame={customization.frameColor}
+          onSelect={(frameColor) => updateCustomization({ frameColor })}
+        />
+
+        <SizeBottomSheet
+          isOpen={activeModal === 'size'}
+          onClose={closeModal}
+          currentSize={customization.size}
+          onSelect={(size) => updateCustomization({ size })}
+        />
+
+        <EffectBottomSheet
+          isOpen={activeModal === 'effect'}
+          onClose={closeModal}
+          currentEffect={customization.effect}
+          onSelect={(effect) => updateCustomization({ effect })}
+        />
+
+        <BorderBottomSheet
+          isOpen={activeModal === 'border'}
+          onClose={closeModal}
+          currentBorder={customization.border}
+          borderColor={customization.borderColor}
+          borderWidth={customization.borderWidth}
+          onToggle={(border) => updateCustomization({ border })}
+          onBorderUpdate={handleBorderUpdate}
+          uploadedImage={uploadedImage}
+        />
+
+        {uploadedImage && (
+          <ImageEditor
+            isOpen={activeModal === 'imageEditor'}
+            onClose={closeModal}
+            image={uploadedImage}
+            customization={customization}
+            onTransformUpdate={updateImageTransform}
+            onDownload={handleDownload}            onImageReplace={replaceImage}
+          />
+        )}
+
+        {/* Floating Add Button for mobile */}
+        <FloatingAddButton
+          onAddFrame={handleAddFrame}
+          hasFrames={frameCollection.frames.length > 0}
+          hasImage={!!uploadedImage}
+        />        {/* Tutorial Tooltip */}
+        <TutorialTooltip 
+          show={showTutorial} 
+          onClose={handleCloseTutorial} 
+        />
+        </ResponsiveLayout>
+        <ToastContainer position="top-right" />
+      </div>
+    </AuthProvider>
+  </NotificationProvider>
   );
 }
 
