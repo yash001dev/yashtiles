@@ -94,3 +94,21 @@ export interface BorderOption {
   width: number;
   preview: string;
 }
+
+// Email verification types
+export interface VerifyEmailDto {
+  email: string;
+  token: string;
+}
+
+export interface ResetPasswordDto {
+  email: string;
+  token: string;
+  newPassword: string;
+}
+
+export interface VerifyEmailResponse {
+  message: string;
+  user: any;
+  accessToken: string;
+}

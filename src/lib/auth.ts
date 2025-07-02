@@ -1,3 +1,5 @@
+import { VerifyEmailDto, VerifyEmailResponse } from '../types';
+
 // Authentication service to handle API calls
 export interface User {
   id: string;
@@ -258,6 +260,37 @@ class AuthService {
     }
 
     return response.json();
+  }
+
+  // Verify email
+  async verifyEmail(email: string, token: string): Promise<AuthResponse> {
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/verify-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include cookies for refresh token
+      body: JSON.stringify({ email, token }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Email verification failed');
+    }
+
+    const data = await response.json();
+    
+    // Store access token and user data
+    this.setTokens({ 
+      accessToken: data.accessToken, 
+      refreshToken: '' // Refresh token comes as HTTP-only cookie
+    });
+    this.updateStoredUser(data.user);
+
+    return {
+      user: data.user,
+      tokens: { accessToken: data.accessToken, refreshToken: '' }
+    };
   }
 
   // Get stored user data
