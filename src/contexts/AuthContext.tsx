@@ -23,6 +23,7 @@ type AuthAction =
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   register: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
+  googleLogin: (googleToken: string) => Promise<void>;
   logout: () => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (email: string, token: string, newPassword: string) => Promise<void>;
@@ -148,6 +149,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  // Google login function
+  const googleLogin = async (googleToken: string) => {
+    try {
+      dispatch({ type: 'AUTH_START' });
+      const response = await authService.googleLogin(googleToken);
+      dispatch({ type: 'AUTH_SUCCESS', payload: response.user });
+    } catch (error) {
+      dispatch({ type: 'AUTH_ERROR', payload: error instanceof Error ? error.message : 'Google login failed' });
+      throw error;
+    }
+  };
+
   // Logout function with notifications
   const logout = async () => {
     try {
@@ -192,6 +205,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     ...state,
     login,
     register,
+    googleLogin,
     logout,
     forgotPassword,
     resetPassword,

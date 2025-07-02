@@ -1,4 +1,4 @@
-import { VerifyEmailDto, VerifyEmailResponse } from '../types';
+import { jwtDecode } from "jwt-decode";
 
 // Authentication service to handle API calls
 export interface User {
@@ -43,8 +43,25 @@ export interface ResetPasswordData {
   newPassword: string;
 }
 
+export interface GoogleLoginData {
+  accessToken: string;
+}
+
+interface GoogleJWTPayload {
+  email: string;
+  given_name: string;
+  family_name: string;
+  name: string;
+  picture?: string;
+  sub: string;
+  aud: string;
+  iss: string;
+  exp: number;
+  iat: number;
+}
+
 // API base URL - this should come from environment variables
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 class AuthService {
   private accessToken: string | null = null;
@@ -52,9 +69,9 @@ class AuthService {
 
   constructor() {
     // Initialize tokens from localStorage if available
-    if (typeof window !== 'undefined') {
-      this.accessToken = localStorage.getItem('accessToken');
-      this.refreshToken = localStorage.getItem('refreshToken');
+    if (typeof window !== "undefined") {
+      this.accessToken = localStorage.getItem("accessToken");
+      this.refreshToken = localStorage.getItem("refreshToken");
     }
   }
 
@@ -62,10 +79,10 @@ class AuthService {
   private setTokens(tokens: AuthTokens) {
     this.accessToken = tokens.accessToken;
     this.refreshToken = tokens.refreshToken;
-    
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('accessToken', tokens.accessToken);
-      localStorage.setItem('refreshToken', tokens.refreshToken);
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("accessToken", tokens.accessToken);
+      localStorage.setItem("refreshToken", tokens.refreshToken);
     }
   }
 
@@ -73,11 +90,11 @@ class AuthService {
   private clearTokens() {
     this.accessToken = null;
     this.refreshToken = null;
-    
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
+
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
     }
   }
 
@@ -93,14 +110,14 @@ class AuthService {
 
   // Make authenticated API request
   private async apiRequest(
-    endpoint: string, 
+    endpoint: string,
     options: RequestInit = {}
   ): Promise<Response> {
     const url = `${API_BASE_URL}/api/v1${endpoint}`;
-    
+
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      ...options.headers as Record<string, string>,
+      "Content-Type": "application/json",
+      ...(options.headers as Record<string, string>),
     };
 
     // Add authorization header if we have an access token
@@ -132,24 +149,24 @@ class AuthService {
   // User registration
   async register(data: RegisterData): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Registration failed');
+      throw new Error(error.message || "Registration failed");
     }
 
     const authResponse: AuthResponse = await response.json();
     this.setTokens(authResponse.tokens);
-    
+
     // Store user data
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('user', JSON.stringify(authResponse.user));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(authResponse.user));
     }
 
     return authResponse;
@@ -158,24 +175,24 @@ class AuthService {
   // User login
   async login(data: LoginData): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Login failed');
+      throw new Error(error.message || "Login failed");
     }
 
     const authResponse: AuthResponse = await response.json();
     this.setTokens(authResponse.tokens);
-    
+
     // Store user data
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('user', JSON.stringify(authResponse.user));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(authResponse.user));
     }
 
     return authResponse;
@@ -189,10 +206,10 @@ class AuthService {
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.refreshToken}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.refreshToken}`,
         },
       });
 
@@ -214,13 +231,13 @@ class AuthService {
   async logout(): Promise<void> {
     try {
       if (this.accessToken) {
-        await this.apiRequest('/auth/logout', {
-          method: 'POST',
+        await this.apiRequest("/auth/logout", {
+          method: "POST",
         });
       }
     } catch (error) {
       // Ignore logout errors, just clear tokens
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       this.clearTokens();
     }
@@ -228,17 +245,20 @@ class AuthService {
 
   // Forgot password
   async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
-    const response = await fetch(`${API_BASE_URL}/api/v1/auth/forgot-password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/v1/auth/forgot-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Failed to send reset email');
+      throw new Error(error.message || "Failed to send reset email");
     }
 
     return response.json();
@@ -247,16 +267,16 @@ class AuthService {
   // Reset password
   async resetPassword(data: ResetPasswordData): Promise<{ message: string }> {
     const response = await fetch(`${API_BASE_URL}/api/v1/auth/reset-password`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Password reset failed');
+      throw new Error(error.message || "Password reset failed");
     }
 
     return response.json();
@@ -265,49 +285,111 @@ class AuthService {
   // Verify email
   async verifyEmail(email: string, token: string): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/api/v1/auth/verify-email`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      credentials: 'include', // Include cookies for refresh token
+      credentials: "include", // Include cookies for refresh token
       body: JSON.stringify({ email, token }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Email verification failed');
+      throw new Error(error.message || "Email verification failed");
     }
 
     const data = await response.json();
-    
+
     // Store access token and user data
-    this.setTokens({ 
-      accessToken: data.accessToken, 
-      refreshToken: '' // Refresh token comes as HTTP-only cookie
+    this.setTokens({
+      accessToken: data.accessToken,
+      refreshToken: "", // Refresh token comes as HTTP-only cookie
     });
     this.updateStoredUser(data.user);
 
     return {
       user: data.user,
-      tokens: { accessToken: data.accessToken, refreshToken: '' }
+      tokens: { accessToken: data.accessToken, refreshToken: "" },
     };
   }
 
   // Get stored user data
   getStoredUser(): User | null {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return null;
     }
 
-    const userData = localStorage.getItem('user');
+    const userData = localStorage.getItem("user");
     return userData ? JSON.parse(userData) : null;
   }
 
   // Update stored user data
   updateStoredUser(user: User): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('user', JSON.stringify(user));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(user));
     }
+  }
+
+  // Google login
+  async googleLogin(googleCredential: string): Promise<AuthResponse> {
+    try {
+      // Decode the JWT token to extract user information
+      const decodedToken = jwtDecode<GoogleJWTPayload>(googleCredential);
+
+      console.log("Decoded Google token:", decodedToken);
+
+      const payload = {
+        accessToken: googleCredential,
+        email: decodedToken.email,
+        firstName: decodedToken.given_name,
+        lastName: decodedToken.family_name,
+      };
+
+      console.log("Sending payload to backend:", payload);
+
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/google/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Include cookies for refresh token
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Google login failed");
+      }
+
+      const data = await response.json();
+
+      // The backend returns { user, accessToken } format for Google login
+      this.setTokens({
+        accessToken: data.accessToken,
+        refreshToken: "", // Refresh token comes as HTTP-only cookie
+      });
+
+      // Store user data
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
+      return {
+        user: data.user,
+        tokens: {
+          accessToken: data.accessToken,
+          refreshToken: "", // Refresh token comes as HTTP-only cookie
+        },
+      };
+    } catch (error) {
+      console.error("Google login error:", error);
+      throw error;
+    }
+  }
+
+  // Get Google OAuth URL for redirect flow
+  getGoogleAuthUrl(): string {
+    return `${API_BASE_URL}/api/v1/auth/google`;
   }
 }
 

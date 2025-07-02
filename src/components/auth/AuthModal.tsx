@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
+import { GoogleLogin } from '@react-oauth/google';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,8 +18,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   
-  const { login, register, forgotPassword, resetPassword, error, clearError } = useAuth();
-  const { showSuccess, showError } = useNotifications();
+  const { login, register, forgotPassword, resetPassword, googleLogin, error, clearError } = useAuth();
+  const { addNotification } = useNotifications();
 
   // Form data states
   const [formData, setFormData] = useState({
@@ -65,7 +66,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
       switch (mode) {
         case 'login':
           await login(formData.email, formData.password);
-          showSuccess('Welcome back!', 'You have successfully signed in.');
+          addNotification({
+            type: 'success',
+            title: 'Welcome back!',
+            message: 'You have successfully signed in.'
+          });
           handleClose();
           break;
 
@@ -74,23 +79,55 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
             throw new Error('Passwords do not match');
           }
           await register(formData.firstName, formData.lastName, formData.email, formData.password);
-          showSuccess('Welcome to YashTiles!', 'Your account has been created successfully.');
+          addNotification({
+            type: 'success',
+            title: 'Welcome to YashTiles!',
+            message: 'Your account has been created successfully.'
+          });
           handleClose();
           break;
 
         case 'forgot-password':
           await forgotPassword(formData.email);
-          showSuccess('Reset link sent', 'If the email exists, a reset link has been sent');
+          addNotification({
+            type: 'success',
+            title: 'Reset link sent',
+            message: 'If the email exists, a reset link has been sent'
+          });
           setMessage('If the email exists, a reset link has been sent');
           break;
 
         case 'reset-password':
           await resetPassword(formData.email, formData.resetToken, formData.password);
-          showSuccess('Password reset successful', 'Your password has been reset successfully');
+          addNotification({
+            type: 'success',
+            title: 'Password reset successful',
+            message: 'Your password has been reset successfully'
+          });
           setMessage('Password has been reset successfully');
           setMode('login');
           break;
       }
+    } catch (err) {
+      // Error is handled by the context
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async (credentialResponse: any) => {
+    setIsLoading(true);
+    setMessage('');
+    clearError();
+
+    try {
+      await googleLogin(credentialResponse.credential);
+      addNotification({
+        type: 'success',
+        title: 'Welcome back!',
+        message: 'You have successfully signed in with Google.'
+      });
+      handleClose();
     } catch (err) {
       // Error is handled by the context
     } finally {
@@ -143,6 +180,30 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         {isLoading ? 'Signing in...' : 'Sign In'}
       </button>
 
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-300" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white text-gray-500">Or continue with</span>
+        </div>
+      </div>
+
+      <div className="w-full">
+        <GoogleLogin
+          onSuccess={handleGoogleLogin}
+          onError={() => {
+            addNotification({
+              type: 'error',
+              title: 'Google login failed',
+              message: 'An error occurred during Google login'
+            });
+          }}
+          theme="outline"
+          size="large"
+        />
+      </div>
+
       <div className="text-center space-y-2">
         <button
           type="button"
@@ -162,6 +223,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           </button>
         </p>
       </div>
+
+      
+      
     </>
   );
 
