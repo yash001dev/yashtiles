@@ -38,7 +38,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
   // Calculate total amount
   const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
 
-  if (!isOpen) return null;
+  if (!isOpen || items.length === 0) return null;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
