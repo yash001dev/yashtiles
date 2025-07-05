@@ -39,7 +39,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
             {children}
             
             {/* Multi-frame slider for desktop */}
-            {frames.length > 0 && (
+            {hasUploadedImage && (
               <div className="mt-6 px-6">
                 <MultiFrameSlider
                   frames={frames}
@@ -57,6 +57,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
           {hasUploadedImage && (
             <div className="w-80 bg-white border-l border-gray-200 p-6 min-h-[calc(100vh-4rem)]">
               <FrameDetails
+                frames={frames}
                 customization={customization}
                 onAddToCart={onAddToCart}
               />
@@ -71,7 +72,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
       {children}
       
       {/* Multi-frame slider for mobile - placed before frame details */}
-      {frames.length > 0 && (
+      {hasUploadedImage && (
         <div className="px-4 py-4">
           <MultiFrameSlider
             frames={frames}
@@ -88,6 +89,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
       {hasUploadedImage && (
         <div className="px-4 pb-24">
           <FrameDetails
+            frames={frames}
             customization={customization}
             onAddToCart={onAddToCart}
           />
