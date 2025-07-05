@@ -3,6 +3,7 @@ import { X, CreditCard, MapPin, Package } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCheckout, CheckoutData } from '../../hooks/useCheckout';
 import AuthModal from '../auth/AuthModal';
+import { API_BASE_URL } from '@/lib/auth';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -30,10 +31,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
     city: '',
     state: '',
     zipCode: '',
-    country: 'US',
+    country: 'IN',
   });
 
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'razorpay'>('stripe');
+
 
   // Calculate total amount
   const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
@@ -45,6 +47,112 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
     setShippingData(prev => ({ ...prev, [name]: value }));
   };
 
+  const cartTotal = items.reduce((sum, item) => sum + item.price, 0);
+
+    // PayU integration handler
+    const handleCartClick = async () => {
+      // Collect order items from frameCollection
+      const allItems = items.map(frame => ({
+        productId: frame.id, // Replace with real productId if available
+        quantity: 1,
+        price: frame.price, // Or frame.price if available
+        size: frame.customization.size,
+        frameType: frame.customization.material,
+        imageUrl: frame.image,
+        frameColor: frame.customization.frameColor,
+        borderColor: frame.customization.borderColor,
+        borderWidth: frame.customization.borderWidth,
+        material: frame.customization.material,
+        effect: frame.customization.effect,
+      }));
+      // Collect shipping address from user or fallback
+      const shippingAddress = user ? {
+        firstName: shippingData.firstName,
+        lastName: shippingData.lastName || '',
+        email: shippingData.email,
+        phone: shippingData.phone,
+        street: shippingData.address,
+        city: shippingData.city,
+        state: shippingData.state,
+        zipCode: shippingData.zipCode,
+        country: 'IN',
+      } : {
+        firstName: shippingData.firstName,
+        lastName: shippingData.lastName,
+        email: shippingData.email,
+        phone: shippingData.phone,
+        street: shippingData.address,
+        city: shippingData.city,
+        state: shippingData.state,
+        zipCode: shippingData.zipCode,
+        country: 'IN',
+      };
+      const order = {
+        items:allItems,
+        totalAmount: cartTotal,
+        shippingAddress,
+        shippingCost: 0,
+        taxAmount: 0,
+        notes: '',
+      };
+      const txnid = Date.now().toString();
+      const amount = cartTotal;
+      const productinfo = 'FrameIt Custom Frame';
+      const firstname = shippingAddress.firstName;
+      const email = shippingAddress.email;
+      const key = process.env.NEXT_PUBLIC_PAYU_KEY;
+      const salt = process.env.NEXT_PUBLIC_PAYU_SALT;
+      const udf1 = '';
+      const udf2 = '';
+      const udf3 = '';
+      const udf4 = '';
+      const udf5 = '';
+      console.log({amount})
+      // 1. Generate hash
+      const hashRes = await fetch(`${API_BASE_URL}/api/v1/payments/payu/generate-hash`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, txnid, amount, productinfo, firstname, email, salt, udf1, udf2, udf3, udf4, udf5 })
+      });
+      const { hash } = await hashRes.json();
+      // 2. Initiate payment
+      //Todo: change later
+      const surl = `http://localhost:3001/success`;
+      const furl = `http://localhost:3001/failure`;
+      const res = await fetch(`${API_BASE_URL}/api/v1/payments/payu/initiate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order, surl, furl, userId: user?.id, key, txnid, amount, productinfo, firstname, email, hash, udf1, udf2, udf3, udf4, udf5 })
+      });
+      const data = await res.json();
+      if (data && data.action && data.params) {
+        // Create and submit form
+        const form = document.createElement('form');
+        form.action = data.action;
+        form.method = 'POST';
+        form.style.display = 'none';
+        Object.entries(data.params).forEach(([key, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = String(value);
+          form.appendChild(input);
+        });
+        // Add udf1-udf5 as hidden fields if not present
+        ['udf1','udf2','udf3','udf4','udf5'].forEach((udf) => {
+          if (!data.params[udf]) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = udf;
+            input.value = '';
+            form.appendChild(input);
+          }
+        });
+        document.body.appendChild(form);
+        form.submit();
+      }
+    };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -66,18 +174,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
         totalAmount,
       };
 
-      const result = await processCheckout(checkoutData);
+      handleCartClick();
       
-      if (result.success) {
-        if (result.paymentUrl) {
-          // Redirect to payment page
-          window.location.href = result.paymentUrl;
-        } else {
-          // Show success message and close modal
-          alert('Order placed successfully!');
-          onClose();
-        }
-      }
     } catch (err) {
       // Error is handled by the hook
     }
@@ -176,7 +274,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     value={shippingData.firstName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
                   />
                   <input
                     type="text"
@@ -185,7 +283,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     value={shippingData.lastName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
                   />
                   <input
                     type="email"
@@ -194,7 +292,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     value={shippingData.email}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
                   />
                   <input
                     type="tel"
@@ -203,7 +301,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     value={shippingData.phone}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
                   />
                   <input
                     type="text"
@@ -212,7 +310,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     value={shippingData.address}
                     onChange={handleInputChange}
                     required
-                    className="md:col-span-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="md:col-span-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
                   />
                   <input
                     type="text"
@@ -221,7 +319,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     value={shippingData.city}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
                   />
                   <input
                     type="text"
@@ -230,7 +328,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     value={shippingData.state}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
                   />
                   <input
                     type="text"
@@ -239,77 +337,13 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     value={shippingData.zipCode}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
                   />
-                  <select
-                    name="country"
-                    value={shippingData.country}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                  >
-                    <option value="US">United States</option>
-                    <option value="CA">Canada</option>
-                    <option value="IN">India</option>
-                    <option value="GB">United Kingdom</option>
-                    <option value="AU">Australia</option>
-                  </select>
+                
                 </div>
               </div>
 
-              {/* Payment Method */}
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
-                  <CreditCard size={18} className="mr-2" />
-                  Payment Method
-                </h3>
-                
-                <div className="space-y-3">
-                  <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="stripe"
-                      checked={paymentMethod === 'stripe'}
-                      onChange={(e) => setPaymentMethod(e.target.value as any)}
-                      className="mr-3"
-                    />
-                    <div className="flex items-center">
-                      <CreditCard size={20} className="mr-2 text-gray-600" />
-                      <span>Credit/Debit Card (Stripe)</span>
-                    </div>
-                  </label>
-                  
-                  <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="paypal"
-                      checked={paymentMethod === 'paypal'}
-                      onChange={(e) => setPaymentMethod(e.target.value as any)}
-                      className="mr-3"
-                    />
-                    <div className="flex items-center">
-                      <span className="text-blue-600 font-bold mr-2">PayPal</span>
-                    </div>
-                  </label>
-                  
-                  <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="razorpay"
-                      checked={paymentMethod === 'razorpay'}
-                      onChange={(e) => setPaymentMethod(e.target.value as any)}
-                      className="mr-3"
-                    />
-                    <div className="flex items-center">
-                      <span className="text-blue-800 font-bold mr-2">Razorpay</span>
-                      <span className="text-sm text-gray-600">(India)</span>
-                    </div>
-                  </label>
-                </div>
-              </div>
+
 
               {/* Order Total */}
               <div className="border-t border-gray-200 pt-4">

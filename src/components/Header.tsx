@@ -3,6 +3,7 @@ import { ShoppingCart } from 'lucide-react';
 import UserMenu from './auth/UserMenu';
 import AuthModal from './auth/AuthModal';
 
+
 interface HeaderProps {
   onOpenAuthModal?: () => void;
   onCartClick?: () => void;
@@ -12,6 +13,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onOpenAuthModal, onCartClick, cartTotal = 0 }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+
   const handleOpenAuthModal = () => {
     if (onOpenAuthModal) {
       onOpenAuthModal();
@@ -19,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenAuthModal, onCartClick, cartTotal
       setIsAuthModalOpen(true);
     }
   };
+
 
   return (
     <>
