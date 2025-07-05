@@ -174,12 +174,61 @@ function AppContent() {
   const handleCloseTutorial = () => {
     setShowTutorial(false);
     localStorage.setItem('tutorialSeen', 'true');
-  };  return (
+  };
+
+  // Calculate cart total including temporary frame
+  const calculateCartTotal = React.useMemo(() => {
+    let total = 0;
+    
+    // Add price from actual frames
+    total += frameCollection.frames.reduce((sum, frame) => {
+      return sum + getSizePrice(frame.customization.size);
+    }, 0);
+    
+    // Add price from temporary frame (uploaded image with no frames)
+    if (frameCollection.frames.length === 0 && uploadedImage) {
+      total += getSizePrice(customization.size);
+    }
+    
+    return total;
+  }, [frameCollection.frames, uploadedImage, customization.size]);
+
+  // Generate checkout items including temporary frame
+  const generateCheckoutItems = React.useMemo(() => {
+    const items = [];
+    
+    // Add actual frames
+    frameCollection.frames.forEach((frame, index) => {
+      items.push({
+        id: frame.id,
+        name: `Custom Frame ${index + 1}`,
+        price: getSizePrice(frame.customization.size),
+        customization: frame.customization,
+        image: frame.image.url,
+      });
+    });
+    
+    // Add temporary frame if no actual frames exist
+    if (frameCollection.frames.length === 0 && uploadedImage) {
+      items.push({
+        id: 'temp-frame-' + Date.now(),
+        name: 'Custom Frame',
+        price: getSizePrice(customization.size),
+        customization,
+        image: uploadedImage.url,
+      });
+    }
+    
+    return items;
+  }, [frameCollection.frames, uploadedImage, customization]);
+
+  return (
     <div className="min-h-screen">
       {/* Header takes full width */}
       <Header 
         onCartClick={handleCheckout}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        cartTotal={calculateCartTotal}
       />
       
       {/* Content area starts after header */}
@@ -291,17 +340,11 @@ function AppContent() {
         />
 
         {/* Checkout Modal */}
-        {uploadedImage && (
+        {(uploadedImage || frameCollection.frames.length > 0) && (
           <CheckoutModal
             isOpen={isCheckoutModalOpen}
             onClose={() => setIsCheckoutModalOpen(false)}
-            item={{
-              id: 'frame-' + Date.now(),
-              name: 'Custom Frame',
-              price: getSizePrice(customization.size),
-              customization,
-              image: uploadedImage.url,
-            }}
+            items={generateCheckoutItems}
           />
         )}
 

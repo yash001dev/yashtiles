@@ -7,16 +7,16 @@ import AuthModal from '../auth/AuthModal';
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  item: {
+  items: {
     id: string;
     name: string;
     price: number;
     customization: any;
     image?: string;
-  };
+  }[];
 }
 
-const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, item }) => {
+const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items }) => {
   const { isAuthenticated, user } = useAuth();
   const { processCheckout, isLoading, error, clearError } = useCheckout();
   
@@ -34,6 +34,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, item }) 
   });
 
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'razorpay'>('stripe');
+
+  // Calculate total amount
+  const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
 
   if (!isOpen) return null;
 
@@ -54,13 +57,13 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, item }) 
 
     try {
       const checkoutData: CheckoutData = {
-        items: [{
+        items: items.map(item => ({
           ...item,
           quantity: 1,
-        }],
+        })),
         shippingAddress: shippingData,
         paymentMethod,
-        totalAmount: item.price,
+        totalAmount,
       };
 
       const result = await processCheckout(checkoutData);
@@ -103,23 +106,35 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, item }) 
                 <Package size={18} className="mr-2" />
                 Order Summary
               </h3>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  {item.image && (
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-16 h-16 object-cover rounded-lg"
-                    />
-                  )}
-                  <div>
-                    <p className="font-medium text-gray-900">{item.name}</p>
-                    <p className="text-sm text-gray-600">
-                      {item.customization.size} • {item.customization.material} • {item.customization.frameColor}
-                    </p>
+              <div className="space-y-3">
+                {items.map((item, index) => (
+                  <div key={item.id} className="flex items-center justify-between border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
+                    <div className="flex items-center space-x-3">
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-16 h-16 object-cover rounded-lg"
+                        />
+                      )}
+                      <div>
+                        <p className="font-medium text-gray-900">{item.name} {items.length > 1 ? `${index + 1}` : ''}</p>
+                        <p className="text-sm text-gray-600">
+                          {item.customization.size} • {item.customization.material} • {item.customization.frameColor}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="font-semibold text-gray-900">₹{item.price}</p>
                   </div>
-                </div>
-                <p className="font-semibold text-gray-900">₹{item.price}</p>
+                ))}
+                
+                {/* Total */}
+                {items.length > 1 && (
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-300">
+                    <p className="font-semibold text-gray-900">Total ({items.length} items)</p>
+                    <p className="font-bold text-lg text-gray-900">₹{totalAmount}</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -300,7 +315,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, item }) 
               <div className="border-t border-gray-200 pt-4">
                 <div className="flex items-center justify-between text-lg font-semibold">
                   <span>Total:</span>
-                  <span>₹{item.price}</span>
+                  <span>₹{totalAmount}</span>
                 </div>
               </div>
 
