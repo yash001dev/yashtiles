@@ -1,5 +1,5 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+
+export default {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -23,7 +23,7 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        'dark-green': "hsl(var(--dark-green))",
+        'dark-green':"hsl(var(--dark-green))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -68,6 +68,7 @@ module.exports = {
           dark: "#2a2a2a",
           "dark-lighter": "#3a3a3a",
         },
+        // FrameIt brand colors
         cream: {
           50: "#FDFBF7",
           100: "#F5F1EA",
@@ -94,52 +95,35 @@ module.exports = {
           800: "#2C2C2C",
           900: "#1A1A1A",
         },
-        "app-border": "hsl(var(--app-border))",
-        "app-input": "hsl(var(--app-input))",
-        "app-ring": "hsl(var(--app-ring))",
-        "app-background": "hsl(var(--app-background))",
-        "app-foreground": "hsl(var(--app-foreground))",
-        "app-primary": {
-          DEFAULT: "hsl(var(--app-primary))",
-          foreground: "hsl(var(--app-primary-foreground))",
-        },
-        "app-secondary": {
-          DEFAULT: "hsl(var(--app-secondary))",
-          foreground: "hsl(var(--app-secondary-foreground))",
-        },
-        "app-destructive": {
-          DEFAULT: "hsl(var(--app-destructive))",
-          foreground: "hsl(var(--app-destructive-foreground))",
-        },
-        "app-muted": {
-          DEFAULT: "hsl(var(--app-muted))",
-          foreground: "hsl(var(--app-muted-foreground))",
-        },
-        "app-accent": {
-          DEFAULT: "hsl(var(--app-accent))",
-          foreground: "hsl(var(--app-accent-foreground))",
-        },
       },
       fontFamily: {
-        sans: ["var(--font-prompt)"],
+        sans: ["var(--font-prompt)"]
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      boxShadow: {
-        'custom-lg': '0px 10px 60px rgba(0, 0, 0, 0.07)',
-      },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
         },
         "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
         },
+      },
+      boxShadow: {
+        'custom-lg': '0px 10px 60px rgba(0, 0, 0, 0.07)',
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -148,4 +132,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-};
+}
