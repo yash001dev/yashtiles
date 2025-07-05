@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
 import { FrameItem } from '../types/index';
+import { useAuth } from '../contexts/AuthContext';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -15,6 +16,7 @@ interface MultiFrameSliderProps {
   onFrameSelect: (frameId: string) => void;
   onFrameRemove: (frameId: string) => void;
   onAddFrame: () => void;
+  onAuthRequired?: () => void;
   className?: string;
 }
 
@@ -24,9 +26,19 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
   onFrameSelect,
   onFrameRemove,
   onAddFrame,
+  onAuthRequired,
   className = ''
 }) => {
   const swiperRef = useRef(null);
+  const { isAuthenticated } = useAuth();
+
+  const handleAddFrame = () => {
+    if (!isAuthenticated && onAuthRequired) {
+      onAuthRequired();
+      return;
+    }
+    onAddFrame();
+  };
 
   return (
     <div className={`bg-white rounded-xl shadow-lg p-4 ${className}`}>
@@ -55,8 +67,9 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
           {/* Add New Frame Slide */}
           <SwiperSlide style={{ width: 'auto' }}>
             <button
-              onClick={onAddFrame}
+              onClick={handleAddFrame}
               className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-purple-400 hover:bg-purple-50 transition-colors group"
+              title={isAuthenticated ? "Add Frame" : "Login to Add Frame"}
             >
               <Plus className="w-6 h-6 text-gray-400 group-hover:text-purple-500" />
             </button>

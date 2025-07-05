@@ -187,15 +187,25 @@ class AuthService {
       throw new Error(error.message || "Login failed");
     }
 
-    const authResponse: AuthResponse = await response.json();
-    this.setTokens(authResponse.tokens);
+    const responseData = await response.json();
+
+    // Handle the actual backend response format: { user, accessToken }
+    const tokens = {
+      accessToken: responseData.accessToken,
+      refreshToken: "", // Refresh token comes as HTTP-only cookie
+    };
+
+    this.setTokens(tokens);
 
     // Store user data
     if (typeof window !== "undefined") {
-      localStorage.setItem("user", JSON.stringify(authResponse.user));
+      localStorage.setItem("user", JSON.stringify(responseData.user));
     }
 
-    return authResponse;
+    return {
+      user: responseData.user,
+      tokens,
+    };
   }
 
   // Refresh access token

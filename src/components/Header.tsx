@@ -5,9 +5,10 @@ import AuthModal from './auth/AuthModal';
 
 interface HeaderProps {
   onOpenAuthModal?: () => void;
+  onCartClick?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onOpenAuthModal }) => {
+const Header: React.FC<HeaderProps> = ({ onOpenAuthModal, onCartClick }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const handleOpenAuthModal = () => {
@@ -29,7 +30,10 @@ const Header: React.FC<HeaderProps> = ({ onOpenAuthModal }) => {
               </h1>
             </div>
               <div className="flex items-center space-x-4">
-              <button className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200 flex items-center space-x-2">
+              <button 
+                onClick={onCartClick}
+                className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200 flex items-center space-x-2"
+              >
                 <ShoppingCart size={18} />
                 <span className="hidden sm:inline">₹399</span>
                 <span className="sm:hidden">₹399</span>

@@ -12,6 +12,7 @@ interface ResponsiveLayoutProps {
   onFrameRemove: (frameId: string) => void;
   onAddFrame: () => void;
   onAddToCart?: () => void;
+  onAuthRequired?: () => void;
   hasUploadedImage: boolean;
   children: React.ReactNode;
 }
@@ -24,6 +25,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
   onFrameRemove,
   onAddFrame,
   onAddToCart,
+  onAuthRequired,
   hasUploadedImage,
   children
 }) => {
@@ -45,6 +47,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
                   onFrameSelect={onFrameSelect}
                   onFrameRemove={onFrameRemove}
                   onAddFrame={onAddFrame}
+                  onAuthRequired={onAuthRequired}
                 />
               </div>
             )}
@@ -76,6 +79,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
             onFrameSelect={onFrameSelect}
             onFrameRemove={onFrameRemove}
             onAddFrame={onAddFrame}
+            onAuthRequired={onAuthRequired}
           />
         </div>
       )}

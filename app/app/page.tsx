@@ -14,12 +14,17 @@ import ResponsiveLayout from '../../src/components/ResponsiveLayout';
 import FloatingAddButton from '../../src/components/FloatingAddButton';
 import TutorialTooltip from '../../src/components/TutorialTooltip';
 import ToastContainer from '../../src/components/ui/ToastContainer';
-import { AuthProvider } from '../../src/contexts/AuthContext';
-import { NotificationProvider } from '../../src/contexts/NotificationContext';
+import CheckoutModal from '../../src/components/checkout/CheckoutModal';
+import AuthModal from '../../src/components/auth/AuthModal';
+import { AuthProvider, useAuth } from '../../src/contexts/AuthContext';
+import { NotificationProvider, useNotifications } from '../../src/contexts/NotificationContext';
 import { useFrameCustomizer } from '../../src/hooks/useFrameCustomizer';
 import { downloadFramedImage } from '../../src/utils/downloadImage';
 
-function App() {
+function AppContent() {
+  const { isAuthenticated } = useAuth();
+  const { addNotification } = useNotifications();
+  
   const {
     customization,
     updateCustomization,
@@ -36,6 +41,11 @@ function App() {
     selectFrame,
     updateActiveFrame,
   } = useFrameCustomizer();
+
+  // State for checkout and auth modals
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = React.useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
+  const [pendingAction, setPendingAction] = React.useState<'cart' | 'checkout' | null>(null);
   // Update active frame when customization or image changes
   React.useEffect(() => {
     if (frameCollection.activeFrameId && uploadedImage) {
@@ -79,9 +89,66 @@ function App() {
   };
 
   const handleAddToCart = () => {
-    // Add to cart functionality
+    if (!uploadedImage) {
+      addNotification({
+        type: 'warning',
+        title: 'No Image',
+        message: 'Please upload an image first before adding to cart.'
+      });
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setPendingAction('cart');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    // Add to cart functionality - no redirect, just show success message
     console.log('Adding to cart:', { customization, uploadedImage });
+    addNotification({
+      type: 'success',
+      title: 'Added to Cart',
+      message: 'Your customized frame has been added to cart.'
+    });
   };
+
+  const handleCheckout = () => {
+    if (!uploadedImage) {
+      addNotification({
+        type: 'warning',
+        title: 'No Image',
+        message: 'Please upload an image first before proceeding to checkout.'
+      });
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setPendingAction('checkout');
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    setIsCheckoutModalOpen(true);
+  };
+
+  // Handle auth modal success
+  React.useEffect(() => {
+    if (isAuthenticated && pendingAction && !isAuthModalOpen) {
+      if (pendingAction === 'cart') {
+        // Just add to cart, don't redirect
+        console.log('Adding to cart after authentication:', { customization, uploadedImage });
+        addNotification({
+          type: 'success',
+          title: 'Added to Cart',
+          message: 'Your customized frame has been added to cart.'
+        });
+      } else if (pendingAction === 'checkout') {
+        setTimeout(() => setIsCheckoutModalOpen(true), 100);
+      }
+      setPendingAction(null);
+    }
+  }, [isAuthenticated, pendingAction, isAuthModalOpen]);
 
   // Keyboard shortcuts
   React.useEffect(() => {
@@ -108,23 +175,28 @@ function App() {
     setShowTutorial(false);
     localStorage.setItem('tutorialSeen', 'true');
   };  return (
-    <NotificationProvider>
-      <AuthProvider>
-        <div className="min-h-screen">
-          {/* Header takes full width */}
-          <Header />
-          
-          {/* Content area starts after header */}
-          <ResponsiveLayout
-            customization={customization}
-            frames={frameCollection.frames}
-            activeFrameId={frameCollection.activeFrameId}
-            onFrameSelect={selectFrame}
-            onFrameRemove={removeFrameFromCollection}
-            onAddFrame={handleAddFrame}
-            onAddToCart={handleAddToCart}
-            hasUploadedImage={!!uploadedImage}
-          >
+    <div className="min-h-screen">
+      {/* Header takes full width */}
+      <Header 
+        onCartClick={handleCheckout}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+      />
+      
+      {/* Content area starts after header */}
+      <ResponsiveLayout
+        customization={customization}
+        frames={frameCollection.frames}
+        activeFrameId={frameCollection.activeFrameId}
+        onFrameSelect={selectFrame}
+        onFrameRemove={removeFrameFromCollection}
+        onAddFrame={handleAddFrame}
+        onAddToCart={handleAddToCart}
+        onAuthRequired={() => {
+          setPendingAction('cart');
+          setIsAuthModalOpen(true);
+        }}
+        hasUploadedImage={!!uploadedImage}
+      >
           <main className="pb-2 relative">
             {!uploadedImage ? (
               <PhotoUpload onImageSelect={handleImageUpload} />
@@ -139,7 +211,10 @@ function App() {
             )}
           </main>
 
-        {uploadedImage && <Toolbar onToolClick={handleToolClick} onAddFrame={handleAddFrame} hasImage={!!uploadedImage} />}        {/* Bottom Sheets */}
+        {uploadedImage && <Toolbar onToolClick={handleToolClick} onAddFrame={handleAddFrame} onAuthRequired={() => {
+          setPendingAction('cart');
+          setIsAuthModalOpen(true);
+        }} hasImage={!!uploadedImage} />}        {/* Bottom Sheets */}
         <MaterialBottomSheet
           isOpen={activeModal === 'frame'}
           onClose={closeModal}
@@ -195,16 +270,73 @@ function App() {
           onAddFrame={handleAddFrame}
           hasFrames={frameCollection.frames.length > 0}
           hasImage={!!uploadedImage}
+          onAuthRequired={() => {
+            setPendingAction('cart');
+            setIsAuthModalOpen(true);
+          }}
         />        {/* Tutorial Tooltip */}
         <TutorialTooltip 
           show={showTutorial} 
           onClose={handleCloseTutorial} 
         />
+
+        {/* Auth Modal */}
+        <AuthModal 
+          isOpen={isAuthModalOpen}
+          onClose={() => {
+            setIsAuthModalOpen(false);
+            setPendingAction(null);
+          }}
+        />
+
+        {/* Checkout Modal */}
+        {uploadedImage && (
+          <CheckoutModal
+            isOpen={isCheckoutModalOpen}
+            onClose={() => setIsCheckoutModalOpen(false)}
+            item={{
+              id: 'frame-' + Date.now(),
+              name: 'Custom Frame',
+              price: getSizePrice(customization.size),
+              customization,
+              image: uploadedImage.url,
+            }}
+          />
+        )}
+
         </ResponsiveLayout>
         <ToastContainer position="top-right" />
-      </div>
-    </AuthProvider>
-  </NotificationProvider>
+    </div>
+  );
+}
+
+// Helper function to get size pricing
+function getSizePrice(size: string) {
+  const prices: Record<string, number> = {
+    '8x8': 299,
+    '8x10': 404,
+    '10x8': 404,
+    '9x12': 582,
+    '12x9': 582,
+    '12x12': 797,
+    '12x18': 1218,
+    '18x12': 1218,
+    '18x18': 1900,
+    '18x24': 2400,
+    '24x18': 2400,
+    '24x32': 4200,
+    '32x24': 4200,
+  };
+  return prices[size] || 399;
+}
+
+function App() {
+  return (
+    <NotificationProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </NotificationProvider>
   );
 }
 

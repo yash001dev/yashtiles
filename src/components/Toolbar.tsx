@@ -1,15 +1,26 @@
 import React from 'react';
 import { Grid, Frame, Maximize, Square, Plus, Sparkles, Palette } from 'lucide-react';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ToolbarProps {
   onToolClick: (tool: string) => void;
   onAddFrame?: () => void;
+  onAuthRequired?: () => void;
   hasImage?: boolean;
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, onAddFrame, hasImage }) => {
+const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, onAddFrame, onAuthRequired, hasImage }) => {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+  const { isAuthenticated } = useAuth();
+
+  const handleAddFrame = () => {
+    if (!isAuthenticated && onAuthRequired) {
+      onAuthRequired();
+      return;
+    }
+    onAddFrame?.();
+  };
   
   const tools = [
     { id: 'material', icon: Grid, label: 'Material', color: 'text-blue-600' },
@@ -59,7 +70,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, onAddFrame, hasImage }) 
         <div className="pb-8 px-3">
           {/* Add Frame button - smaller and correctly labeled */}
           <button
-            onClick={onAddFrame}
+            onClick={handleAddFrame}
             className="group w-full flex flex-col items-center space-y-2 p-3 border-2 border-dashed border-gray-300 rounded-xl hover:border-purple-400 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105 active:scale-95 hover:shadow-lg relative"
             style={{
               animationDelay: '500ms',
@@ -68,7 +79,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, onAddFrame, hasImage }) 
           >
             {/* Tooltip positioned above the button */}
             <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-              Add Frame
+              {isAuthenticated ? 'Add Frame' : 'Login to Add Frame'}
             </div>
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center group-hover:from-purple-600 group-hover:to-purple-700 transition-all duration-300 shadow-md group-hover:shadow-lg">
               <Plus size={16} className="text-white transition-transform duration-300 group-hover:rotate-90" />
