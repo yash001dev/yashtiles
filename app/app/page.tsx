@@ -196,6 +196,7 @@ function AppContent() {
           setIsAuthModalOpen(true);
         }}
         hasUploadedImage={!!uploadedImage}
+        uploadedImage={uploadedImage}
       >
           <main className="pb-2 relative">
             {!uploadedImage ? (

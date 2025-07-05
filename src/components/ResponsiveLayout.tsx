@@ -2,7 +2,7 @@ import React from 'react';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import FrameDetails from './FrameDetails';
 import MultiFrameSlider from './MultiFrameSlider';
-import { FrameCustomization, FrameItem } from '../types';
+import { FrameCustomization, FrameItem, UploadedImage } from '../types';
 
 interface ResponsiveLayoutProps {
   customization: FrameCustomization;
@@ -14,6 +14,7 @@ interface ResponsiveLayoutProps {
   onAddToCart?: () => void;
   onAuthRequired?: () => void;
   hasUploadedImage: boolean;
+  uploadedImage?: UploadedImage | null;
   children: React.ReactNode;
 }
 
@@ -27,6 +28,7 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
   onAddToCart,
   onAuthRequired,
   hasUploadedImage,
+  uploadedImage,
   children
 }) => {
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');  if (isLargeScreen) {
@@ -48,6 +50,8 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
                   onFrameRemove={onFrameRemove}
                   onAddFrame={onAddFrame}
                   onAuthRequired={onAuthRequired}
+                  uploadedImage={uploadedImage}
+                  currentCustomization={customization}
                 />
               </div>
             )}
@@ -81,6 +85,8 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({
             onFrameRemove={onFrameRemove}
             onAddFrame={onAddFrame}
             onAuthRequired={onAuthRequired}
+            uploadedImage={uploadedImage}
+            currentCustomization={customization}
           />
         </div>
       )}

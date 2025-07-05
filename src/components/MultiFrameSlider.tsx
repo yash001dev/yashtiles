@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
-import { FrameItem } from '../types/index';
+import { FrameItem, FrameCustomization, UploadedImage } from '../types/index';
 import { useAuth } from '../contexts/AuthContext';
 
 // Import Swiper styles
@@ -18,6 +18,9 @@ interface MultiFrameSliderProps {
   onAddFrame: () => void;
   onAuthRequired?: () => void;
   className?: string;
+  // Props for showing temporary frame when no frames exist
+  uploadedImage?: UploadedImage | null;
+  currentCustomization?: FrameCustomization;
 }
 
 const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
@@ -27,10 +30,16 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
   onFrameRemove,
   onAddFrame,
   onAuthRequired,
-  className = ''
+  className = '',
+  uploadedImage,
+  currentCustomization
 }) => {
   const swiperRef = useRef(null);
   const { isAuthenticated } = useAuth();
+
+  // Calculate effective frame count (including temporary frame)
+  const hasTemporaryFrame = frames.length === 0 && uploadedImage && currentCustomization;
+  const effectiveFrameCount = hasTemporaryFrame ? 1 : frames.length;
 
   const handleAddFrame = () => {
     if (!isAuthenticated && onAuthRequired) {
@@ -44,7 +53,7 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
     <div className={`bg-white rounded-xl shadow-lg p-4 ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">Your Frames</h3>
-        <span className="text-sm text-gray-500">{frames.length} frame{frames.length !== 1 ? 's' : ''}</span>
+        <span className="text-sm text-gray-500">{effectiveFrameCount} frame{effectiveFrameCount !== 1 ? 's' : ''}</span>
       </div>
 
       <div className="relative">
@@ -64,6 +73,23 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
           }}
           className="multi-frame-swiper"
         >
+          {/* Temporary Frame Slide - shown when no frames but has uploaded image */}
+          {hasTemporaryFrame && uploadedImage && (
+            <SwiperSlide style={{ width: 'auto' }}>
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-purple-500 ring-2 ring-purple-200">
+                  <img
+                    src={uploadedImage.url}
+                    alt="Current frame"
+                    className="w-full h-full object-cover"
+                  />
+                  {/* Frame overlay to simulate the actual frame */}
+                  <div className="absolute inset-0 border-2 border-black opacity-50 pointer-events-none" />
+                </div>
+              </div>
+            </SwiperSlide>
+          )}
+
           {/* Add New Frame Slide */}
           <SwiperSlide style={{ width: 'auto' }}>
             <button
@@ -114,7 +140,7 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
         </Swiper>
 
         {/* Custom Navigation Buttons */}
-        {frames.length > 3 && (
+        {effectiveFrameCount > 3 && (
           <>
             <button className="swiper-button-prev-custom absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center z-10 hover:bg-gray-50">
               <ChevronLeft className="w-4 h-4 text-gray-600" />
@@ -125,7 +151,7 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
           </>
         )}
       </div>      {/* Custom pagination */}
-      {frames.length > 3 && (
+      {effectiveFrameCount > 3 && (
         <div className="flex justify-center mt-4">
           <div className="swiper-pagination-custom flex gap-1"></div>
         </div>
