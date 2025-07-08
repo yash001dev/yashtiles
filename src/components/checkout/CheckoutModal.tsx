@@ -1,9 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, CreditCard, MapPin, Package } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCheckout, CheckoutData } from '../../hooks/useCheckout';
 import AuthModal from '../auth/AuthModal';
 import { API_BASE_URL } from '@/lib/auth';
+
+// Zod schema for form validation
+const shippingSchema = z.object({
+  firstName: z.string().min(1, 'First name is required').min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(1, 'Last name is required').min(2, 'Last name must be at least 2 characters'),
+  email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
+  phone: z.string().min(1, 'Phone number is required').min(10, 'Phone number must be at least 10 digits').regex(/^[0-9+\-\s()]+$/, 'Please enter a valid phone number'),
+  address: z.string().min(1, 'Address is required').min(5, 'Address must be at least 5 characters'),
+  city: z.string().min(1, 'City is required').min(2, 'City must be at least 2 characters'),
+  state: z.string().min(1, 'State is required').min(2, 'State must be at least 2 characters'),
+  zipCode: z.string().min(1, 'ZIP code is required').regex(/^[0-9]{6}$/, 'Please enter a valid 6-digit ZIP code'),
+  country: z.string().min(1, 'Country is required'),
+});
+
+type ShippingFormData = z.infer<typeof shippingSchema>;
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -22,35 +40,53 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
   const { processCheckout, isLoading, error, clearError } = useCheckout();
   
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [shippingData, setShippingData] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: 'IN',
-  });
-
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'razorpay'>('stripe');
 
+  // Initialize form with react-hook-form and zod validation
+  const form = useForm<ShippingFormData>({
+    resolver: zodResolver(shippingSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: 'IN',
+    },
+    mode: 'onChange',
+  });
+
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors, isValid } } = form;
+
+  // Update form values when user data changes
+  useEffect(() => {
+    if (user) {
+      setValue('firstName', user.firstName || '');
+      setValue('lastName', user.lastName || '');
+      setValue('email', user.email || '');
+    }
+  }, [user, setValue]);
+
+  // Reset form when modal is closed
+  useEffect(() => {
+    if (!isOpen) {
+      reset();
+      clearError();
+    }
+  }, [isOpen]);
 
   // Calculate total amount
   const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
 
   if (!isOpen || items.length === 0) return null;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setShippingData(prev => ({ ...prev, [name]: value }));
-  };
-
   const cartTotal = items.reduce((sum, item) => sum + item.price, 0);
 
-    // PayU integration handler
-    const handleCartClick = async () => {
+  // PayU integration handler
+  const handleCartClick = async (shippingData: ShippingFormData) => {
       // Collect order items from frameCollection
       const allItems = items.map(frame => ({
         productId: frame.id, // Replace with real productId if available
@@ -65,18 +101,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
         material: frame.customization.material,
         effect: frame.customization.effect,
       }));
-      // Collect shipping address from user or fallback
-      const shippingAddress = user ? {
-        firstName: shippingData.firstName,
-        lastName: shippingData.lastName || '',
-        email: shippingData.email,
-        phone: shippingData.phone,
-        street: shippingData.address,
-        city: shippingData.city,
-        state: shippingData.state,
-        zipCode: shippingData.zipCode,
-        country: 'IN',
-      } : {
+      
+      // Collect shipping address from form data
+      const shippingAddress = {
         firstName: shippingData.firstName,
         lastName: shippingData.lastName,
         email: shippingData.email,
@@ -87,14 +114,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
         zipCode: shippingData.zipCode,
         country: 'IN',
       };
+      
       const order = {
-        items:allItems,
+        items: allItems,
         totalAmount: cartTotal,
         shippingAddress,
         shippingCost: 0,
         taxAmount: 0,
         notes: '',
       };
+      
       const txnid = Date.now().toString();
       const amount = cartTotal;
       const productinfo = 'FrameIt Custom Frame';
@@ -107,7 +136,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       const udf3 = '';
       const udf4 = '';
       const udf5 = '';
-      console.log({amount})
+      
+      console.log({amount});
+      
       // 1. Generate hash
       const hashRes = await fetch(`${API_BASE_URL}/api/v1/payments/payu/generate-hash`, {
         method: 'POST',
@@ -115,47 +146,104 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
         body: JSON.stringify({ key, txnid, amount, productinfo, firstname, email, salt, udf1, udf2, udf3, udf4, udf5 })
       });
       const { hash } = await hashRes.json();
-      // 2. Initiate payment
-      //Todo: change later
-      const surl = `http://localhost:3001/success`;
-      const furl = `http://localhost:3001/failure`;
+      
+      // 2. Prepare FormData for PayU initiation with frame images
+      const formData = new FormData();
+      
+      // Convert image URLs to File objects and append to FormData
+      const imagePromises = items.map(async (item, index) => {
+        if (item.image) {
+          try {
+            // Check if it's a data URL or regular URL
+            if (item.image.startsWith('data:')) {
+              // Handle data URLs (base64 images)
+              const response = await fetch(item.image);
+              const blob = await response.blob();
+              const file = new File([blob], `frame-${index + 1}.jpg`, { type: 'image/jpeg' });
+              formData.append('frameImages', file);
+            } else {
+              // Handle regular URLs
+              const response = await fetch(item.image, { 
+                mode: 'cors',
+                headers: {
+                  'Accept': 'image/*'
+                }
+              });
+              if (!response.ok) {
+                throw new Error(`Failed to fetch image: ${response.status}`);
+              }
+              const blob = await response.blob();
+              const file = new File([blob], `frame-${index + 1}.jpg`, { type: blob.type || 'image/jpeg' });
+              formData.append('frameImages', file);
+            }
+          } catch (error) {
+            console.error(`Failed to fetch image for item ${index}:`, error);
+            // Continue without this image rather than failing the entire process
+          }
+        }
+      });
+      
+      // Wait for all image conversions to complete
+      await Promise.all(imagePromises);
+      
+      // Append other form data as JSON strings
+      formData.append('order', JSON.stringify(order));
+      formData.append('surl', `http://localhost:3001/success`);
+      formData.append('furl', `http://localhost:3001/failure`);
+      formData.append('userId', user?.id || '');
+      formData.append('key', key || '');
+      formData.append('txnid', txnid);
+      formData.append('amount', amount.toString());
+      formData.append('productinfo', productinfo);
+      formData.append('firstname', firstname);
+      formData.append('email', email);
+      formData.append('hash', hash);
+      formData.append('udf1', udf1);
+      formData.append('udf2', udf2);
+      formData.append('udf3', udf3);
+      formData.append('udf4', udf4);
+      formData.append('udf5', udf5);
+      
+      // 3. Initiate payment with FormData
       const res = await fetch(`${API_BASE_URL}/api/v1/payments/payu/initiate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order, surl, furl, userId: user?.id, key, txnid, amount, productinfo, firstname, email, hash, udf1, udf2, udf3, udf4, udf5 })
+        body: formData, // Don't set Content-Type header, let browser set it for FormData
       });
+      
       const data = await res.json();
       if (data && data.action && data.params) {
-        // Create and submit form
-        const form = document.createElement('form');
-        form.action = data.action;
-        form.method = 'POST';
-        form.style.display = 'none';
+        // Submit to PayU payment gateway using form submission
+        const paymentForm = document.createElement('form');
+        paymentForm.action = data.action;
+        paymentForm.method = 'POST';
+        paymentForm.style.display = 'none';
+        
+        // Add all parameters as hidden inputs
         Object.entries(data.params).forEach(([key, value]) => {
           const input = document.createElement('input');
           input.type = 'hidden';
           input.name = key;
           input.value = String(value);
-          form.appendChild(input);
+          paymentForm.appendChild(input);
         });
-        // Add udf1-udf5 as hidden fields if not present
+        
+        // Add udf1-udf5 if not present
         ['udf1','udf2','udf3','udf4','udf5'].forEach((udf) => {
           if (!data.params[udf]) {
             const input = document.createElement('input');
             input.type = 'hidden';
             input.name = udf;
             input.value = '';
-            form.appendChild(input);
+            paymentForm.appendChild(input);
           }
         });
-        document.body.appendChild(form);
-        form.submit();
+        
+        document.body.appendChild(paymentForm);
+        paymentForm.submit();
       }
     };
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const onSubmit = async (formData: ShippingFormData) => {
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
@@ -169,12 +257,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
           ...item,
           quantity: 1,
         })),
-        shippingAddress: shippingData,
+        shippingAddress: formData,
         paymentMethod,
         totalAmount,
       };
 
-      handleCartClick();
+      await handleCartClick(formData);
       
     } catch (err) {
       // Error is handled by the hook
@@ -258,7 +346,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Shipping Information */}
               <div>
                 <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
@@ -267,78 +357,110 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    name="firstName"
-                    placeholder="First name"
-                    value={shippingData.firstName}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
-                  />
-                  <input
-                    type="text"
-                    name="lastName"
-                    placeholder="Last name"
-                    value={shippingData.lastName}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email address"
-                    value={shippingData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
-                  />
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Phone number"
-                    value={shippingData.phone}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
-                  />
-                  <input
-                    type="text"
-                    name="address"
-                    placeholder="Street address"
-                    value={shippingData.address}
-                    onChange={handleInputChange}
-                    required
-                    className="md:col-span-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
-                  />
-                  <input
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    value={shippingData.city}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
-                  />
-                  <input
-                    type="text"
-                    name="state"
-                    placeholder="State/Province"
-                    value={shippingData.state}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
-                  />
-                  <input
-                    type="text"
-                    name="zipCode"
-                    placeholder="ZIP/Postal code"
-                    value={shippingData.zipCode}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-5 bg-white 00 focus:border-transparent"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="First name"
+                      {...register('firstName')}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
+                        errors.firstName ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.firstName && (
+                      <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Last name"
+                      {...register('lastName')}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
+                        errors.lastName ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.lastName && (
+                      <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Email address"
+                      {...register('email')}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
+                        errors.email ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="tel"
+                      placeholder="Phone number"
+                      {...register('phone')}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
+                        errors.phone ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.phone && (
+                      <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+                    )}
+                  </div>
+                  <div className="md:col-span-2">
+                    <input
+                      type="text"
+                      placeholder="Street address"
+                      {...register('address')}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
+                        errors.address ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.address && (
+                      <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="City"
+                      {...register('city')}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
+                        errors.city ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.city && (
+                      <p className="mt-1 text-sm text-red-600">{errors.city.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="State/Province"
+                      {...register('state')}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
+                        errors.state ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.state && (
+                      <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="ZIP/Postal code"
+                      {...register('zipCode')}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
+                        errors.zipCode ? 'border-red-300' : 'border-gray-300'
+                      }`}
+                    />
+                    {errors.zipCode && (
+                      <p className="mt-1 text-sm text-red-600">{errors.zipCode.message}</p>
+                    )}
+                  </div>
                 
                 </div>
               </div>
@@ -356,7 +478,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading || !isAuthenticated}
+                disabled={isLoading || !isAuthenticated || !isValid}
                 className="w-full bg-pink-500 hover:bg-pink-600 disabled:bg-pink-300 text-white font-medium py-3 rounded-lg transition-colors duration-200"
               >
                 {isLoading ? 'Processing...' : 'Place Order'}
