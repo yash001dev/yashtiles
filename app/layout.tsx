@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
 const prompt = Prompt({
   weight: [
     "100",
@@ -124,11 +124,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans" suppressHydrationWarning={true}>
+<GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID }>
         <TooltipProvider>
           {children}
           <Toaster />
           <Sonner />
         </TooltipProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );
