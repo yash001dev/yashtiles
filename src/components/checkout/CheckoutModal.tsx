@@ -188,8 +188,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       
       // Append other form data as JSON strings
       formData.append('order', JSON.stringify(order));
-      formData.append('surl', `http://localhost:3001/success`);
-      formData.append('furl', `http://localhost:3001/failure`);
+      formData.append('surl', `${window.location.origin}/api/payu/success`);
+      formData.append('furl', `${window.location.origin}/api/payu/failure`);
       formData.append('userId', user?.id || '');
       formData.append('key', key || '');
       formData.append('txnid', txnid);
