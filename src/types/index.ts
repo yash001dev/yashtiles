@@ -112,3 +112,71 @@ export interface VerifyEmailResponse {
   user: any;
   accessToken: string;
 }
+
+export interface Order {
+  _id: string;
+  userId: string;
+  orderNumber: string;
+  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  items: OrderItem[];
+  totalAmount: number;
+  shippingCost: number;
+  taxAmount: number;
+  txnid: number;
+  shippingAddress: Address;
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  notes?: string;
+  statusHistory: StatusHistoryItem[];
+  trackingNumber?: string;
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+}
+
+export interface OrderItem {
+  _id: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  size: string;
+  frameType: string;
+  imageUrl: string;
+}
+
+export interface Address {
+  _id?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+
+export interface StatusHistoryItem {
+  _id: string;
+  status: string;
+  timestamp: string;
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+}
+
+export interface OrdersResponse {
+  orders: Order[];
+  pagination: PaginationMeta;
+}
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+}

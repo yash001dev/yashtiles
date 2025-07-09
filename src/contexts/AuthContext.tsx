@@ -1,3 +1,5 @@
+'use client';
+
 import React, { createContext, useContext, useEffect, useReducer, ReactNode } from 'react';
 import { authService, User, AuthTokens } from '../lib/auth';
 import { useNotifications } from './NotificationContext';
