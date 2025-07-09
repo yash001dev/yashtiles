@@ -44,12 +44,12 @@ class OrdersService {
     const endpoint = `/api/v1/orders${queryString ? `?${queryString}` : ""}`;
 
     const response = await this.makeRequest<OrdersResponse>(endpoint);
-    
+
     // Add calculated pagination properties
     const pagination = response.pagination;
     pagination.hasNextPage = pagination.page < pagination.pages;
     pagination.hasPreviousPage = pagination.page > 1;
-    
+
     return response;
   }
 

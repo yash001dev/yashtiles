@@ -117,14 +117,20 @@ export interface Order {
   _id: string;
   userId: string;
   orderNumber: string;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status:
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled";
   items: OrderItem[];
   totalAmount: number;
   shippingCost: number;
   taxAmount: number;
   txnid: number;
   shippingAddress: Address;
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  paymentStatus: "pending" | "paid" | "failed" | "refunded";
   notes?: string;
   statusHistory: StatusHistoryItem[];
   trackingNumber?: string;

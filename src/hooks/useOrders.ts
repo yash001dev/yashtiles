@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-import { ordersService } from '@/lib/orders';
-import { OrdersResponse, PaginationParams } from '@/types';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useEffect, useCallback } from "react";
+import { ordersService } from "@/lib/orders";
+import { OrdersResponse, PaginationParams } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface UseOrdersResult {
-  orders: OrdersResponse['orders'];
-  meta: OrdersResponse['pagination'] | null;
+  orders: OrdersResponse["orders"];
+  meta: OrdersResponse["pagination"] | null;
   loading: boolean;
   error: string | null;
   refetch: () => void;
@@ -13,10 +13,12 @@ export interface UseOrdersResult {
   setLimit: (limit: number) => void;
 }
 
-export function useOrders(initialParams: PaginationParams = {}): UseOrdersResult {
+export function useOrders(
+  initialParams: PaginationParams = {}
+): UseOrdersResult {
   const { isAuthenticated } = useAuth();
-  const [orders, setOrders] = useState<OrdersResponse['orders']>([]);
-  const [meta, setMeta] = useState<OrdersResponse['pagination'] | null>(null);
+  const [orders, setOrders] = useState<OrdersResponse["orders"]>([]);
+  const [meta, setMeta] = useState<OrdersResponse["pagination"] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [params, setParams] = useState<PaginationParams>({
@@ -40,7 +42,7 @@ export function useOrders(initialParams: PaginationParams = {}): UseOrdersResult
       setOrders(response.orders);
       setMeta(response.pagination);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch orders');
+      setError(err instanceof Error ? err.message : "Failed to fetch orders");
       setOrders([]);
       setMeta(null);
     } finally {
@@ -53,11 +55,11 @@ export function useOrders(initialParams: PaginationParams = {}): UseOrdersResult
   }, [fetchOrders]);
 
   const setPage = useCallback((page: number) => {
-    setParams(prev => ({ ...prev, page }));
+    setParams((prev) => ({ ...prev, page }));
   }, []);
 
   const setLimit = useCallback((limit: number) => {
-    setParams(prev => ({ ...prev, limit, page: 1 })); // Reset to first page when changing limit
+    setParams((prev) => ({ ...prev, limit, page: 1 })); // Reset to first page when changing limit
   }, []);
 
   const refetch = useCallback(() => {
