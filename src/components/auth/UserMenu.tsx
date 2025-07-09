@@ -9,13 +9,17 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuthModal }) => {
   const { user, isAuthenticated, logout } = useAuth();
-  const { showSuccess } = useNotifications();
+  const { addNotification } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
       await logout();
-      showSuccess('Signed out successfully', 'You have been logged out of your account.');
+      addNotification({
+        type: 'success',
+        title: 'Signed out successfully',
+        message: 'You have been logged out of your account.'
+      });
       setIsOpen(false);
     } catch (error) {
       console.error('Logout error:', error);
