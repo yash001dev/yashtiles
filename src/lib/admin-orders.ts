@@ -63,6 +63,27 @@ export interface UpdateOrderData {
   statusNotes?: string;
 }
 
+// Utility function to clean data by removing _id fields
+export const cleanOrderDataForUpdate = (data: any): any => {
+  if (!data) return data;
+  
+  if (Array.isArray(data)) {
+    return data.map(item => cleanOrderDataForUpdate(item));
+  }
+  
+  if (typeof data === 'object' && data !== null) {
+    const cleaned: any = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (key !== '_id') {
+        cleaned[key] = cleanOrderDataForUpdate(value);
+      }
+    }
+    return cleaned;
+  }
+  
+  return data;
+};
+
 class AdminOrdersService {
   private baseUrl = config.apiUrl;
 
@@ -161,9 +182,12 @@ class AdminOrdersService {
    * Update a single order
    */
   async updateOrder(orderId: string, data: UpdateOrderData): Promise<Order> {
+    // Clean the data to remove any _id fields
+    const cleanedData = cleanOrderDataForUpdate(data);
+    
     return this.makeRequest<Order>(`/api/v1/orders/${orderId}`, {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: JSON.stringify(cleanedData),
     });
   }
 
@@ -171,9 +195,12 @@ class AdminOrdersService {
    * Bulk update multiple orders
    */
   async bulkUpdateOrders(data: BulkUpdateOrderData): Promise<BulkUpdateResponse> {
+    // Clean the data to remove any _id fields
+    const cleanedData = cleanOrderDataForUpdate(data);
+    
     return this.makeRequest<BulkUpdateResponse>(`/api/v1/orders/bulk-update`, {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: JSON.stringify(cleanedData),
     });
   }
 
