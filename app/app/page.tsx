@@ -266,14 +266,14 @@ function AppContent() {
           setIsAuthModalOpen(true);
         }} hasImage={!!uploadedImage} />}        {/* Bottom Sheets */}
         <MaterialBottomSheet
-          isOpen={activeModal === 'frame'}
+          isOpen={activeModal === 'material'}
           onClose={closeModal}
           currentMaterial={customization.material}
           onSelect={(material) => updateCustomization({ material })}
         />
 
         <FrameBottomSheet
-          isOpen={activeModal === 'material'}
+          isOpen={activeModal === 'frame'}
           onClose={closeModal}
           currentFrame={customization.frameColor}
           onSelect={(frameColor) => updateCustomization({ frameColor })}

@@ -47,7 +47,7 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
       onClose={onClose} 
       title="Select Material"
       description="Choose the perfect material for your frame"    >
-      <div className="space-y-4">
+      <div className="space-y-4 mt-[0.4rem]">
         {materials.map((material) => (
           <button
             key={material.id}

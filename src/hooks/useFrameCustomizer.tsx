@@ -118,6 +118,7 @@ export const useFrameCustomizer = () => {
   }, [frameCollection.activeFrameId, uploadedImage, customization]);
 
   const openModal = (modalName: string) => {
+    // Ensure modalName matches the intended modal to open
     setActiveModal(modalName);
   };
 
