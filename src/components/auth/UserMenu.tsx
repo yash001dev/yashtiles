@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, LogOut, Settings, Package } from 'lucide-react';
+import { User, LogOut, Settings, Package, Shield, BarChart3 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../contexts/NotificationContext';
 
@@ -26,6 +26,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuthModal }) => {
     setIsOpen(false);
     onOpenAuthModal?.();
   };
+
+  const handleNavigation = (path: string) => {
+    setIsOpen(false);
+    window.location.href = path;
+  };
+
+  const isAdmin = user?.role === 'admin';
 
   if (!isAuthenticated) {
     return (
@@ -80,7 +87,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuthModal }) => {
 
             <div className="py-1">
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={() => handleNavigation('/orders')}
                 className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
               >
                 <Package size={16} className="mr-3" />
@@ -95,6 +102,33 @@ const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuthModal }) => {
                 Account Settings
               </button>
             </div>
+
+            {/* Admin Section - Only visible for admin users */}
+            {isAdmin && (
+              <div className="border-t border-gray-100 py-1">
+                <div className="px-4 py-2">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Admin
+                  </p>
+                </div>
+                
+                <button
+                  onClick={() => handleNavigation('/admin')}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-200"
+                >
+                  <BarChart3 size={16} className="mr-3 text-blue-600" />
+                  Dashboard
+                </button>
+                
+                <button
+                  onClick={() => handleNavigation('/admin/orders')}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-200"
+                >
+                  <Shield size={16} className="mr-3 text-blue-600" />
+                  Manage Orders
+                </button>
+              </div>
+            )}
 
             <div className="border-t border-gray-100 py-1">
               <button
