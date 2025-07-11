@@ -16,13 +16,13 @@ const ContactPage = () => {
     <div className="min-h-screen">
          <FrameItHeader hideMenu={true}/>
       {/* Hero Section */}
-      <section className="py-20 bg-dark-green text-white">
+      <section className="py-20 bg-dark-green ">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold  mb-6">
               Get in Touch
             </h1>
-            <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl /80 max-w-2xl mx-auto">
               Have questions about our framing services? Need help with your
               order? We&apos;re here to help you create the perfect framed memories.
             </p>
@@ -118,7 +118,7 @@ const ContactPage = () => {
                     />
                   </div>
 
-                  <Button className="w-full  text-white font-semibold py-3 text-lg">
+                  <Button className="w-full   font-semibold py-3 text-lg">
                     Send Message
                   </Button>
                 </form>
@@ -132,8 +132,8 @@ const ContactPage = () => {
 
                 <div className="space-y-8">
                   <div className="flex items-start gap-4">
-                    <div className="bg-primary p-3 rounded-lg">
-                      <Mail className="w-6 h-6 text-white" />
+                    <div className="bg-pink-500 text-white p-3 rounded-lg">
+                      <Mail className="w-6 h-6 " />
                     </div>
                     <div>
                       <h3 className="font-semibold text-charcoal-900 mb-1">
@@ -147,8 +147,8 @@ const ContactPage = () => {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="bg-primary p-3 rounded-lg">
-                      <Phone className="w-6 h-6 text-white" />
+                    <div className="bg-pink-500 text-white p-3 rounded-lg">
+                      <Phone className="w-6 h-6 " />
                     </div>
                     <div>
                       <h3 className="font-semibold text-charcoal-900 mb-1">
@@ -160,8 +160,8 @@ const ContactPage = () => {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="bg-primary p-3 rounded-lg">
-                      <MapPin className="w-6 h-6 text-white" />
+                    <div className="bg-pink-500 text-white p-3 rounded-lg">
+                      <MapPin className="w-6 h-6 " />
                     </div>
                     <div>
                       <h3 className="font-semibold text-charcoal-900 mb-1">
@@ -175,8 +175,8 @@ const ContactPage = () => {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="bg-primary p-3 rounded-lg">
-                      <Clock className="w-6 h-6 text-white" />
+                    <div className="bg-pink-500 text-white p-3 rounded-lg">
+                      <Clock className="w-6 h-6 " />
                     </div>
                     <div>
                       <h3 className="font-semibold text-charcoal-900 mb-1">

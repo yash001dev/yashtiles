@@ -69,7 +69,7 @@ const FrameItWhatWeCover = () => {
                 key={index}
                 className="group bg-white shadow-lg rounded-xl p-6 text-center hover:bg-gold-50 transition-all duration-300 hover:shadow-lg hover:scale-105 border border-cream-300/50"
               >
-                <div className="inline-flex items-center text-white justify-center w-12 h-12 bg-gradient-to-br from-green-400 to-green-600  rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="inline-flex items-center text-white justify-center w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-600  rounded-lg mb-4 group-hover:scale-110 transition-transform duration-300">
                   <item.icon className="w-6 h-6" />
                 </div>
 
@@ -85,8 +85,8 @@ const FrameItWhatWeCover = () => {
           </div>
 
           {/* Special note */}
-          <div className="bg-gradient-to-bl from-green-500 to-green-500/40 rounded-2xl p-8 text-center border border-gold-500/20">
-            <div className="max-w-3xl mx-auto">
+          <div className="bg-gradient-to-bl from-pink-400 to-pink-800 rounded-2xl p-8 text-center border border-gold-500/20">
+            <div className="max-w-3xl mx-auto text-white">
               <h3 className="text-2xl font-bold  mb-4">
                 Don&apos;t See Your Type? We&apos;ve Got You Covered!
               </h3>

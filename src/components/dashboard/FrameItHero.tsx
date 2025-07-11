@@ -20,7 +20,7 @@ const FrameItHero = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-dark-green text-white overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center bg-dark-green overflow-hidden">
       {/* Optimized background pattern using CSS instead of inline SVG */}
       <div className="absolute  opacity-30">
         <div className="absolute inset-0" style={{
@@ -81,7 +81,7 @@ const FrameItHero = () => {
                     {[...Array(5)].map((_, i) => (
                       <div
                         key={i}
-                        className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 border-2 border-cream-50 flex items-center justify-center"
+                        className="w-8 h-8 rounded-full bg-gradient-to-br from-wood-400 to-wood-600 border-2 border-cream-50 flex items-center justify-center"
                       >
                         <span className="text-xs text-white">★</span>
                       </div>
@@ -98,7 +98,7 @@ const FrameItHero = () => {
             <div className="relative">
               <div className="relative mx-auto max-w-lg">
                 {/* Main frame mockup */}
-                <div className="relative bg-wood-500 p-6 rounded-lg shadow-2xl transform rotate-3 hover:rotate-1 transition-transform duration-500">
+                <div className="relative bg-wood-300 p-6 rounded-lg shadow-2xl transform rotate-3 hover:rotate-1 transition-transform duration-500">
                   <div className="bg-cream-50 p-4 rounded">
                     <div className="aspect-[4/3] bg-gradient-to-br from-slate-200 to-slate-300 rounded flex items-center justify-center">
                       <div className="text-center text-slate-600">
@@ -123,7 +123,7 @@ const FrameItHero = () => {
                 </div>
 
                 {/* Floating smaller frames */}
-                <div className="absolute -top-4 -left-4 bg-wood-300 p-3 rounded shadow-lg transform -rotate-12 opacity-80">
+                <div className="absolute -top-4 -left-4 bg-wood-600 p-3 rounded shadow-lg transform -rotate-12 opacity-80">
                   <div className="w-20 h-20 bg-cream-100 rounded flex items-center justify-center">
                     <svg
                       className="w-6 h-6 text-slate-400"
@@ -190,7 +190,7 @@ const FrameItHero = () => {
       {/* Bottom wave separator */}
       <div className="absolute bottom-0 left-0 right-0">
         <svg
-          className="w-full h-20 text-green-800/30"
+          className="w-full h-20 text-wood-600/30"
           viewBox="0 0 1200 120"
           preserveAspectRatio="none"
           aria-hidden="true"

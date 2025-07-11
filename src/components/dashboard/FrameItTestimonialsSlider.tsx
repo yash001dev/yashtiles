@@ -122,14 +122,14 @@ const FrameItTestimonialsSlider = () => {
   // Don't render until mounted to prevent hydration mismatch
   if (!isMounted) {
     return (
-      <section className="py-20 bg-dark-green text-white overflow-hidden">
+      <section className="py-20 bg-dark-green  overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
                 What Our Customers Say
               </h2>
-              <p className="text-lg text-white max-w-2xl mx-auto">
+              <p className="text-lg  max-w-2xl mx-auto">
                 Don&apos;t just take our word for it. Here&apos;s what real customers say
                 about their FrameIt experience.
               </p>
@@ -142,7 +142,7 @@ const FrameItTestimonialsSlider = () => {
   }
 
   return (
-    <section ref={sectionRef} className="py-20 bg-dark-green text-white overflow-hidden">
+    <section ref={sectionRef} className="py-20 bg-dark-green  overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -150,7 +150,7 @@ const FrameItTestimonialsSlider = () => {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
               What Our Customers Say
             </h2>
-            <p className="text-lg text-white max-w-2xl mx-auto">
+            <p className="text-lg  max-w-2xl mx-auto">
               Don&apos;t just take our word for it. Here&apos;s what real customers say
               about their FrameIt experience.
             </p>
@@ -170,11 +170,11 @@ const FrameItTestimonialsSlider = () => {
                         <div className="grid md:grid-cols-3 gap-8 items-center">
                           {/* Quote and Rating */}
                           <div className="md:col-span-2">
-                            <div className="flex items-center gap-1 mb-4">
+                            <div className="flex items-center gap-1 mb-4 border-0">
                               {[...Array(testimonial.rating)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className="w-5 h-5 fill-primary"
+                                  className="w-5 h-5 fill-pink-300  border-0"
                                   aria-hidden="true"
                                 />
                               ))}
@@ -211,10 +211,10 @@ const FrameItTestimonialsSlider = () => {
 
                           {/* Photo Type Badge */}
                           <div className="md:col-span-1 flex justify-center">
-                            <div className="bg-gowilds-primary-dark text-white rounded-2xl p-6 text-center">
+                            <div className="bg-wood-500 rounded-2xl p-6 text-center">
                               <div className="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
                                 <svg
-                                  className="w-8 h-8 text-white"
+                                  className="w-8 h-8 "
                                   fill="currentColor"
                                   viewBox="0 0 20 20"
                                   aria-hidden="true"
@@ -244,7 +244,7 @@ const FrameItTestimonialsSlider = () => {
               variant="outline"
               size="icon"
               onClick={prevSlide}
-              className="absolute text-dark-green left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-10"
+              className="absolute  left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-10"
               aria-label="Previous testimonial"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -254,7 +254,7 @@ const FrameItTestimonialsSlider = () => {
               variant="outline"
               size="icon"
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 text-dark-green -translate-y-1/2 bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-10"
+              className="absolute right-4 top-1/2  -translate-y-1/2 bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-10"
               aria-label="Next testimonial"
             >
               <ChevronRight className="w-5 h-5" />
