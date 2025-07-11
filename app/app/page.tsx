@@ -13,7 +13,6 @@ import BorderBottomSheet from '../../src/components/BorderBottomSheet';
 import ResponsiveLayout from '../../src/components/ResponsiveLayout';
 import FloatingAddButton from '../../src/components/FloatingAddButton';
 import TutorialTooltip from '../../src/components/TutorialTooltip';
-import ToastContainer from '../../src/components/ui/ToastContainer';
 import CheckoutModal from '../../src/components/checkout/CheckoutModal';
 import AuthModal from '../../src/components/auth/AuthModal';
 import { AuthProvider, useAuth } from '../../src/contexts/AuthContext';
@@ -349,7 +348,7 @@ function AppContent() {
         )}
 
         </ResponsiveLayout>
-        <ToastContainer position="top-right" />
+        {/* <ToastContainer position="top-right" /> */}
     </div>
   );
 }

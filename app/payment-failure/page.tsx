@@ -1,9 +1,9 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-export default function PayUFailurePage() {
+ function PayUFailure() {
   const searchParams = useSearchParams();
   const [paymentData, setPaymentData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -100,3 +100,11 @@ export default function PayUFailurePage() {
     </div>
   );
 } 
+
+export default function PayUFailurePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PayUFailure />
+    </Suspense>
+  );
+}
