@@ -31,6 +31,9 @@ function AppContent() {
     uploadedImage,
     setImage,
     replaceImage,
+    handleImageChange,
+    getFrameImageUrl,
+    getFrameImageAsFile,
     updateImageTransform,
     activeModal,
     openModal,
@@ -78,14 +81,22 @@ function AppContent() {
     }
   }, [uploadedImage, addFrameToCollection]);
 
-  const handleImageUpload = (file: File) => {
-    setImage(file);
+  const handleImageUpload = async (file: File) => {
+    await setImage(file);
     // Automatically add the first frame when image is uploaded
     setTimeout(() => {
       if (frameCollection.frames.length === 0) {
         handleAddFrame();
       }
     }, 100);
+  };
+
+  const handleFrameImageUpload = async (frameId: string, file: File) => {
+    await handleImageChange(frameId, file);
+  };
+
+  const handleImageReplace = async (file: File) => {
+    await replaceImage(file);
   };
 
   const handleAddToCart = () => {
@@ -311,7 +322,7 @@ function AppContent() {
             image={uploadedImage}
             customization={customization}
             onTransformUpdate={updateImageTransform}
-            onDownload={handleDownload}            onImageReplace={replaceImage}
+            onDownload={handleDownload}            onImageReplace={handleImageReplace}
           />
         )}
 
