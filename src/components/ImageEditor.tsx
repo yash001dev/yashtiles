@@ -1,6 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, RotateCw, ZoomIn, ZoomOut, Move, Download, RefreshCw } from 'lucide-react';
 import { UploadedImage, ImageTransform, FrameCustomization } from '../types';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { updateActiveFrame } from '@/redux/slices/frameCustomizerSlice';
 
 interface ImageEditorProps {
   isOpen: boolean;
@@ -24,6 +26,23 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dispatch = useAppDispatch();
+  const activeFrameId = useAppSelector(state => state.frameCustomizer.frameCollection.activeFrameId);
+
+  // Ensure frame updates are saved when the editor closes
+  useEffect(() => {
+    // Update the frame immediately when opened to ensure consistency
+    if (isOpen && activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
+    
+    // Update when closing/unmounting
+    return () => {
+      if (activeFrameId) {
+        dispatch(updateActiveFrame());
+      }
+    };
+  }, [isOpen, activeFrameId, dispatch]);
 
   if (!isOpen) return null;
 
@@ -31,6 +50,16 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     const file = event.target.files?.[0];
     if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
       onImageReplace(file);
+      
+      // Update the active frame in Redux to ensure changes persist
+      setTimeout(() => {
+        dispatch(updateActiveFrame());
+      }, 100);
+    }
+    
+    // Reset the input value so the same file can be selected again if needed
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -53,15 +82,30 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    
+    // Update active frame in Redux when done dragging
+    if (activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
   };
 
   const handleScaleChange = (delta: number) => {
     const newScale = Math.max(0.5, Math.min(3, image.transform.scale + delta));
     onTransformUpdate({ scale: newScale });
+    
+    // Update Redux when scale changes
+    if (activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
   };
 
   const handleRotate = () => {
     onTransformUpdate({ rotation: (image.transform.rotation + 90) % 360 });
+    
+    // Update Redux when rotation changes
+    if (activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
   };
 
   const handleReset = () => {
@@ -71,6 +115,11 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       x: 0,
       y: 0,
     });
+    
+    // Update Redux when transform is reset
+    if (activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
   };
 
   const getImageStyles = () => {
@@ -229,7 +278,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                           max="3"
                           step="0.1"
                           value={image.transform.scale}
-                          onChange={(e) => onTransformUpdate({ scale: parseFloat(e.target.value) })}
+                          onChange={(e) => {
+                            onTransformUpdate({ scale: parseFloat(e.target.value) });
+                            // Delay updating Redux to avoid too many updates during sliding
+                            if (activeFrameId) {
+                              dispatch(updateActiveFrame());
+                            }
+                          }}
                           className="flex-1"
                         />
                         <button
@@ -268,7 +323,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                             min="-200"
                             max="200"
                             value={image.transform.x}
-                            onChange={(e) => onTransformUpdate({ x: parseInt(e.target.value) })}
+                            onChange={(e) => {
+                              onTransformUpdate({ x: parseInt(e.target.value) });
+                              // Delay updating Redux to avoid too many updates during sliding
+                              if (activeFrameId) {
+                                dispatch(updateActiveFrame());
+                              }
+                            }}
                             className="w-full"
                           />
                         </div>
@@ -279,7 +340,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                             min="-200"
                             max="200"
                             value={image.transform.y}
-                            onChange={(e) => onTransformUpdate({ y: parseInt(e.target.value) })}
+                            onChange={(e) => {
+                              onTransformUpdate({ y: parseInt(e.target.value) });
+                              // Delay updating Redux to avoid too many updates during sliding
+                              if (activeFrameId) {
+                                dispatch(updateActiveFrame());
+                              }
+                            }}
                             className="w-full"
                           />
                         </div>

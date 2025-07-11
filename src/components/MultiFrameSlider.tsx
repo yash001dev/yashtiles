@@ -48,7 +48,15 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
       onAuthRequired();
       return;
     }
-    onAddFrame();
+    
+    // First time when there are no frames, don't show file upload dialog
+    // Just call onAddFrame directly which will use the current temporary frame
+    if (frames.length === 0 && uploadedImage && currentCustomization) {
+      onAddFrame();
+    } else {
+      // For subsequent clicks, trigger the file upload dialog via parent component
+      onAddFrame();
+    }
   };
 
   return (
