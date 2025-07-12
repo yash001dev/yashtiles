@@ -41,6 +41,9 @@ export const metadata: Metadata = {
   authors: [{ name: "FrameIt" }],
   creator: "FrameIt",
   publisher: "FrameIt",
+  icons: {
+    icon: '/favicon.svg',
+  },
   openGraph: {
     title: "FrameIt - Transform Your Memories Into Stunning Wall Art",
     description:
@@ -49,7 +52,7 @@ export const metadata: Metadata = {
     siteName: "FrameIt",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/favicon.svg",
         width: 1200,
         height: 630,
         alt: "FrameIt - Custom Photo Framing",
@@ -96,6 +99,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="icon" href="../src/favicon.svg" type="image/svg+xml" />
         <meta name="theme-color" content="#166534" />
         <meta name="color-scheme" content="light dark" />
         <script

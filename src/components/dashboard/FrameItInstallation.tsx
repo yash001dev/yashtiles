@@ -1,5 +1,6 @@
 "use client";
 
+import PlayIcon from "@/assets/PlayIcon";
 import { CheckCircle, Clock, Shield, Wrench } from "lucide-react";
 import Image from "next/image";
 
@@ -154,22 +155,16 @@ const FrameItInstallation = () => {
             </div>
 
             {/* Installation Video CTA */}
-            <div className="text-center mt-12 bg-dark-green  rounded-2xl p-8 border border-gold-500/20">
+            <div className="text-center mt-12 bg-dark-green !text-black  rounded-2xl p-8 border border-gold-500/20">
               <h3 className="text-xl font-bold  mb-4">
                 Need Visual Guidance?
               </h3>
-              <p className="/70 mb-6">
+              <p className=" mb-6">
                 Watch our step-by-step installation video for a complete
                 walkthrough of the process.
               </p>
               <button className="  font-semibold px-8 py-3 rounded-xl transition-colors duration-300 inline-flex items-center gap-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                </svg>
+               <PlayIcon/>
                 Watch Installation Video
               </button>
             </div>

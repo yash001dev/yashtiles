@@ -77,7 +77,7 @@ const FrameItFooter = () => {
                       <li key={link.name}>
                         <a
                           href={link.href}
-                          className="hover:text-primarytransition-colors duration-300"
+                          className="hover:text-primary transition-colors duration-300"
                         >
                           {link.name}
                         </a>

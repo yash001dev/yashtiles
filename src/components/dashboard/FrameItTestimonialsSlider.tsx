@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import TestimonialBadgeIcon from "@/assets/TestimonialBadgeIcon";
 
 const testimonials = [
   {
@@ -213,18 +214,7 @@ const FrameItTestimonialsSlider = () => {
                           <div className="md:col-span-1 flex justify-center">
                             <div className="bg-wood-500 rounded-2xl p-6 text-center">
                               <div className="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
-                                <svg
-                                  className="w-8 h-8 "
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                  aria-hidden="true"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
+                               <TestimonialBadgeIcon/>  
                               </div>
                               <p className="font-semibold">
                                 {testimonial.photoType}

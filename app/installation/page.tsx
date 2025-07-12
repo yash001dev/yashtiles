@@ -39,7 +39,7 @@ const InstallationPage = () => {
                 </Link>
                 <Link
                   href="/installation"
-                  className="text-dark-green font-semibold"
+                  className="text-primary font-semibold"
                 >
                   Installation Guide
                 </Link>
@@ -65,7 +65,7 @@ const InstallationPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="#installation"
-                className="inline-flex  items-center justify-center px-6 py-3 bg-primary  font-semibold rounded-xl  transition-colors duration-300"
+                className="inline-flex  items-center justify-center px-6 py-3 bg-primary text-white  font-semibold rounded-xl  transition-colors duration-300"
               >
                 Installation Steps
               </a>
