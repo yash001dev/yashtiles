@@ -64,10 +64,10 @@ const FrameBottomSheet: React.FC<FrameBottomSheetProps> = ({
               <p className="text-sm text-gray-500">{frame.description}</p>
             </div>
 
-            {currentFrame === frame.id && (
+            {/* {currentFrame === frame.id && (
               <div className="w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center animate-pulse">                <div className="w-2 h-2 bg-white rounded-full" />
               </div>
-            )}
+            )} */}
           </button>
         ))}
         </div>

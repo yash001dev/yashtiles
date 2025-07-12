@@ -194,18 +194,12 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Edit Photo</h2>
           <div className="flex items-center space-x-1 sm:space-x-2">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm"
-            >
-              <RefreshCw size={16} className="sm:w-[18px] sm:h-[18px]" />
-              <span className="hidden sm:inline">Replace</span>
-            </button>
+        
             <button
               onClick={onDownload}
-              className="bg-pink-500 hover:bg-pink-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm"
+              className="bg-pink-500 hover:bg-pink-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm mr-10"
             >
-              <Download size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <Download size={16} className="sm:w-[18px] sm:h-[18px] " />
               <span className="hidden sm:inline">Download</span>
             </button>
             <button
@@ -233,10 +227,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                 <div className={`relative ${customization.material === 'classic' ? 'p-4 sm:p-6' : ''} ${customization.material === 'classic' ? getFrameColor() : ''} shadow-2xl w-full max-w-sm lg:max-w-md xl:max-w-lg`}>
                   <div 
                     className={`relative overflow-hidden rounded-sm ${getAspectRatio()} cursor-move`}
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseUp}
+                    // onMouseDown={handleMouseDown}
+                    // onMouseMove={handleMouseMove}
+                    // onMouseUp={handleMouseUp}
+                    // onMouseLeave={handleMouseUp}
                   >
                     <img
                       src={image.url}
@@ -311,7 +305,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                       </div>
                     </div>
 
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Position
                       </label>
@@ -351,13 +345,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                           />
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     <button
                       onClick={handleReset}
                       className="w-full p-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
                     >
-                      Reset Position & Scale
+                      Reset  Scale
                     </button>
                   </div>
                 </div>
@@ -378,7 +372,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h3 className="font-semibold text-gray-900 mb-2">Tips</h3>
                   <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Drag the image to reposition</li>
                     <li>• Use scale slider to resize</li>
                     <li>• Rotate in 90° increments</li>
                     <li>• Replace image anytime</li>
