@@ -21,6 +21,7 @@ interface MultiFrameSliderProps {
   // Props for showing temporary frame when no frames exist
   uploadedImage?: UploadedImage | null;
   currentCustomization?: FrameCustomization;
+  getFrameImageUrl?: (frameId: string) => string | null;
 }
 
 const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
@@ -32,7 +33,8 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
   onAuthRequired,
   className = '',
   uploadedImage,
-  currentCustomization
+  currentCustomization,
+  getFrameImageUrl,
 }) => {
   const swiperRef = useRef(null);
   const { isAuthenticated } = useAuth();
@@ -46,7 +48,15 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
       onAuthRequired();
       return;
     }
-    onAddFrame();
+    
+    // First time when there are no frames, don't show file upload dialog
+    // Just call onAddFrame directly which will use the current temporary frame
+    if (frames.length === 0 && uploadedImage && currentCustomization) {
+      onAddFrame();
+    } else {
+      // For subsequent clicks, trigger the file upload dialog via parent component
+      onAddFrame();
+    }
   };
 
   return (
@@ -102,41 +112,46 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
           </SwiperSlide>
 
           {/* Frame Slides */}
-          {frames.map((frame) => (
-            <SwiperSlide key={frame.id} style={{ width: 'auto' }}>
-              <div className="relative group">
-                <button
-                  onClick={() => onFrameSelect(frame.id)}
-                  className={`w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
-                    activeFrameId === frame.id
-                      ? 'border-pink-500 ring-2 ring-pink-200'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <img
-                    src={frame.image.url}
-                    alt="Frame preview"
-                    className="w-full h-full object-cover"
-                  />
-                  {/* Frame overlay to simulate the actual frame */}
-                  <div className="absolute inset-0 border-2 border-black opacity-50 pointer-events-none" />
-                </button>
-                
-                {/* Remove button */}
-                {frames.length > 1 && (
+          {frames.map((frame) => {
+            const frameImageUrl = getFrameImageUrl ? getFrameImageUrl(frame.id) : null;
+            const displayUrl = frameImageUrl || frame.image.url;
+            
+            return (
+              <SwiperSlide key={frame.id} style={{ width: 'auto' }}>
+                <div className="relative group">
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onFrameRemove(frame.id);
-                    }}
-                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => onFrameSelect(frame.id)}
+                    className={`w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
+                      activeFrameId === frame.id
+                        ? 'border-pink-500 ring-2 ring-pink-200'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
                   >
-                    <X className="w-4 h-4" />
+                    <img
+                      src={displayUrl}
+                      alt="Frame preview"
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Frame overlay to simulate the actual frame */}
+                    <div className="absolute inset-0 border-2 border-black opacity-50 pointer-events-none" />
                   </button>
-                )}
-              </div>
-            </SwiperSlide>
-          ))}
+                  
+                  {/* Remove button */}
+                  {frames.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onFrameRemove(frame.id);
+                      }}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
 
         {/* Custom Navigation Buttons */}

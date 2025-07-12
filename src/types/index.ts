@@ -36,6 +36,8 @@ export interface FrameCollection {
 }
 
 export interface MaterialOption {
+  link: string | undefined;
+  content: string;
   id: "classic" | "frameless" | "canvas";
   name: string;
   image: string;

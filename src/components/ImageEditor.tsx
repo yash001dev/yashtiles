@@ -1,6 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, RotateCw, ZoomIn, ZoomOut, Move, Download, RefreshCw } from 'lucide-react';
 import { UploadedImage, ImageTransform, FrameCustomization } from '../types';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { updateActiveFrame } from '@/redux/slices/frameCustomizerSlice';
 
 interface ImageEditorProps {
   isOpen: boolean;
@@ -24,6 +26,23 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dispatch = useAppDispatch();
+  const activeFrameId = useAppSelector(state => state.frameCustomizer.frameCollection.activeFrameId);
+
+  // Ensure frame updates are saved when the editor closes
+  useEffect(() => {
+    // Update the frame immediately when opened to ensure consistency
+    if (isOpen && activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
+    
+    // Update when closing/unmounting
+    return () => {
+      if (activeFrameId) {
+        dispatch(updateActiveFrame());
+      }
+    };
+  }, [isOpen, activeFrameId, dispatch]);
 
   if (!isOpen) return null;
 
@@ -31,6 +50,16 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     const file = event.target.files?.[0];
     if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
       onImageReplace(file);
+      
+      // Update the active frame in Redux to ensure changes persist
+      setTimeout(() => {
+        dispatch(updateActiveFrame());
+      }, 100);
+    }
+    
+    // Reset the input value so the same file can be selected again if needed
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -53,15 +82,30 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    
+    // Update active frame in Redux when done dragging
+    if (activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
   };
 
   const handleScaleChange = (delta: number) => {
     const newScale = Math.max(0.5, Math.min(3, image.transform.scale + delta));
     onTransformUpdate({ scale: newScale });
+    
+    // Update Redux when scale changes
+    if (activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
   };
 
   const handleRotate = () => {
     onTransformUpdate({ rotation: (image.transform.rotation + 90) % 360 });
+    
+    // Update Redux when rotation changes
+    if (activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
   };
 
   const handleReset = () => {
@@ -71,6 +115,11 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       x: 0,
       y: 0,
     });
+    
+    // Update Redux when transform is reset
+    if (activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
   };
 
   const getImageStyles = () => {
@@ -145,18 +194,12 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Edit Photo</h2>
           <div className="flex items-center space-x-1 sm:space-x-2">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm"
-            >
-              <RefreshCw size={16} className="sm:w-[18px] sm:h-[18px]" />
-              <span className="hidden sm:inline">Replace</span>
-            </button>
+        
             <button
               onClick={onDownload}
-              className="bg-pink-500 hover:bg-pink-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm"
+              className="bg-pink-500 hover:bg-pink-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm mr-10"
             >
-              <Download size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <Download size={16} className="sm:w-[18px] sm:h-[18px] " />
               <span className="hidden sm:inline">Download</span>
             </button>
             <button
@@ -184,10 +227,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                 <div className={`relative ${customization.material === 'classic' ? 'p-4 sm:p-6' : ''} ${customization.material === 'classic' ? getFrameColor() : ''} shadow-2xl w-full max-w-sm lg:max-w-md xl:max-w-lg`}>
                   <div 
                     className={`relative overflow-hidden rounded-sm ${getAspectRatio()} cursor-move`}
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseUp}
+                    // onMouseDown={handleMouseDown}
+                    // onMouseMove={handleMouseMove}
+                    // onMouseUp={handleMouseUp}
+                    // onMouseLeave={handleMouseUp}
                   >
                     <img
                       src={image.url}
@@ -229,7 +272,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                           max="3"
                           step="0.1"
                           value={image.transform.scale}
-                          onChange={(e) => onTransformUpdate({ scale: parseFloat(e.target.value) })}
+                          onChange={(e) => {
+                            onTransformUpdate({ scale: parseFloat(e.target.value) });
+                            // Delay updating Redux to avoid too many updates during sliding
+                            if (activeFrameId) {
+                              dispatch(updateActiveFrame());
+                            }
+                          }}
                           className="flex-1"
                         />
                         <button
@@ -256,7 +305,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                       </div>
                     </div>
 
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Position
                       </label>
@@ -268,7 +317,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                             min="-200"
                             max="200"
                             value={image.transform.x}
-                            onChange={(e) => onTransformUpdate({ x: parseInt(e.target.value) })}
+                            onChange={(e) => {
+                              onTransformUpdate({ x: parseInt(e.target.value) });
+                              // Delay updating Redux to avoid too many updates during sliding
+                              if (activeFrameId) {
+                                dispatch(updateActiveFrame());
+                              }
+                            }}
                             className="w-full"
                           />
                         </div>
@@ -279,18 +334,24 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                             min="-200"
                             max="200"
                             value={image.transform.y}
-                            onChange={(e) => onTransformUpdate({ y: parseInt(e.target.value) })}
+                            onChange={(e) => {
+                              onTransformUpdate({ y: parseInt(e.target.value) });
+                              // Delay updating Redux to avoid too many updates during sliding
+                              if (activeFrameId) {
+                                dispatch(updateActiveFrame());
+                              }
+                            }}
                             className="w-full"
                           />
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     <button
                       onClick={handleReset}
                       className="w-full p-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
                     >
-                      Reset Position & Scale
+                      Reset  Scale
                     </button>
                   </div>
                 </div>
@@ -311,7 +372,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h3 className="font-semibold text-gray-900 mb-2">Tips</h3>
                   <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Drag the image to reposition</li>
                     <li>• Use scale slider to resize</li>
                     <li>• Rotate in 90° increments</li>
                     <li>• Replace image anytime</li>

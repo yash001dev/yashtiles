@@ -1,63 +1,49 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { FrameCustomization, UploadedImage, ImageTransform, FrameItem, FrameCollection } from '../types';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { 
+  updateCustomization as updateCustomizationAction, 
+  setUploadedImage, 
+  replaceImage as replaceImageAction, 
+  updateImageTransform as updateImageTransformAction,
+  setFrameImage,
+  addFrameToCollection as addFrameToCollectionAction,
+  removeFrameFromCollection as removeFrameFromCollectionAction,
+  selectFrame as selectFrameAction,
+  updateActiveFrame as updateActiveFrameAction,
+  setActiveModal as setActiveModalAction
+} from '@/redux/slices/frameCustomizerSlice';
+import { fileToBase64, base64ToFile } from '@/redux/utils';
 
 export const useFrameCustomizer = () => {
-  const [customization, setCustomization] = useState<FrameCustomization>({
-    material: 'classic',
-    frameColor: 'black',
-    size: '8x8',
-    effect: 'original',
-    border: true,
-    borderColor: '#000000',
-    borderWidth: 2,
-  });
+  const dispatch = useAppDispatch();
+  const customization = useAppSelector((state) => state.frameCustomizer.customization);
+  const frameCollection = useAppSelector((state) => state.frameCustomizer.frameCollection);
+  const uploadedImage = useAppSelector((state) => state.frameCustomizer.uploadedImage);
+  const frameImages = useAppSelector((state) => state.frameCustomizer.frameImages);
+  const activeModal = useAppSelector((state) => state.frameCustomizer.activeModal);
 
-  const [frameCollection, setFrameCollection] = useState<FrameCollection>({
-    frames: [],
-    activeFrameId: null,
-  });
-
-  const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
-  const [activeModal, setActiveModal] = useState<string | null>(null);
+  // Use helper functions from Redux utils
+  
+  // Helper function to convert base64 to Blob URL for display
+  const base64ToImageUrl = (base64: string): string => {
+    return base64; // Base64 can be used directly as src
+  };
 
   const updateCustomization = (updates: Partial<FrameCustomization>) => {
-    setCustomization(prev => ({ ...prev, ...updates }));
+    dispatch(updateCustomizationAction(updates));
   };
 
   const updateImageTransform = (transform: Partial<ImageTransform>) => {
-    if (uploadedImage) {
-      setUploadedImage(prev => ({
-        ...prev!,
-        transform: { ...prev!.transform, ...transform }
-      }));
-    }
+    dispatch(updateImageTransformAction(transform));
   };
 
-  const setImage = (file: File) => {
-    const url = URL.createObjectURL(file);
-    setUploadedImage({
+  const setImage = async (file: File) => {
+    const base64 = await fileToBase64(file);
+    dispatch(setUploadedImage({
       file,
-      url,
+      url: base64,
       transform: {
-        scale: 1,
-        rotation: 0,
-        x: 0,
-        y: 0,
-      }
-    });
-  };
-
-  const replaceImage = (file: File) => {
-    if (uploadedImage) {
-      // Clean up the old URL
-      URL.revokeObjectURL(uploadedImage.url);
-    }
-    
-    const url = URL.createObjectURL(file);
-    setUploadedImage(prev => ({
-      file,
-      url,
-      transform: prev?.transform || {
         scale: 1,
         rotation: 0,
         x: 0,
@@ -66,64 +52,56 @@ export const useFrameCustomizer = () => {
     }));
   };
 
+  const replaceImage = async (file: File) => {
+    const base64 = await fileToBase64(file);
+    dispatch(replaceImageAction({
+      file,
+      url: base64
+    }));
+  };
+
+  const handleImageChange = async (frameId: string, file: File) => {
+    const base64 = await fileToBase64(file);
+    dispatch(setFrameImage({
+      frameId,
+      base64
+    }));
+  };
+
+  const getFrameImageUrl = (frameId: string): string | null => {
+    return frameImages[frameId] || null;
+  };
+
+  const getFrameImageAsFile = (frameId: string, filename?: string): File | null => {
+    const base64 = frameImages[frameId];
+    if (!base64) return null;
+    return base64ToFile(base64, filename);
+  };
+
   const addFrameToCollection = () => {
     if (uploadedImage) {
-      const newFrame: FrameItem = {
-        id: Date.now().toString(),
-        image: uploadedImage,
-        customization: { ...customization },
-        createdAt: new Date(),
-      };
-
-      setFrameCollection(prev => ({
-        frames: [...prev.frames, newFrame],
-        activeFrameId: newFrame.id,
-      }));
+      dispatch(addFrameToCollectionAction());
     }
   };
 
   const removeFrameFromCollection = (frameId: string) => {
-    setFrameCollection(prev => {
-      const newFrames = prev.frames.filter(frame => frame.id !== frameId);
-      const newActiveId = newFrames.length > 0 ? 
-        (prev.activeFrameId === frameId ? newFrames[0].id : prev.activeFrameId) : 
-        null;
-      
-      return {
-        frames: newFrames,
-        activeFrameId: newActiveId,
-      };
-    });
+    dispatch(removeFrameFromCollectionAction(frameId));
   };
 
   const selectFrame = (frameId: string) => {
-    const frame = frameCollection.frames.find(f => f.id === frameId);
-    if (frame) {
-      setFrameCollection(prev => ({ ...prev, activeFrameId: frameId }));
-      setUploadedImage(frame.image);
-      setCustomization(frame.customization);
-    }
+    dispatch(selectFrameAction(frameId));
   };
+  
   const updateActiveFrame = useCallback(() => {
-    if (frameCollection.activeFrameId && uploadedImage) {
-      setFrameCollection(prev => ({
-        ...prev,
-        frames: prev.frames.map(frame => 
-          frame.id === prev.activeFrameId 
-            ? { ...frame, image: uploadedImage, customization }
-            : frame
-        ),
-      }));
-    }
-  }, [frameCollection.activeFrameId, uploadedImage, customization]);
+    dispatch(updateActiveFrameAction());
+  }, [dispatch]);
 
   const openModal = (modalName: string) => {
-    // Ensure modalName matches the intended modal to open
-    setActiveModal(modalName);
+    dispatch(setActiveModalAction(modalName));
   };
 
   const closeModal = () => {
-    setActiveModal(null);
+    dispatch(setActiveModalAction(null));
   };
 
   const activeFrame = frameCollection.frames.find(f => f.id === frameCollection.activeFrameId);
@@ -134,6 +112,12 @@ export const useFrameCustomizer = () => {
     uploadedImage,
     setImage,
     replaceImage,
+    handleImageChange,
+    getFrameImageUrl,
+    getFrameImageAsFile,
+    frameImages,
+    base64ToImageUrl,
+    base64ToFile,
     updateImageTransform,
     activeModal,
     openModal,

@@ -2,6 +2,7 @@ import React from 'react';
 import { Info } from 'lucide-react';
 import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
 import { MaterialOption, FrameCustomization } from '../types';
+import TooltipCard from './common/TooltipCard';
 
 interface MaterialBottomSheetProps {
   isOpen: boolean;
@@ -22,29 +23,36 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
       name: 'Classic Frame',
       image: 'https://images.pexels.com/photos/1090638/pexels-photo-1090638.jpeg?auto=compress&cs=tinysrgb&w=300',
       description: 'Traditional frame with mounting',
+      content: 'Timeless, premium look, printed on superios paper. Available in regular and wide frame options. ',
+      link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Classic+Frames&query=Classic+Frames',
     },
     {
       id: 'frameless',
       name: 'Frameless',
       image: 'https://images.pexels.com/photos/1090641/pexels-photo-1090641.jpeg?auto=compress&cs=tinysrgb&w=300',
       description: 'Clean, modern look',
+      content: 'Clean, modern look, printed on superios paper. with easy magenetic mounting. ',
+      link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Frameless+Frames&query=Frameless+Frames',
     },
     {
       id: 'canvas',
       name: 'Canvas',
       image: 'https://images.pexels.com/photos/1090644/pexels-photo-1090644.jpeg?auto=compress&cs=tinysrgb&w=300',
       description: 'Textured canvas finish',
+      content:"wooden structure used to stretch and hold a canvas taut, providing a sturdy surface for painting and a way to display your artwork.",
+      link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Canvas+Frames&query=Canvas+Frames',
     },
   ];
 
   const handleSelect = (materialId: FrameCustomization['material']) => {
     onSelect(materialId);
-    onClose();
+    // onClose();
   };
   return (
     <ResponsiveBottomSheet 
       isOpen={isOpen} 
       onClose={onClose} 
+      childClassName='!overflow-y-visible'
       title="Select Material"
       description="Choose the perfect material for your frame"    >
       <div className="space-y-4 mt-[0.4rem]">
@@ -52,7 +60,7 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
           <button
             key={material.id}
             onClick={() => handleSelect(material.id)}
-            className={`relative group overflow-hidden rounded-xl border-2 transition-all duration-300 transform hover:scale-105 w-full ${
+            className={`relative group rounded-xl border-2 transition-all duration-300 transform hover:scale-105 w-full ${
               currentMaterial === material.id
                 ? 'border-pink-500 ring-2 ring-pink-200 shadow-lg'
                 : 'border-gray-200 hover:border-gray-300'
@@ -76,15 +84,24 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
                 </p>
               </div>
 
-              {currentMaterial === material.id && (
+              {/* {currentMaterial === material.id && (
                 <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center animate-pulse">
                   <div className="w-2 h-2 bg-white rounded-full" />
                 </div>
-              )}
+              )} */}
 
-              <button className="p-2 bg-gray-100 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              {/* <button className="p-2 bg-gray-100 rounded-full ">
                 <Info size={16} className="text-gray-600" />
-              </button>
+              </button> */}
+              <TooltipCard
+                // title={material.name}
+                content={material.content}
+                link={material.link}
+                pageName="Material"
+                className="z-[9999] w-full"
+                iconClassName="text-pink-600"
+                iconSize={24}
+              />
             </div>
           </button>
         ))}

@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Upload, Camera, Image } from 'lucide-react';
+import React, { useRef, useState } from "react";
+import { Upload, Camera, Image } from "lucide-react";
 
 interface PhotoUploadProps {
   onImageSelect: (file: File) => void;
@@ -11,7 +11,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+    if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
       onImageSelect(file);
     }
   };
@@ -20,7 +20,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
     event.preventDefault();
     setIsDragOver(false);
     const file = event.dataTransfer.files[0];
-    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+    if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
       onImageSelect(file);
     }
   };
@@ -40,9 +40,9 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
       <div className="w-full max-w-md animate-fadeInUp">
         <div
           className={`relative bg-white rounded-3xl shadow-xl border-2 border-dashed transition-all duration-300 p-12 text-center cursor-pointer group ${
-            isDragOver 
-              ? 'border-pink-400 bg-pink-50 scale-105' 
-              : 'border-gray-300 hover:border-pink-400 hover:bg-pink-50 hover:scale-105'
+            isDragOver
+              ? "border-pink-400 bg-pink-50 scale-105"
+              : "border-gray-300 hover:border-pink-400 hover:bg-pink-50 hover:scale-105"
           }`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -56,20 +56,27 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
             onChange={handleFileSelect}
             className="hidden"
           />
-          
+
           <div className="space-y-6">
             {/* Animated Icon */}
             <div className="flex justify-center">
-              <div className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 ${
-                isDragOver ? 'bg-pink-200 scale-110' : 'bg-pink-100 group-hover:bg-pink-200 group-hover:scale-110'
-              }`}>
+              <div
+                className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  isDragOver
+                    ? "bg-pink-200 scale-110"
+                    : "bg-pink-100 group-hover:bg-pink-200 group-hover:scale-110"
+                }`}
+              >
                 <div className="relative">
-                  <Camera size={32} className="text-pink-500 transition-transform duration-300 group-hover:scale-110" />
+                  <Camera
+                    size={32}
+                    className="text-pink-500 transition-transform duration-300 group-hover:scale-110"
+                  />
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full animate-ping" />
                 </div>
               </div>
             </div>
-            
+
             {/* Content */}
             <div className="space-y-3">
               <h3 className="text-2xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-pink-600">
@@ -82,15 +89,24 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
                 PNG or JPEG files only • Max 10MB
               </p>
             </div>
-            
+
             {/* Upload Button */}
             <div className="flex items-center justify-center space-x-3 text-pink-500 font-semibold">
-              <Upload size={20} className="transition-transform duration-300 group-hover:scale-110" />
-              <span className="transition-colors duration-300 group-hover:text-pink-600">Choose Photo</span>
+              <Upload
+                size={20}
+                className="transition-transform duration-300 group-hover:scale-110"
+              />
+              <span className="transition-colors duration-300 group-hover:text-pink-600">
+                Choose Photo
+              </span>
             </div>
 
+            <ul className="text-gray-600 !text-sm text-left ">
+              <li>  &gt;   Upload your favorite photos and get them delivered as beautifully framed art. </li>
+              <li> &gt; Premium quality, handcrafted frames that turn your memories into masterpieces.</li>
+            </ul>
             {/* Sample Images */}
-            <div className="pt-4 border-t border-gray-100">
+            {/* <div className="pt-4 border-t border-gray-100">
               <p className="text-xs text-gray-400 mb-3">Or try with sample images</p>
               <div className="flex justify-center space-x-2">
                 {[
@@ -116,20 +132,32 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
-          
+
           {/* Animated Background */}
-          <div className={`absolute inset-0 rounded-3xl transition-opacity duration-300 ${
-            isDragOver ? 'bg-pink-100 opacity-50' : 'bg-pink-50 opacity-0 group-hover:opacity-30'
-          }`} />
-          
+          <div
+            className={`absolute inset-0 rounded-3xl transition-opacity duration-300 ${
+              isDragOver
+                ? "bg-pink-100 opacity-50"
+                : "bg-pink-50 opacity-0 group-hover:opacity-30"
+            }`}
+          />
+
           {/* Floating Elements */}
           <div className="absolute top-4 right-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
-            <Image size={24} className="text-pink-400 animate-bounce" style={{ animationDelay: '0.5s' }} />
+            <Image
+              size={24}
+              className="text-pink-400 animate-bounce"
+              style={{ animationDelay: "0.5s" }}
+            />
           </div>
           <div className="absolute bottom-4 left-4 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
-            <Upload size={20} className="text-pink-400 animate-bounce" style={{ animationDelay: '1s' }} />
+            <Upload
+              size={20}
+              className="text-pink-400 animate-bounce"
+              style={{ animationDelay: "1s" }}
+            />
           </div>
         </div>
       </div>
@@ -145,7 +173,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
             transform: translateY(0);
           }
         }
-        
+
         .animate-fadeInUp {
           animation: fadeInUp 0.6s ease-out;
         }
