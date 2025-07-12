@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useCheckout, CheckoutData } from '../../hooks/useCheckout';
 import AuthModal from '../auth/AuthModal';
 import { API_BASE_URL } from '@/lib/auth';
+import { base64ToFile } from '@/redux/utils';
 
 // Zod schema for form validation
 const shippingSchema = z.object({
@@ -156,10 +157,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
           try {
             // Check if it's a data URL or regular URL
             if (item.image.startsWith('data:')) {
-              // Handle data URLs (base64 images)
-              const response = await fetch(item.image);
-              const blob = await response.blob();
-              const file = new File([blob], `frame-${index + 1}.jpg`, { type: 'image/jpeg' });
+              // Handle data URLs (base64 images) using our utility function
+              const file = base64ToFile(item.image, `frame-${index + 1}.jpg`);
               formData.append('frameImages', file);
             } else {
               // Handle regular URLs
