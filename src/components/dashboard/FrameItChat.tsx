@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import CloseIcon from "@/assets/CloseIcon";
 
 interface FrameItChatProps {
   onClose: () => void;
@@ -95,9 +96,7 @@ const FrameItChat: React.FC<FrameItChatProps> = ({ onClose }) => {
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full h-8 w-8">
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+           <CloseIcon/>
           </Button>
         </div>
 

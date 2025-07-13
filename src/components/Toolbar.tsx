@@ -81,10 +81,10 @@ const Toolbar: React.FC<ToolbarProps> = ({ onToolClick, onAddFrame, onAuthRequir
             <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
               {isAuthenticated ? 'Add Frame' : 'Login to Add Frame'}
             </div>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center group-hover:from-purple-600 group-hover:to-purple-700 transition-all duration-300 shadow-md group-hover:shadow-lg">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-pink-600 flex items-center justify-center group-hover:from-pink-600 group-hover:to-pink-700 transition-all duration-300 shadow-md group-hover:shadow-lg">
               <Plus size={16} className="text-white transition-transform duration-300 group-hover:rotate-90" />
             </div>
-            <span className="text-xs text-gray-600 group-hover:text-purple-700 font-medium transition-colors duration-300">
+            <span className="text-xs text-gray-600 group-hover:text-pink-700 font-medium transition-colors duration-300">
               Add Frame
             </span>
           </button>

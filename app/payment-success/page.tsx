@@ -1,9 +1,10 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import SuccessCheckIcon from '@/assets/SuccessCheckIcon';
 
-export default function PayUSuccessPage() {
+ function PayUSuccess() {
   const searchParams = useSearchParams();
   const [paymentData, setPaymentData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -47,32 +48,30 @@ export default function PayUSuccessPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-green-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-4"></div>
-        <p className="text-green-600">Processing payment response...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-pink-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mb-4"></div>
+        <p className="text-pink-600">Processing payment response...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-green-50 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-pink-50 p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
         <div className="mb-4">
-          <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+          <div className="mx-auto w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-4">
+          <SuccessCheckIcon className="text-pink-600"/>
           </div>
-          <h1 className="text-3xl font-bold text-green-700 mb-2">Payment Successful!</h1>
+          <h1 className="text-3xl font-bold text-pink-700 mb-2">Payment Successful!</h1>
           <p className="text-gray-600 mb-4">
             Thank you for your purchase. Your payment was processed successfully.
           </p>
         </div>
 
         {paymentData && (
-          <div className="bg-green-50 rounded-lg p-4 mb-6 text-left">
-            <h3 className="font-semibold text-green-800 mb-2">Payment Details:</h3>
-            <div className="text-sm text-green-700 space-y-1">
+          <div className="bg-pink-50 rounded-lg p-4 mb-6 text-left">
+            <h3 className="font-semibold text-pink-800 mb-2">Payment Details:</h3>
+            <div className="text-sm text-pink-700 space-y-1">
               {paymentData.txnid && <p><span className="font-medium">Transaction ID:</span> {paymentData.txnid}</p>}
               {paymentData.amount && <p><span className="font-medium">Amount:</span> ₹{paymentData.amount}</p>}
               {paymentData.status && <p><span className="font-medium">Status:</span> {paymentData.status}</p>}
@@ -85,13 +84,13 @@ export default function PayUSuccessPage() {
         <div className="space-y-3">
           <Link 
             href="/app" 
-            className="block w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-medium"
+            className="block w-full bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition font-medium"
           >
             Continue Shopping
           </Link>
           <Link 
             href="/orders" 
-            className="block w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-medium"
+            className="block w-full bg-pink-200 text-pink-800 px-6 py-3 rounded-lg hover:bg-pink-300 transition font-medium"
           >
             View Orders
           </Link>
@@ -100,3 +99,12 @@ export default function PayUSuccessPage() {
     </div>
   );
 }
+
+export default function PayUSuccessPage() {
+  
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PayUSuccess />
+    </Suspense>
+  );
+} 

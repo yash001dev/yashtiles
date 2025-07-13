@@ -38,7 +38,7 @@ export default function OrderDetailsPage() {
         setLoading(true);
         setError(null);
         const response = await ordersService.getOrderById(orderId);
-        setOrder(response);
+        setOrder(response as Order);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch order details');
       } finally {

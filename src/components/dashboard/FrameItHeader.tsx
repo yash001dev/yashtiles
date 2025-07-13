@@ -8,7 +8,7 @@ import Link from 'next/link'
 function FrameItHeader({hideMenu=false}) {
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border px-3">
+    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border px-14">
     <div className="section-container section-padding">
       <div className="flex items-center justify-between h-16">
         <div className="flex items-center space-x-2">

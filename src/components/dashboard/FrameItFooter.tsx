@@ -29,7 +29,7 @@ const socialLinks = [
 
 const FrameItFooter = () => {
   return (
-    <footer className="bg-dark-green text-cream-50">
+    <footer className="bg-dark-green">
       {/* Main footer content */}
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-6xl mx-auto">
@@ -40,7 +40,7 @@ const FrameItFooter = () => {
                 <h3 className="text-2xl font-bold text-primary mb-4">
                   FrameIt
                 </h3>
-                <p className="text-cream-50/80 leading-relaxed mb-6">
+                <p className=" leading-relaxed mb-6">
                   Transform your precious memories into stunning wall art with
                   our premium, handcrafted frames. Every photo deserves to be
                   treasured.
@@ -59,7 +59,7 @@ const FrameItFooter = () => {
                     placeholder="Enter your email"
                     className="bg-white/10 border-black/20 text-black placeholder:text-black/50 "
                   />
-                  <Button className=" text-white px-6">
+                  <Button className="  px-6">
                     Subscribe
                   </Button>
                 </div>
@@ -77,7 +77,7 @@ const FrameItFooter = () => {
                       <li key={link.name}>
                         <a
                           href={link.href}
-                          className="text-cream-50/70 hover:text-primarytransition-colors duration-300"
+                          className="hover:text-primary transition-colors duration-300"
                         >
                           {link.name}
                         </a>
@@ -94,7 +94,7 @@ const FrameItFooter = () => {
                       <li key={link.name}>
                         <a
                           href={link.href}
-                          className="text-cream-50/70 hover:text-primary transition-colors duration-300"
+                          className=" hover:text-primary transition-colors duration-300"
                         >
                           {link.name}
                         </a>
@@ -111,7 +111,7 @@ const FrameItFooter = () => {
                       <li key={link.name}>
                         <a
                           href={link.href}
-                          className="text-cream-50/70 hover:text-primary transition-colors duration-300"
+                          className=" hover:text-primary transition-colors duration-300"
                         >
                           {link.name}
                         </a>
@@ -125,12 +125,12 @@ const FrameItFooter = () => {
                       <Mail className="w-4 h-4 text-primary" />
                       <a
                         href="mailto:hello@frameit.com"
-                        className="text-cream-50/70 hover:text-primary transition-colors duration-300"
+                        className=" hover:text-primary transition-colors duration-300"
                       >
                         hello@frameit.com
                       </a>
                     </div>
-                    <p className="text-cream-50/70">1-555-FRAME-IT</p>
+                    <p className="">1-555-FRAME-IT</p>
                   </div>
                 </div>
               </div>
@@ -144,19 +144,19 @@ const FrameItFooter = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             {/* Copyright */}
-            <p className="text-cream-50/60 text-sm">
+            <p className="text-sm">
               © 2025 FrameIt. All rights reserved. Made with ❤️ for your
               memories.
             </p>
 
             {/* Social links */}
             <div className="flex items-center gap-4">
-              <span className="text-cream-50/60 text-sm">Follow us:</span>
+              <span className="text-sm">Follow us:</span>
               {socialLinks.map((social) => (
                 <a
                   key={social.name}
                   href={social.href}
-                  className="w-8 h-8 rounded-full bg-cream-50/10 flex items-center justify-center text-cream-50/70 hover:bg-gold-500 hover:text-white transition-all duration-300"
+                  className="w-8 h-8 rounded-full bg-cream-50/10 flex items-center justify-center /70 hover:bg-gold-500 hover: transition-all duration-300"
                   aria-label={social.name}
                 >
                   <social.icon className="w-4 h-4" />

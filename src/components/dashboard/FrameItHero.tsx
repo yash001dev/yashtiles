@@ -1,5 +1,8 @@
 "use client";
 
+import ChatBubbleIcon from "@/assets/ChatBubbleIcon";
+import PhotoIcon from "@/assets/PhotoIcon";
+import WaveSeparator from "@/assets/WaveSeparator";
 import { Button } from "@/components/ui/button";
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
@@ -20,7 +23,7 @@ const FrameItHero = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-dark-green text-white overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center bg-dark-green overflow-hidden">
       {/* Optimized background pattern using CSS instead of inline SVG */}
       <div className="absolute  opacity-30">
         <div className="absolute inset-0" style={{
@@ -62,7 +65,7 @@ const FrameItHero = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-2 border-green-800 text-black hover:bg-green-800 hover:text-cream-50 font-semibold px-8 py-6 text-lg rounded-xl transition-all duration-300"
+                  className="border-2 border-pink-800 text-black hover:bg-pink-800 hover:text-cream-50 font-semibold px-8 py-6 text-lg rounded-xl transition-all duration-300"
                   onClick={() => {
                     if (isMounted && typeof window !== 'undefined') {
                       const element = document.querySelector("#showcase");
@@ -81,7 +84,7 @@ const FrameItHero = () => {
                     {[...Array(5)].map((_, i) => (
                       <div
                         key={i}
-                        className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 border-2 border-cream-50 flex items-center justify-center"
+                        className="w-8 h-8 rounded-full bg-gradient-to-br from-wood-400 to-wood-600 border-2 border-cream-50 flex items-center justify-center"
                       >
                         <span className="text-xs text-white">★</span>
                       </div>
@@ -98,23 +101,12 @@ const FrameItHero = () => {
             <div className="relative">
               <div className="relative mx-auto max-w-lg">
                 {/* Main frame mockup */}
-                <div className="relative bg-wood-500 p-6 rounded-lg shadow-2xl transform rotate-3 hover:rotate-1 transition-transform duration-500">
+                <div className="relative bg-wood-300 p-6 rounded-lg shadow-2xl transform rotate-3 hover:rotate-1 transition-transform duration-500">
                   <div className="bg-cream-50 p-4 rounded">
                     <div className="aspect-[4/3] bg-gradient-to-br from-slate-200 to-slate-300 rounded flex items-center justify-center">
                       <div className="text-center text-slate-600">
                         <div className="w-16 h-16 mx-auto mb-3 bg-slate-400 rounded-full flex items-center justify-center">
-                          <svg
-                            className="w-8 h-8 text-slate-200"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            aria-hidden="true"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
+                         <PhotoIcon/>
                         </div>
                         <p className="text-sm font-medium">Your Photo Here</p>
                       </div>
@@ -123,7 +115,7 @@ const FrameItHero = () => {
                 </div>
 
                 {/* Floating smaller frames */}
-                <div className="absolute -top-4 -left-4 bg-wood-300 p-3 rounded shadow-lg transform -rotate-12 opacity-80">
+                <div className="absolute -top-4 -left-4 bg-wood-600 p-3 rounded shadow-lg transform -rotate-12 opacity-80">
                   <div className="w-20 h-20 bg-cream-100 rounded flex items-center justify-center">
                     <svg
                       className="w-6 h-6 text-slate-400"
@@ -168,19 +160,7 @@ const FrameItHero = () => {
           onClick={() => setShowChat(true)}
           className="relative flex ml-auto right-3 bottom-0"
         >
-          <svg
-            className="h-10 w-10"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-            />
-          </svg>
+        <ChatBubbleIcon/>
           <span className="sr-only">Open chat</span>
           {/* Chat notification dot */}
           <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse" />
@@ -189,14 +169,7 @@ const FrameItHero = () => {
 
       {/* Bottom wave separator */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg
-          className="w-full h-20 text-green-800/30"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <path d="M1200 120L0 16.48V120z" fill="currentColor"></path>
-        </svg>
+       <WaveSeparator/>
       </div>
       
       {showChat && <FrameItChat onClose={() => setShowChat(false)} />}

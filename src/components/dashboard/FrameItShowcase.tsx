@@ -72,7 +72,7 @@ const FrameItShowcase = () => {
   };
 
   return (
-    <section id="work" className="py-20 bg-dark-green text-white">
+    <section id="work" className="py-20 bg-dark-green ">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
@@ -117,7 +117,7 @@ const FrameItShowcase = () => {
                           {hoveredItem === item.id && (
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                               <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                                <ZoomIn className="w-6 h-6 text-white" />
+                                <ZoomIn className="w-6 h-6 " />
                               </div>
                             </div>
                           )}
@@ -132,7 +132,7 @@ const FrameItShowcase = () => {
                         <p className="text-sm  mb-2">
                           {item.description}
                         </p>
-                        <span className="inline-block bg-dark-green text-white px-3 py-1 rounded-full text-xs font-medium">
+                        <span className="inline-block bg-primary text-white  px-3 py-1 rounded-full text-xs font-medium">
                           {item.frameColor}
                         </span>
                       </div>
@@ -170,7 +170,7 @@ const FrameItShowcase = () => {
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     index === currentSlide
                       ? "bg-primary scale-125"
-                      : "bg-green-600 hover:bg-primary"
+                      : "bg-pink-600 hover:bg-primary"
                   }`}
                 />
               ))}
@@ -179,7 +179,7 @@ const FrameItShowcase = () => {
 
           {/* CTA */}
           {/* <div className="text-center mt-12">
-            <Button className=" text-white font-semibold px-8 py-3 rounded-xl">
+            <Button className="  font-semibold px-8 py-3 rounded-xl">
               View Full Gallery
             </Button>
           </div> */}

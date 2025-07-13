@@ -162,7 +162,7 @@ function ResetPasswordContent() {
           <div className="flex items-center justify-center mb-4">
             <Frame className="h-12 w-12 text-blue-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">YashTiles</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{process.env.NEXT_PUBLIC_APP_NAME}</h1>
           <p className="text-gray-600 mt-2">Reset Your Password</p>
         </div>
 

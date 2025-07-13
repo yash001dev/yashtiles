@@ -23,18 +23,21 @@ const SizeModal: React.FC<SizeModalProps> = ({
       name: '8" × 8"',
       dimensions: 'Square format',
       aspectRatio: 1,
+      price: 0
     },
     {
       id: '8x11',
       name: '8" × 11"',
       dimensions: 'Portrait format',
-      aspectRatio: 8/11,
+      aspectRatio: 8/11,  
+      price: 0,
     },
     {
       id: '11x8',
       name: '11" × 8"',
       dimensions: 'Landscape format',
       aspectRatio: 11/8,
+      price: 0
     },
   ];
 

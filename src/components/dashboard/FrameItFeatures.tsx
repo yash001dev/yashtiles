@@ -50,11 +50,11 @@ const FrameItFeatures = () => {
                 key={index}
                 className="group shadow-lg rounded-2xl p-8 text-center hover:bg-white transition-all duration-300 hover:shadow-xl hover:scale-105"
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-400 to-pink-600 text-white rounded-xl mb-6 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="w-8 h-8" />
                 </div>
 
-                <h3 className="text-xl font-bold text-dark-green imary mb-4">
+                <h3 className="text-xl font-bold text-primary mb-4">
                   {feature.title}
                 </h3>
 
@@ -68,7 +68,7 @@ const FrameItFeatures = () => {
           {/* Bottom CTA */}
           <div className="text-center mt-16">
             <div className="inline-flex items-center gap-2 shadow-xl px-6 py-3 rounded-full">
-              <span className="text-dark-green font-semibold">
+              <span className="text-primary font-semibold">
                 ✨ Join thousands of happy customers
               </span>
             </div>

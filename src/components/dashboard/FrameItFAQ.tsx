@@ -61,9 +61,9 @@ const FrameItFAQ = () => {
                 <AccordionItem
                   key={index}
                   value={`item-${index}`}
-                  className="bg-white rounded-xl border border-dark-green/50 px-6 shadow-sm hover:shadow-md transition-shadow duration-300"
+                  className="bg-white rounded-xl border border-primary/50 px-6 shadow-sm hover:shadow-md transition-shadow duration-300"
                 >
-                  <AccordionTrigger className="text-left font-semibold text-dark-green hover:text-green-800 transition-colors duration-300 py-6">
+                  <AccordionTrigger className="text-left font-semibold text-primary hover:text-pink-800 transition-colors duration-300 py-6">
                     {faq.question}
                   </AccordionTrigger>
                   <AccordionContent className="text-charcoal-800/80 leading-relaxed pb-6">

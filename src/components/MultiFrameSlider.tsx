@@ -87,7 +87,7 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
           {hasTemporaryFrame && uploadedImage && (
             <SwiperSlide style={{ width: 'auto' }}>
               <div className="relative group">
-                <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-purple-500 ring-2 ring-purple-200">
+                <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-pink-500 ring-2 ring-pink-200">
                   <img
                     src={uploadedImage.url}
                     alt="Current frame"
@@ -104,10 +104,10 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
           <SwiperSlide style={{ width: 'auto' }}>
             <button
               onClick={handleAddFrame}
-              className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-purple-400 hover:bg-purple-50 transition-colors group"
+              className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-pink-400 hover:bg-pink-50 transition-colors group"
               title={isAuthenticated ? "Add Frame" : "Login to Add Frame"}
             >
-              <Plus className="w-6 h-6 text-gray-400 group-hover:text-purple-500" />
+              <Plus className="w-6 h-6 text-gray-400 group-hover:text-pink-500" />
             </button>
           </SwiperSlide>
 
@@ -123,7 +123,7 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
                     onClick={() => onFrameSelect(frame.id)}
                     className={`w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${
                       activeFrameId === frame.id
-                        ? 'border-purple-500 ring-2 ring-purple-200'
+                        ? 'border-pink-500 ring-2 ring-pink-200'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >

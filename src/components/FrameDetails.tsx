@@ -159,13 +159,13 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
             
             <div className="flex justify-between items-center text-lg font-bold">
               <span className="text-gray-900">Grand Total</span>
-              <span className="text-purple-600">₹{price}</span>
+              <span className="text-pink-600">₹{price}</span>
             </div>
           </div>
           
           <Button 
             onClick={onAddToCart}
-            className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
+            className="w-full mt-4 bg-pink-600 hover:bg-pink-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
           >
             <ShoppingCart className="w-5 h-5" />
             Add to Cart (1 item)

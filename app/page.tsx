@@ -38,6 +38,26 @@ const FrameItFooter = dynamic(() => import("@/components/dashboard/FrameItFooter
   loading: () => <div className="py-20 bg-charcoal-900"><div className="container mx-auto px-4"><div className="animate-pulse h-96 bg-gray-800 rounded-lg"></div></div></div>,
   ssr: true
 });
+export const metadata = {
+  title: "FrameIt – Custom Photo Framing Online",
+  description: "Transform your memories into stunning wall art with FrameIt. Premium frames, fast shipping, and a 7-day satisfaction guarantee.",
+  openGraph: {
+    title: "FrameIt – Custom Photo Framing Online",
+    description: "Transform your memories into stunning wall art with FrameIt. Premium frames, fast shipping, and a 7-day satisfaction guarantee.",
+    url: "https://frameit.com/",
+    siteName: "FrameIt",
+    images: [
+      {
+        url: "/favicon.svg",
+        width: 1200,
+        height: 630,
+        alt: "FrameIt - Custom Photo Framing",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+};
 
 export default function HomePage() {
   return (

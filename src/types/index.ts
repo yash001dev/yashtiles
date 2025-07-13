@@ -14,7 +14,9 @@ export interface FrameCustomization {
     | "18x24"
     | "24x18"
     | "24x32"
-    | "32x24";
+    | "32x24"
+    | "8x11"
+    | "11x8";
   effect: "original" | "silver" | "noir" | "vivid" | "dramatic";
   border: boolean;
   borderColor?: string;
@@ -63,7 +65,9 @@ export interface SizeOption {
     | "18x24"
     | "24x18"
     | "24x32"
-    | "32x24";
+    | "32x24"
+    | "8x11"
+    | "11x8";
   name: string;
   dimensions: string;
   aspectRatio: number;

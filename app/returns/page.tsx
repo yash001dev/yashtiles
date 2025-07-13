@@ -1,7 +1,7 @@
-import FrameItFooter from "@/components/FrameItFooter";
+import FrameItFooter from "@/components/dashboard/FrameItFooter";
 import Link from "next/link";
 import { ArrowLeft, RefreshCw, Shield, Clock, CheckCircle } from "lucide-react";
-import FrameItHeader from "@/components/FrameItHeader";
+import FrameItHeader from "@/components/dashboard/FrameItHeader";
 
 export const metadata = {
   title: "Returns & Exchanges - FrameIt",
@@ -16,13 +16,13 @@ const ReturnsPage = () => {
       <FrameItHeader hideMenu />
 
       {/* Hero Section */}
-      <section className="py-16 bg-dark-green text-white">
+      <section className="py-16 bg-dark-green ">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold  mb-6">
               Returns & Exchanges
             </h1>
-            <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-8">
+            <p className="text-lg md:text-xl /80 max-w-2xl mx-auto mb-8">
               Your satisfaction is our top priority. If you&apos;re not completely
               happy with your frame, we&apos;ll make it right.
             </p>
@@ -55,8 +55,8 @@ const ReturnsPage = () => {
 
             <div className="grid md:grid-cols-3 gap-8">
               <div className="bg-white shadow-lg rounded-2xl p-8 text-center">
-                <div className="bg-dark-green p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                  <Clock className="w-8 h-8 text-white" />
+                <div className="bg-pink-300 p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                  <Clock className="w-8 h-8 " />
                 </div>
                 <h3 className="text-xl font-bold text-charcoal-900 mb-4">
                   7-Day Window
@@ -68,8 +68,8 @@ const ReturnsPage = () => {
               </div>
 
               <div className="bg-white shadow-lg rounded-2xl p-8 text-center">
-                <div className="bg-dark-green p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                  <RefreshCw className="w-8 h-8 text-white" />
+                <div className="bg-pink-300 p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                  <RefreshCw className="w-8 h-8 " />
                 </div>
                 <h3 className="text-xl font-bold text-charcoal-900 mb-4">
                   Free Exchanges
@@ -81,8 +81,8 @@ const ReturnsPage = () => {
               </div>
 
               <div className="bg-white shadow-lg rounded-2xl p-8 text-center">
-                <div className="bg-dark-green p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
-                  <CheckCircle className="w-8 h-8 text-white" />
+                <div className="bg-pink-300 p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
+                  <CheckCircle className="w-8 h-8 " />
                 </div>
                 <h3 className="text-xl font-bold text-charcoal-900 mb-4">
                   Full Refunds
@@ -97,21 +97,21 @@ const ReturnsPage = () => {
       </section>
 
       {/* Return Process */}
-      <section className="py-20 bg-dark-green text-white">
+      <section className="py-20 bg-dark-green ">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold  mb-4">
                 How to Return Your Frame
               </h2>
-              <p className="text-lg text-white/70">
+              <p className="text-lg /70">
                 Simple steps to process your return or exchange.
               </p>
             </div>
 
             <div className="grid md:grid-cols-4 gap-8 " >
               <div className="text-center shadow-xl border bg-white  text-black p-2 rounded-xl ">
-                <div className="bg-dark-green text-white rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center font-bold text-lg">
+                <div className="bg-pink-300  rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center font-bold text-lg">
                   1
                 </div>
                 <h3 className="font-bold  mb-3">Contact Us</h3>
@@ -122,7 +122,7 @@ const ReturnsPage = () => {
               </div>
 
               <div className="text-center shadow-xl border bg-white  text-black p-2 rounded-xl">
-                <div className="bg-dark-green text-white rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center font-bold text-lg">
+                <div className="bg-pink-300  rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center font-bold text-lg">
                   2
                 </div>
                 <h3 className="font-bold  mb-3">
@@ -135,7 +135,7 @@ const ReturnsPage = () => {
               </div>
 
               <div className="text-center shadow-xl border bg-white  text-black p-2 rounded-xl">
-                <div className="bg-dark-green text-white rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center font-bold text-lg">
+                <div className="bg-pink-300  rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center font-bold text-lg">
                   3
                 </div>
                 <h3 className="font-bold  mb-3">
@@ -148,7 +148,7 @@ const ReturnsPage = () => {
               </div>
 
               <div className="text-center shadow-xl border bg-white  text-black p-2 rounded-xl">
-                <div className="bg-dark-green text-white rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center font-bold text-lg">
+                <div className="bg-pink-300  rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center font-bold text-lg">
                   4
                 </div>
                 <h3 className="font-bold  mb-3">Get Refund</h3>
@@ -299,13 +299,13 @@ const ReturnsPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center px-8 py-3 bg-dark-green text-white font-semibold rounded-xl transition-colors duration-300"
+                className="inline-flex items-center justify-center px-8 py-3 bg-dark-green  font-semibold rounded-xl transition-colors duration-300"
               >
                 Contact Support
               </Link>
               <a
                 href="mailto:returns@frameit.com"
-                className="inline-flex items-center justify-center px-8 py-3 bg-primary text-white font-semibold rounded-xl border border-cream-50/20  transition-colors duration-300"
+                className="inline-flex items-center justify-center px-8 py-3 bg-primary  font-semibold rounded-xl border text-white border-cream-50/20  transition-colors duration-300"
               >
                 Email Returns Team
               </a>

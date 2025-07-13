@@ -1,7 +1,8 @@
-import FrameItInstallation from "@/components/FrameItInstallation";
-import FrameItFooter from "@/components/FrameItFooter";
+
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import FrameItInstallation from "@/components/dashboard/FrameItInstallation";
+import FrameItFooter from "@/components/dashboard/FrameItFooter";
 
 export const metadata = {
   title: "Installation & Care Guide - FrameIt",
@@ -13,8 +14,8 @@ const InstallationPage = () => {
   return (
     <div className="min-h-screen">
       {/* Navigation Header */}
-      <header className="bg-white border-b border-cream-300 py-4">
-        <div className="container mx-auto px-4">
+      <header className="bg-white border-b border-cream-300 py-4 w-full">
+        <div className="px-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <Link
               href="/"
@@ -38,7 +39,7 @@ const InstallationPage = () => {
                 </Link>
                 <Link
                   href="/installation"
-                  className="text-dark-green font-semibold"
+                  className="text-primary font-semibold"
                 >
                   Installation Guide
                 </Link>
@@ -49,13 +50,13 @@ const InstallationPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 bg-dark-green text-white">
+      <section className="py-16 bg-dark-green ">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold  mb-6">
               Installation & Care Guide
             </h1>
-            <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-8">
+            <p className="text-lg md:text-xl /80 max-w-2xl mx-auto mb-8">
               Everything you need to know to perfectly install your FrameIt
               frames and keep them looking beautiful for years to come.
             </p>
@@ -64,13 +65,13 @@ const InstallationPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="#installation"
-                className="inline-flex items-center justify-center px-6 py-3 bg-primary  font-semibold rounded-xl text-white transition-colors duration-300"
+                className="inline-flex  items-center justify-center px-6 py-3 bg-primary text-white  font-semibold rounded-xl  transition-colors duration-300"
               >
                 Installation Steps
               </a>
               <a
                 href="#care"
-                className="inline-flex items-center justify-center px-6 py-3 bg-white text-charcoal-800 hover:bg-green-800 hover:text-cream-50  font-semibold rounded-xl border border-charcoal-800/20  transition-colors duration-300"
+                className="inline-flex items-center justify-center px-6 py-3 bg-white text-charcoal-800 hover:bg-primary hover:text-cream-50  font-semibold rounded-xl border border-charcoal-800/20  transition-colors duration-300"
               >
                 Care Instructions
               </a>
@@ -83,7 +84,7 @@ const InstallationPage = () => {
       <FrameItInstallation />
 
       {/* Additional Resources */}
-      <section className="py-20 bg-white text-dark-green">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
@@ -99,7 +100,7 @@ const InstallationPage = () => {
               <div className="bg-white shadow-xl hover:shadow-2xl rounded-xl p-6 text-center">
                 <div className="w-16 h-16 bg-dark-green rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
-                    className="w-8 h-8 text-white"
+                    className="w-8 h-8 "
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -115,7 +116,7 @@ const InstallationPage = () => {
                 <h3 className="font-bold  mb-3">
                   Live Chat Support
                 </h3>
-                <p className="text-charcoal-800/70 mb-4">
+                <p className=" mb-4">
                   Get instant help from our installation experts
                 </p>
                 <a
@@ -129,7 +130,7 @@ const InstallationPage = () => {
               <div className="bg-white shadow-xl hover:shadow-2xl rounded-xl p-6 text-center">
                 <div className="w-16 h-16 bg-dark-green rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
-                    className="w-8 h-8 text-white"
+                    className="w-8 h-8 "
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -145,7 +146,7 @@ const InstallationPage = () => {
                 <h3 className="font-bold  mb-3">
                   Video Tutorials
                 </h3>
-                <p className="text-charcoal-800/70 mb-4">
+                <p className=" mb-4">
                   Watch step-by-step installation videos
                 </p>
                 <a
@@ -159,7 +160,7 @@ const InstallationPage = () => {
               <div className="bg-white shadow-xl hover:shadow-2xl rounded-xl p-6 text-center">
                 <div className="w-16 h-16 bg-dark-green rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
-                    className="w-8 h-8 text-white"
+                    className="w-8 h-8 "
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -173,7 +174,7 @@ const InstallationPage = () => {
                   </svg>
                 </div>
                 <h3 className="font-bold  mb-3">PDF Guide</h3>
-                <p className="text-charcoal-800/70 mb-4">
+                <p className=" mb-4">
                   Download our complete installation manual
                 </p>
                 <a

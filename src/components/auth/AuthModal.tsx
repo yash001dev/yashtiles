@@ -81,7 +81,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           await register(formData.firstName, formData.lastName, formData.email, formData.password);
           addNotification({
             type: 'success',
-            title: 'Welcome to YashTiles!',
+            title: `Welcome to ${process.env.NEXT_PUBLIC_APP_NAME} !`,
             message: 'Your account has been created successfully.'
           });
           handleClose();
@@ -451,7 +451,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
       case 'login':
         return 'Sign in to your account';
       case 'register':
-        return 'Join YashTiles today';
+        return `Join ${process.env.NEXT_PUBLIC_APP_NAME} today`;
       case 'forgot-password':
         return 'Reset your password';
       case 'reset-password':

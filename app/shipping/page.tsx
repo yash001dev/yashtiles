@@ -1,7 +1,7 @@
-import FrameItFooter from "@/components/FrameItFooter";
+import FrameItFooter from "@/components/dashboard/FrameItFooter";
 import Link from "next/link";
 import { ArrowLeft, Truck, Clock, Shield, MapPin } from "lucide-react";
-import FrameItHeader from "@/components/FrameItHeader";
+import FrameItHeader from "@/components/dashboard/FrameItHeader";
 
 export const metadata = {
   title: "Shipping Information - FrameIt",

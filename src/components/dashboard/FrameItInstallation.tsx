@@ -1,5 +1,6 @@
 "use client";
 
+import PlayIcon from "@/assets/PlayIcon";
 import { CheckCircle, Clock, Shield, Wrench } from "lucide-react";
 import Image from "next/image";
 
@@ -76,7 +77,7 @@ const FrameItInstallation = () => {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
+          {/* Header */}n
           <div className="text-center mb-16">
             {/* <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-charcoal-900 mb-4">
               Installation & Care Guide
@@ -117,7 +118,7 @@ const FrameItInstallation = () => {
                       />
 
                       {/* Step Number Overlay */}
-                      <div className="absolute top-4 left-4 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg shadow-lg">
+                      <div className="absolute top-4 left-4 bg-primary  rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg shadow-lg">
                         {step.step}
                       </div>
 
@@ -154,22 +155,16 @@ const FrameItInstallation = () => {
             </div>
 
             {/* Installation Video CTA */}
-            <div className="text-center mt-12 bg-dark-green text-white rounded-2xl p-8 border border-gold-500/20">
+            <div className="text-center mt-12 bg-dark-green !text-black  rounded-2xl p-8 border border-gold-500/20">
               <h3 className="text-xl font-bold  mb-4">
                 Need Visual Guidance?
               </h3>
-              <p className="text-white/70 mb-6">
+              <p className=" mb-6">
                 Watch our step-by-step installation video for a complete
                 walkthrough of the process.
               </p>
-              <button className=" text-white font-semibold px-8 py-3 rounded-xl transition-colors duration-300 inline-flex items-center gap-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                </svg>
+              <button className="  font-semibold px-8 py-3 rounded-xl transition-colors duration-300 inline-flex items-center gap-2">
+               <PlayIcon/>
                 Watch Installation Video
               </button>
             </div>
@@ -215,7 +210,7 @@ const FrameItInstallation = () => {
                   </p>
                 </div>
                 <div className="text-center">
-                  <div className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  <div className="inline-flex items-center gap-2 bg-primary  px-4 py-2 rounded-full text-sm font-semibold">
                     <CheckCircle className="w-4 h-4" />
                     Premium Materials
                   </div>
