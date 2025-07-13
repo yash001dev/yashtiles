@@ -3,6 +3,7 @@ import { X, RotateCw, ZoomIn, ZoomOut, Move, Download, RefreshCw } from 'lucide-
 import { UploadedImage, ImageTransform, FrameCustomization } from '../types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { updateActiveFrame } from '@/redux/slices/frameCustomizerSlice';
+import FrameRenderer from './ui/FrameRenderer';
 
 interface ImageEditorProps {
   isOpen: boolean;
@@ -122,71 +123,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     }
   };
 
-  const getImageStyles = () => {
-    let filter = '';
-    switch (customization.effect) {
-      case 'silver':
-        filter = 'grayscale(100%) contrast(110%)';
-        break;
-      case 'noir':
-        filter = 'grayscale(100%) contrast(150%) brightness(90%)';
-        break;
-      case 'vivid':
-        filter = 'saturate(150%) contrast(120%)';
-        break;
-      case 'dramatic':
-        filter = 'contrast(140%) brightness(95%) saturate(130%)';
-        break;
-      default:
-        filter = 'none';
-    }
 
-    return {
-      transform: `translate(${image.transform.x}px, ${image.transform.y}px) scale(${image.transform.scale}) rotate(${image.transform.rotation}deg)`,
-      filter,
-    };
-  };
-
-  const getFrameColor = () => {
-    switch (customization.frameColor) {
-      case 'white':
-        return 'bg-white border-gray-200';
-      case 'oak':
-        return 'bg-amber-100 border-amber-200';
-      default:
-        return 'bg-gray-900 border-gray-800';
-    }
-  };
-  const getAspectRatio = () => {
-    switch (customization.size) {
-      case '8x8':
-      case '12x12':
-      case '18x18':
-        return 'aspect-square';
-      case '8x10':
-        return 'aspect-[8/10]';
-      case '10x8':
-        return 'aspect-[10/8]';
-      case '9x12':
-        return 'aspect-[9/12]';
-      case '12x9':
-        return 'aspect-[12/9]';
-      case '12x18':
-        return 'aspect-[12/18]';
-      case '18x12':
-        return 'aspect-[18/12]';
-      case '18x24':
-        return 'aspect-[18/24]';
-      case '24x18':
-        return 'aspect-[24/18]';
-      case '24x32':
-        return 'aspect-[24/32]';
-      case '32x24':
-        return 'aspect-[32/24]';
-      default:
-        return 'aspect-square';
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-2 sm:p-4">
@@ -224,25 +161,19 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 min-h-0">
               {/* Preview Area */}
               <div className="flex-1 flex items-center justify-center lg:justify-start">
-                <div className={`relative ${customization.material === 'classic' ? 'p-4 sm:p-6' : ''} ${customization.material === 'classic' ? getFrameColor() : ''} shadow-2xl w-full max-w-sm lg:max-w-md xl:max-w-lg`}>
-                  <div 
-                    className={`relative overflow-hidden rounded-sm ${getAspectRatio()} cursor-move`}
-                    // onMouseDown={handleMouseDown}
-                    // onMouseMove={handleMouseMove}
-                    // onMouseUp={handleMouseUp}
-                    // onMouseLeave={handleMouseUp}
-                  >
-                    <img
-                      src={image.url}
-                      alt="Preview"
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-100 select-none"
-                      style={getImageStyles()}
-                      draggable={false}
-                    />
-                    {customization.border && customization.material === 'classic' && (
-                      <div className="absolute inset-0 border-2 border-gray-300 pointer-events-none" />
-                    )}
-                  </div>
+                <div className="relative shadow-2xl w-full max-w-sm lg:max-w-md xl:max-w-lg">
+                  <FrameRenderer
+                    customization={customization}
+                    uploadedImage={image}
+                    isEditable={true}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                    showFrameCounter={false}
+                    showEditOverlay={false}
+                    addClassicPadding={true}
+                  />
                 </div>
               </div>
 
