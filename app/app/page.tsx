@@ -21,6 +21,7 @@ import {
   useNotifications,
 } from "../../src/contexts/NotificationContext";
 import { useFrameCustomizer } from "../../src/hooks/useFrameCustomizer";
+import { usePersistence } from "../../src/hooks/usePersistence";
 
 
 function AppContent() {
@@ -47,6 +48,32 @@ function AppContent() {
     updateActiveFrame,
   } = useFrameCustomizer();
 
+  // Initialize persistence functionality
+  const { saveCurrentState, clearPersistedData } = usePersistence({
+    uploadedImage,
+    customization,
+    frameCollection,
+    onImageRestore: async (image) => {
+      // Convert base64 back to File for restoration
+      try {
+        const response = await fetch(image.url);
+        const blob = await response.blob();
+        const file = new File([blob], 'restored-image.jpg', { type: blob.type });
+        await setImage(file);
+      } catch (error) {
+        console.error('Failed to restore image:', error);
+      }
+    },
+    onCustomizationRestore: (restoredCustomization) => {
+      updateCustomization(restoredCustomization);
+    },
+    onFrameCollectionRestore: (frames, activeFrameId) => {
+      // For now, we'll skip frame collection restoration as it requires more complex implementation
+      // TODO: Implement proper frame collection restoration in useFrameCustomizer
+      console.log('Frame collection restoration not yet implemented:', frames, activeFrameId);
+    },
+  });
+
   // State for checkout and auth modals
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = React.useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
@@ -70,9 +97,22 @@ function AppContent() {
     openModal(tool);
   };
 
+  // Create a hidden file input ref for image change
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleImageClick = () => {
-    if (uploadedImage) {
-      openModal("imageEditor");
+    if (uploadedImage && fileInputRef.current) {
+      // Trigger file input when image is clicked
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleImageReplace(file);
+      // Reset the input value so the same file can be selected again
+      event.target.value = '';
     }
   };
 
@@ -303,6 +343,16 @@ function AppContent() {
             />
           )}
         </main>
+        
+        {/* Hidden file input for image change */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileInputChange}
+          style={{ display: 'none' }}
+        />
+        
         {uploadedImage && (
           <Toolbar
             onToolClick={handleToolClick}
@@ -360,7 +410,8 @@ function AppContent() {
           />
         )}
         {/* Floating Add Button for mobile */}
-        <FloatingAddButton
+        {/* TODO : implement multi frame upload in future */}
+        {/* <FloatingAddButton
           onAddFrame={handleAddFrame}
           hasFrames={frameCollection.frames.length > 0}
           hasImage={!!uploadedImage}
@@ -368,7 +419,7 @@ function AppContent() {
             setPendingAction("cart");
             setIsAuthModalOpen(true);
           }}
-        />{" "}
+        />{" "} */}
         {/* Tutorial Tooltip */}
         <TutorialTooltip show={showTutorial} onClose={handleCloseTutorial} />
         {/* Auth Modal */}

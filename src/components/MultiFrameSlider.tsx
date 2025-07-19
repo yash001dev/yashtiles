@@ -101,7 +101,8 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
           )}
 
           {/* Add New Frame Slide */}
-          <SwiperSlide style={{ width: 'auto' }}>
+          {/* TODO : implement multi frame upload in future */}
+          {/* <SwiperSlide style={{ width: 'auto' }}>
             <button
               onClick={handleAddFrame}
               className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-pink-400 hover:bg-pink-50 transition-colors group"
@@ -109,7 +110,7 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
             >
               <Plus className="w-6 h-6 text-gray-400 group-hover:text-pink-500" />
             </button>
-          </SwiperSlide>
+          </SwiperSlide> */}
 
           {/* Frame Slides */}
           {frames.map((frame) => {

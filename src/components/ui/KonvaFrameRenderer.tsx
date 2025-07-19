@@ -340,6 +340,7 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
                     parent.opacity(0);
                   }
                 }}
+                onClick={onImageClick}
               >
                 <Rect
                   x={(stageSize.width - imgWidth) / 2}
@@ -361,7 +362,7 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
                   y={(stageSize.height - 30) / 2}
                   width={100}
                   height={30}
-                  text="Click to edit"
+                  text="Change Image"
                   fontSize={12}
                   fontFamily="Arial"
                   fill="#374151"
