@@ -74,64 +74,36 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
   const mattingWidth = customization.material === 'classic' ? 15 : 0; // Only classic has matting
   const totalPadding = frameWidth + mattingWidth;
 
-  // Calculate exact dimensions based on frame size
+  // Simple dimensions based on original working logic
   const getImageDimensions = () => {
     const [widthStr, heightStr] = customization.size.split('x');
     const widthRatio = parseInt(widthStr);
     const heightRatio = parseInt(heightStr);
     const frameAspectRatio = widthRatio / heightRatio;
     
-    // Calculate available space within the frame (excluding frame and matting)
+    // Use the same simple approach as the original FrameRenderer
+    // Calculate dimensions that fit within the stage while maintaining aspect ratio
     const availableWidth = width - (totalPadding * 2);
     const availableHeight = height - (totalPadding * 2);
     
-    // The canvas area should match the exact frame proportions
-    let canvasWidth, canvasHeight;
+    let imgWidth, imgHeight;
     
-    // Fit the frame proportions within the available space
-    const availableAspectRatio = availableWidth / availableHeight;
-    
-    if (frameAspectRatio > availableAspectRatio) {
-      // Frame is wider than available space - fit by width
-      canvasWidth = availableWidth;
-      canvasHeight = canvasWidth / frameAspectRatio;
+    // Fit the frame aspect ratio within available space
+    if (frameAspectRatio > (availableWidth / availableHeight)) {
+      // Frame is wider - fit by width
+      imgWidth = availableWidth;
+      imgHeight = imgWidth / frameAspectRatio;
     } else {
-      // Frame is taller than available space - fit by height
-      canvasHeight = availableHeight;
-      canvasWidth = canvasHeight * frameAspectRatio;
+      // Frame is taller - fit by height
+      imgHeight = availableHeight;
+      imgWidth = imgHeight * frameAspectRatio;
     }
     
-    // If we have an actual image, calculate how it fits within the canvas
-    if (image) {
-      const imageAspectRatio = image.width / image.height;
-      
-      let imgWidth, imgHeight;
-      
-      // Fit image within the canvas while preserving its aspect ratio
-      if (imageAspectRatio > frameAspectRatio) {
-        // Image is wider than canvas - fit by width
-        imgWidth = canvasWidth;
-        imgHeight = imgWidth / imageAspectRatio;
-      } else {
-        // Image is taller than canvas - fit by height
-        imgHeight = canvasHeight;
-        imgWidth = imgHeight * imageAspectRatio;
-      }
-      
-      return { 
-        width: imgWidth, 
-        height: imgHeight,
-        canvasWidth,
-        canvasHeight
-      };
-    }
-    
-    // Fallback to canvas dimensions
     return { 
-      width: canvasWidth, 
-      height: canvasHeight,
-      canvasWidth,
-      canvasHeight
+      width: imgWidth, 
+      height: imgHeight,
+      canvasWidth: imgWidth,
+      canvasHeight: imgHeight
     };
   };
 
@@ -245,13 +217,14 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
               height={canvasHeight || imgHeight}
               fill="white"
             />
-            {/* Outer Frame */}
-            {customization.material !== 'frameless' && (
+            
+            {/* Outer Frame - only for framed materials */}
+            {customization.material !== 'frameless' && customization.material !== 'canvas' && (
               <Rect
-                x={(stageSize.width - imgWidth - totalPadding * 2) / 2}
-                y={(stageSize.height - imgHeight - totalPadding * 2) / 2}
-                width={imgWidth + totalPadding * 2}
-                height={imgHeight + totalPadding * 2}
+                x={(stageSize.width - (canvasWidth || imgWidth) - totalPadding * 2) / 2}
+                y={(stageSize.height - (canvasHeight || imgHeight) - totalPadding * 2) / 2}
+                width={(canvasWidth || imgWidth) + totalPadding * 2}
+                height={(canvasHeight || imgHeight) + totalPadding * 2}
                 fill={getFrameColor()}
                 shadowColor="black"
                 shadowBlur={10}
@@ -278,18 +251,18 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
             {/* Image */}
             {image && (
               <Group
-                clipX={(stageSize.width - imgWidth) / 2}
-                clipY={(stageSize.height - imgHeight) / 2}
-                clipWidth={imgWidth}
-                clipHeight={imgHeight}
+                clipX={(stageSize.width - (canvasWidth || imgWidth)) / 2}
+                clipY={(stageSize.height - (canvasHeight || imgHeight)) / 2}
+                clipWidth={canvasWidth || imgWidth}
+                clipHeight={canvasHeight || imgHeight}
               >
                 <KonvaImage
                   ref={imageRef}
                   image={image}
-                  x={(stageSize.width - imgWidth) / 2 + (uploadedImage?.transform.x || 0)}
-                  y={(stageSize.height - imgHeight) / 2 + (uploadedImage?.transform.y || 0)}
-                  width={imgWidth}
-                  height={imgHeight}
+                  x={(stageSize.width - (canvasWidth || imgWidth)) / 2 + (uploadedImage?.transform.x || 0)}
+                  y={(stageSize.height - (canvasHeight || imgHeight)) / 2 + (uploadedImage?.transform.y || 0)}
+                  width={canvasWidth || imgWidth}
+                  height={canvasHeight || imgHeight}
                   scaleX={uploadedImage?.transform.scale || 1}
                   scaleY={uploadedImage?.transform.scale || 1}
                   rotation={uploadedImage?.transform.rotation || 0}
