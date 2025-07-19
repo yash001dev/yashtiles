@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, forwardRef, useImperativeHandle } from "react";
 import { Download } from "lucide-react";
 import { FrameCustomization, UploadedImage } from "../types";
 import KonvaFrameRenderer, {
@@ -13,13 +13,20 @@ interface FramePreviewProps {
   currentFrameIndex?: number;
 }
 
-const FramePreview: React.FC<FramePreviewProps> = ({
-  customization,
-  uploadedImage,
-  onImageClick,
-  frameCount = 0,
-  currentFrameIndex = 0,
-}) => {
+export interface FramePreviewRef {
+  handleDownload: () => void;
+}
+
+const FramePreview = forwardRef<FramePreviewRef, FramePreviewProps>((
+  {
+    customization,
+    uploadedImage,
+    onImageClick,
+    frameCount = 0,
+    currentFrameIndex = 0,
+  },
+  ref
+) => {
   // Calculate exact dimensions based on frame size
   const getFrameDimensions = () => {
     const [widthStr, heightStr] = customization.size.split("x");
@@ -58,6 +65,11 @@ const FramePreview: React.FC<FramePreviewProps> = ({
       frameRendererRef.current.downloadImage();
     }
   };
+
+  // Expose handleDownload method through ref
+  useImperativeHandle(ref, () => ({
+    handleDownload,
+  }));
 
   return (
     <div className="flex items-center justify-center min-h-[60vh] px-4 py-8">
@@ -116,6 +128,8 @@ const FramePreview: React.FC<FramePreviewProps> = ({
       `}</style>
     </div>
   );
-};
+});
+
+FramePreview.displayName = 'FramePreview';
 
 export default FramePreview;

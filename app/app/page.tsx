@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import Header from "../../src/components/Header";
 import PhotoUpload from "../../src/components/PhotoUpload";
-import FramePreview from "../../src/components/FramePreview";
+import FramePreview, { FramePreviewRef } from "../../src/components/FramePreview";
 import Toolbar from "../../src/components/Toolbar";
 import KonvaImageEditor from "../../src/components/KonvaImageEditor";
 import MaterialBottomSheet from "../../src/components/MaterialBottomSheet";
@@ -21,7 +21,7 @@ import {
   useNotifications,
 } from "../../src/contexts/NotificationContext";
 import { useFrameCustomizer } from "../../src/hooks/useFrameCustomizer";
-import { downloadFramedImage } from "../../src/utils/downloadImage";
+
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
@@ -76,9 +76,12 @@ function AppContent() {
     }
   };
 
+  const framePreviewRef = useRef<FramePreviewRef>(null);
+
   const handleDownload = async () => {
-    if (uploadedImage) {
-      await downloadFramedImage(uploadedImage, customization);
+    if (uploadedImage && framePreviewRef.current) {
+      // Use FramePreview's download method which properly captures all materials
+      framePreviewRef.current.handleDownload();
       closeModal();
     }
   };
@@ -289,6 +292,7 @@ function AppContent() {
             <PhotoUpload onImageSelect={handleImageUpload} />
           ) : (
             <FramePreview
+              ref={framePreviewRef}
               customization={customization}
               uploadedImage={uploadedImage}
               onImageClick={handleImageClick}
@@ -296,7 +300,6 @@ function AppContent() {
               currentFrameIndex={frameCollection.frames.findIndex(
                 (f) => f.id === frameCollection.activeFrameId
               )}
-
             />
           )}
         </main>
