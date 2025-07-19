@@ -1,6 +1,14 @@
 // Temporary DOM element for decoding HTML entities and parsing HTML content.
 // This element is reused across calls for better performance.
-const tempDiv = document.createElement('div');
+let tempDiv: HTMLDivElement | null = null;
+
+// Initialize tempDiv only in browser environment
+const getTempDiv = () => {
+  if (typeof window !== 'undefined' && !tempDiv) {
+    tempDiv = document.createElement('div');
+  }
+  return tempDiv;
+};
 
 /**
  * Decodes HTML entities, strips unwanted HTML tags, and allows certain tags from the given input.
@@ -24,15 +32,21 @@ const stripAndDecodeHtml = (
     return input as string;
   }
 
-  // Use the pre-created temporary DOM element for performance
-  tempDiv.innerHTML = input as string;
+  // Use the temporary DOM element for performance (browser only)
+  const div = getTempDiv();
+  if (!div) {
+    // Fallback for server-side rendering - just return the input
+    return input as string;
+  }
+  
+  div.innerHTML = input as string;
 
   if (strict) {
-    return tempDiv.textContent || tempDiv.innerText || '';
+    return div.textContent || div.innerText || '';
   }
 
   // Extract and decode any escaped HTML content
-  const decodedHtml = tempDiv.innerHTML;
+  const decodedHtml = div.innerHTML;
 
   // Default allowed tags
   const defaultAllowedTags = [

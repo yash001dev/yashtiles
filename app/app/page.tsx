@@ -4,7 +4,7 @@ import Header from "../../src/components/Header";
 import PhotoUpload from "../../src/components/PhotoUpload";
 import FramePreview from "../../src/components/FramePreview";
 import Toolbar from "../../src/components/Toolbar";
-import ImageEditor from "../../src/components/ImageEditor";
+import KonvaImageEditor from "../../src/components/KonvaImageEditor";
 import MaterialBottomSheet from "../../src/components/MaterialBottomSheet";
 import FrameBottomSheet from "../../src/components/FrameBottomSheet";
 import SizeBottomSheet from "../../src/components/SizeBottomSheet";
@@ -53,6 +53,7 @@ function AppContent() {
   const [pendingAction, setPendingAction] = React.useState<
     "cart" | "checkout" | null
   >(null);
+
   // Update active frame when customization or image changes
   React.useEffect(() => {
     if (frameCollection.activeFrameId && uploadedImage) {
@@ -295,6 +296,7 @@ function AppContent() {
               currentFrameIndex={frameCollection.frames.findIndex(
                 (f) => f.id === frameCollection.activeFrameId
               )}
+
             />
           )}
         </main>
@@ -345,13 +347,12 @@ function AppContent() {
           uploadedImage={uploadedImage}
         />
         {uploadedImage && (
-          <ImageEditor
+          <KonvaImageEditor
             isOpen={activeModal === "imageEditor"}
             onClose={closeModal}
             image={uploadedImage}
             customization={customization}
             onTransformUpdate={updateImageTransform}
-            onDownload={handleDownload}
             onImageReplace={handleImageReplace}
           />
         )}

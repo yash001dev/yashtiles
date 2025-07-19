@@ -19,6 +19,10 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
+  webpack: (config) => {
+    config.externals = [...config.externals, { canvas: 'canvas' }]; // required to make Konva & react-konva work
+    return config;
+  },
   // Environment-specific configuration
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
