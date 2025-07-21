@@ -175,7 +175,7 @@ const FrameItTestimonialsSlider = () => {
                               {[...Array(testimonial.rating)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className="w-5 h-5 fill-pink-300  border-0"
+                                  className="w-5 h-5 fill-pink-300 border-pink-300 stroke-pink-300"
                                   aria-hidden="true"
                                 />
                               ))}
