@@ -59,7 +59,7 @@ const FrameItFooter = () => {
                     placeholder="Enter your email"
                     className="bg-white/10 border-black/20 text-black placeholder:text-black/50 "
                   />
-                  <Button className="  px-6">
+                  <Button className="px-6">
                     Subscribe
                   </Button>
                 </div>
