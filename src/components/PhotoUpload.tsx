@@ -55,6 +55,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
             accept="image/png,image/jpeg"
             onChange={handleFileSelect}
             className="hidden"
+
           />
 
           <div className="space-y-6">

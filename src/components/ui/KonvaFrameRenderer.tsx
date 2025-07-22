@@ -26,6 +26,7 @@ interface KonvaFrameRendererProps {
 
 export interface KonvaFrameRendererRef {
   downloadImage: () => void;
+  getImageDataUrl: () => Promise<string | null>;
 }
 
 const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererProps>(({
@@ -179,24 +180,49 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
 
   // Expose download method through ref
   useImperativeHandle(ref, () => ({
-    downloadImage: () => {
-      if (stageRef.current) {
-        const uri = stageRef.current.toDataURL({
-          mimeType: 'image/png',
-          quality: 1,
-          pixelRatio: 2, // Higher quality
-        });
-        
+    downloadImage: async () => {
+      const dataUrl = await getImageDataUrl();
+      if (dataUrl) {
         // Create download link
         const link = document.createElement('a');
         link.download = `frame-${customization.size}-${customization.material}-${Date.now()}.png`;
-        link.href = uri;
+        link.href = dataUrl;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       }
     },
+    getImageDataUrl: () => getImageDataUrl(),
   }));
+  
+  const getImageDataUrl = async (): Promise<string | null> => {
+    if (!stageRef.current || !uploadedImage) return null;
+    
+    // Create a clone of the stage to avoid affecting the display
+    const stage = stageRef.current;
+    
+    // Wait for the next tick to ensure all filters and customizations are applied
+    return new Promise((resolve) => {
+      // Use requestAnimationFrame to ensure the stage is fully rendered
+      requestAnimationFrame(() => {
+        // Get the pixel ratio for high DPI devices
+        const pixelRatio = window.devicePixelRatio || 1;
+        
+        // Create a clone of the stage to avoid affecting the display
+        const dataUrl = stage.toDataURL({
+          mimeType: 'image/png',
+          quality: 1,
+          pixelRatio: 2, // Higher quality
+          x: 0,
+          y: 0,
+          width: stage.width(),
+          height: stage.height(),
+        });
+        
+        resolve(dataUrl);
+      });
+    });
+  };
 
   return (
     <div className={`${className} flex items-center justify-center`}>

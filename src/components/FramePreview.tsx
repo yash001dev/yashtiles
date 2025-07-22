@@ -15,6 +15,7 @@ interface FramePreviewProps {
 
 export interface FramePreviewRef {
   handleDownload: () => void;
+  getImageDataUrl: () => Promise<string | null>;
 }
 
 const FramePreview = forwardRef<FramePreviewRef, FramePreviewProps>((
@@ -66,9 +67,22 @@ const FramePreview = forwardRef<FramePreviewRef, FramePreviewProps>((
     }
   };
 
-  // Expose handleDownload method through ref
+  const getImageDataUrl = async (): Promise<string | null> => {
+    if (frameRendererRef.current && uploadedImage) {
+      try {
+        return await frameRendererRef.current.getImageDataUrl();
+      } catch (error) {
+        console.error('Error getting image data URL:', error);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  // Expose methods through ref
   useImperativeHandle(ref, () => ({
     handleDownload,
+    getImageDataUrl,
   }));
 
   return (

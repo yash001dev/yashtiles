@@ -2,14 +2,10 @@ import { useState } from 'react';
 import { authService } from '../lib/auth';
 
 export interface CheckoutData {
-  items: {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
+  items: Array<{
     customization: any;
-    image?: string;
-  }[];
+    image: string;
+  }>;
   shippingAddress: {
     firstName: string;
     lastName: string;

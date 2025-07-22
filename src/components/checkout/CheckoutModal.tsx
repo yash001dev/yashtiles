@@ -27,16 +27,15 @@ type ShippingFormData = z.infer<typeof shippingSchema>;
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  items: {
-    id: string;
-    name: string;
-    price: number;
+  items: Array<{
     customization: any;
-    image?: string;
-  }[];
+    image: string;
+    price: number;
+  }>;
+  cartItemImage: string;
 }
 
-const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items }) => {
+const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items, cartItemImage }) => {
   const { isAuthenticated, user } = useAuth();
   const { processCheckout, isLoading, error, clearError } = useCheckout();
   
@@ -47,9 +46,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
   const form = useForm<ShippingFormData>({
     resolver: zodResolver(shippingSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || '',
       phone: '',
       address: '',
       city: '',
@@ -79,28 +78,48 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
     }
   }, [isOpen]);
 
-  // Calculate total amount
-  const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
+  // Calculate total amount from items
+  const totalAmount = items.reduce(
+    (sum, item) => sum + item.price, 
+    0
+  );
 
   if (!isOpen || items.length === 0) return null;
 
-  const cartTotal = items.reduce((sum, item) => sum + item.price, 0);
+  // Helper function to render item image
+  const renderItemImage = (item: string) => {
+    if (!item) return null;
+    return (
+      <img
+        src={item}
+        alt={`${item}`}
+        className="w-16 h-16 object-cover rounded-md"
+      />
+    );
+  };
 
+  // Calculate cart total from items
+  const cartTotal = items.reduce((sum, item) => {
+    return sum + item.price;
+  }, 0);
+
+  
   // PayU integration handler
   const handleCartClick = async (shippingData: ShippingFormData) => {
-      // Collect order items from frameCollection
-      const allItems = items.map(frame => ({
-        productId: frame.id, // Replace with real productId if available
+    try {
+      // Prepare order items from cart items
+      const allItems = items.map((item, index) => ({
+        productId: `frame-${index + 1}`,
         quantity: 1,
-        price: frame.price, // Or frame.price if available
-        size: frame.customization.size,
-        frameType: frame.customization.material,
-        imageUrl: frame.image,
-        frameColor: frame.customization.frameColor,
-        borderColor: frame.customization.borderColor,
-        borderWidth: frame.customization.borderWidth,
-        material: frame.customization.material,
-        effect: frame.customization.effect,
+        price: item.price,
+        size: item.customization.size,
+        frameType: item.customization.material,
+        imageUrl: cartItemImage,
+        frameColor: item.customization.frameColor,
+        borderColor: item.customization.borderColor,
+        borderWidth: item.customization.borderWidth,
+        material: item.customization.material,
+        effect: item.customization.effect,
       }));
       
       // Collect shipping address from form data
@@ -137,9 +156,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       const udf3 = '';
       const udf4 = '';
       const udf5 = '';
-      
-      console.log({amount});
-      
+            
       // 1. Generate hash
       const hashRes = await fetch(`${API_BASE_URL}/api/v1/payments/payu/generate-hash`, {
         method: 'POST',
@@ -153,16 +170,17 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       
       // Convert image URLs to File objects and append to FormData
       const imagePromises = items.map(async (item, index) => {
-        if (item.image) {
+        if (cartItemImage) {
           try {
             // Check if it's a data URL or regular URL
-            if (item.image.startsWith('data:')) {
+            //TODO: use dynamica images 
+            if (cartItemImage.startsWith('data:')) {
               // Handle data URLs (base64 images) using our utility function
-              const file = base64ToFile(item.image, `frame-${index + 1}.jpg`);
+              const file = base64ToFile(cartItemImage, `frame-${index + 1}.jpg`);
               formData.append('frameImages', file);
             } else {
               // Handle regular URLs
-              const response = await fetch(item.image, { 
+              const response = await fetch(cartItemImage, { 
                 mode: 'cors',
                 headers: {
                   'Accept': 'image/*'
@@ -240,7 +258,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
         document.body.appendChild(paymentForm);
         paymentForm.submit();
       }
-    };
+    } catch (error) {
+      console.error('Error in handleCartClick:', error);
+      throw error; // Re-throw to be caught by the caller
+    }
+  };
   
   const onSubmit = async (formData: ShippingFormData) => {
     if (!isAuthenticated) {
@@ -293,33 +315,27 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
               </h3>
               <div className="space-y-3">
                 {items.map((item, index) => (
-                  <div key={item.id} className="flex items-center justify-between border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
-                    <div className="flex items-center space-x-3">
-                      {item.image && (
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-16 h-16 object-cover rounded-lg"
-                        />
-                      )}
+                  <div key={`frame-${index}`} className="flex items-center justify-between border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-md overflow-hidden">
+                        {item.image && (
+                         renderItemImage(cartItemImage)
+                        )}
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-900">{item.name} {items.length > 1 ? `${index + 1}` : ''}</p>
+                        <p className="font-medium text-gray-900">
+                          {item.customization.size} {item.customization.material} Frame
+                          {items.length > 1 ? ` ${index + 1}` : ''}
+                        </p>
                         <p className="text-sm text-gray-600">
-                          {item.customization.size} • {item.customization.material} • {item.customization.frameColor}
+                          {item.customization.size} • {item.customization.material} • 
+                          ₹{item.price}
                         </p>
                       </div>
                     </div>
                     <p className="font-semibold text-gray-900">₹{item.price}</p>
                   </div>
                 ))}
-                
-                {/* Total */}
-                {items.length > 1 && (
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-300">
-                    <p className="font-semibold text-gray-900">Total ({items.length} items)</p>
-                    <p className="font-bold text-lg text-gray-900">₹{totalAmount}</p>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -364,6 +380,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
                         errors.firstName ? 'border-red-300' : 'border-gray-300'
                       }`}
+                      defaultValue={user?.firstName || ''}
                     />
                     {errors.firstName && (
                       <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
@@ -377,6 +394,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
                         errors.lastName ? 'border-red-300' : 'border-gray-300'
                       }`}
+                      defaultValue={user?.lastName || ''}
                     />
                     {errors.lastName && (
                       <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
@@ -387,9 +405,11 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                       type="email"
                       placeholder="Email address"
                       {...register('email')}
+                      disabled={!!user?.email}
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-white focus:border-transparent ${
                         errors.email ? 'border-red-300' : 'border-gray-300'
-                      }`}
+                      } ${user?.email ? 'bg-gray-50 text-gray-500' : ''}`}
+                      defaultValue={user?.email || ''}
                     />
                     {errors.email && (
                       <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>

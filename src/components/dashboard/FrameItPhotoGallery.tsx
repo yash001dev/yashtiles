@@ -324,7 +324,7 @@ const FrameItPhotoGallery = () => {
                 className=" text-white font-semibold px-8 py-3 rounded-xl"
                 onClick={() => {
                   if (isMounted && typeof window !== 'undefined') {
-                    window.location.href = "/contact";
+                    window.location.href = "/app";
                   }
                 }}
               >

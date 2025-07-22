@@ -39,7 +39,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     { id: "material", icon: Grid, label: "Material", color: "text-blue-600" },
     { id: "frame", icon: Frame, label: "Frame", color: "text-green-600" },
     { id: "size", icon: Maximize, label: "Size", color: "text-purple-600" },
-    { id: "effect", icon: Palette, label: "Effect", color: "text-orange-600" },
+    // { id: "effect", icon: Palette, label: "Effect", color: "text-orange-600" },
     { id: "border", icon: Square, label: "Border", color: "text-red-600" },
   ];
   if (isLargeScreen) {

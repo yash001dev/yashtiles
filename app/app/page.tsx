@@ -22,7 +22,7 @@ import {
 } from "../../src/contexts/NotificationContext";
 import { useFrameCustomizer } from "../../src/hooks/useFrameCustomizer";
 import { usePersistence } from "../../src/hooks/usePersistence";
-
+import { FrameCustomization } from "@/types";
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
@@ -173,7 +173,6 @@ function AppContent() {
     }
 
     // Add to cart functionality - no redirect, just show success message
-    console.log("Adding to cart:", { customization, uploadedImage });
     addNotification({
       type: "success",
       title: "Added to Cart",
@@ -181,7 +180,14 @@ function AppContent() {
     });
   };
 
-  const handleCheckout = () => {
+  const [cartItems, setCartItems] = React.useState<Array<{
+    customization: FrameCustomization;
+    image: string;
+  }>>([]);
+
+  const [isProcessingCheckout, setIsProcessingCheckout] = React.useState(false);
+
+  const handleCheckout = async () => {
     if (!uploadedImage) {
       addNotification({
         type: "warning",
@@ -197,7 +203,47 @@ function AppContent() {
       return;
     }
 
-    setIsCheckoutModalOpen(true);
+    try {
+      setIsProcessingCheckout(true);
+      
+      // Get the image data URL from the FramePreview component
+      const imageDataUrl = await framePreviewRef.current?.getImageDataUrl();
+      
+      if (!imageDataUrl) {
+        throw new Error("Could not generate frame preview");
+      }
+      
+      // Get price based on frame size
+      const getSizePrice = (size: string): number => {
+        const prices: Record<string, number> = {
+          '8x10': 1999,
+          '12x18': 2499,
+          '16x20': 2999,
+          '18x24': 3499,
+          '24x36': 4999,
+        };
+        return prices[size] || 0;
+      };
+
+      // Create cart items with customization, image, and price
+      const items = [{
+        customization: { ...customization },
+        image: imageDataUrl,
+        price: getSizePrice(customization.size)
+      }];
+      
+      setCartItems(items);
+      setIsCheckoutModalOpen(true);
+    } catch (error) {
+      console.error("Error preparing checkout:", error);
+      addNotification({
+        type: "error",
+        title: "Error",
+        message: "Failed to prepare checkout. Please try again.",
+      });
+    } finally {
+      setIsProcessingCheckout(false);
+    }
   };
 
   // Handle auth modal success
@@ -205,10 +251,6 @@ function AppContent() {
     if (isAuthenticated && pendingAction && !isAuthModalOpen) {
       if (pendingAction === "cart") {
         // Just add to cart, don't redirect
-        console.log("Adding to cart after authentication:", {
-          customization,
-          uploadedImage,
-        });
         addNotification({
           type: "success",
           title: "Added to Cart",
@@ -278,6 +320,7 @@ function AppContent() {
     const items = [];
 
     // Add actual frames
+    //todo : dynamic data
     frameCollection.frames.forEach((frame, index) => {
       items.push({
         id: frame.id,
@@ -383,12 +426,12 @@ function AppContent() {
           currentSize={customization.size}
           onSelect={(size) => updateCustomization({ size })}
         />
-        <EffectBottomSheet
+        {/* <EffectBottomSheet
           isOpen={activeModal === "effect"}
           onClose={closeModal}
           currentEffect={customization.effect}
           onSelect={(effect) => updateCustomization({ effect })}
-        />
+        /> */}
         <BorderBottomSheet
           isOpen={activeModal === "border"}
           onClose={closeModal}
@@ -436,6 +479,7 @@ function AppContent() {
             isOpen={isCheckoutModalOpen}
             onClose={() => setIsCheckoutModalOpen(false)}
             items={generateCheckoutItems}
+            cartItemImage={cartItems[0]?.image}
           />
         )}
       </ResponsiveLayout>

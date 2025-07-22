@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://frameit.com/admin</loc><lastmod>2025-07-12T05:33:32.551Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/admin/orders</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/payment-success</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/reset-password</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/installation</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/contact</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/verify-email</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/shipping</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/returns</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/orders</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/app</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://frameit.com/payment-failure</loc><lastmod>2025-07-12T05:33:32.552Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/orders</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/payment-failure</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/payment-success</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/admin/orders</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/app</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/reset-password</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/verify-email</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/shipping</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/installation</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/admin</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/returns</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://frameit.com/contact</loc><lastmod>2025-07-21T14:46:20.181Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>
