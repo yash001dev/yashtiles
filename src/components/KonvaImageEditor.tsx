@@ -5,6 +5,8 @@ import { Stage, Layer, Image as KonvaImage, Transformer, Group } from 'react-kon
 import { UploadedImage, ImageTransform, FrameCustomization } from '../types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { updateActiveFrame } from '@/redux/slices/frameCustomizerSlice';
+import { useNotifications } from '@/contexts/NotificationContext';
+import { MAX_FILE_SIZE } from '@/lib/api-utils';
 import Konva from 'konva';
 
 interface KonvaImageEditorProps {
@@ -33,6 +35,8 @@ const KonvaImageEditor: React.FC<KonvaImageEditorProps> = ({
   const stageRef = useRef<Konva.Stage>(null);
   const dispatch = useAppDispatch();
   const activeFrameId = useAppSelector(state => state.frameCustomizer.frameCollection.activeFrameId);
+  const { addNotification } = useNotifications();
+  const maxFileSizeMB = Math.round(MAX_FILE_SIZE / (1024 * 1024));
 
   // Load image
   useEffect(() => {
@@ -84,14 +88,36 @@ const KonvaImageEditor: React.FC<KonvaImageEditorProps> = ({
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
-      onImageReplace(file);
-      
-      setTimeout(() => {
-        dispatch(updateActiveFrame());
-      }, 100);
+    if (!file) return;
+    
+    // Check file type
+    if (!(file.type === 'image/png' || file.type === 'image/jpeg')) {
+      addNotification({
+        type: "error",
+        title: "Invalid File Type",
+        message: "Please upload a valid image file (PNG or JPEG).",
+      });
+      return;
     }
     
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      addNotification({
+        type: "error",
+        title: "File Too Large",
+        message: `The selected file exceeds the ${maxFileSizeMB}MB size limit. Please choose a smaller file.`,
+      });
+      return;
+    }
+    
+    onImageReplace(file);
+    
+    // Update the active frame in Redux to ensure changes persist
+    setTimeout(() => {
+      dispatch(updateActiveFrame());
+    }, 100);
+    
+    // Reset the input value so the same file can be selected again if needed
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }

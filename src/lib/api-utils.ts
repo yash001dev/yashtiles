@@ -174,11 +174,15 @@ export class HttpClient {
 }
 
 // Form validation utilities
+// Maximum file size for uploads (10MB in bytes)
+export const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
 export class FormValidator {
   static email(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
+
 
   static password(password: string): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];

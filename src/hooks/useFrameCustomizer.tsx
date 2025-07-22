@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import { FrameCustomization, UploadedImage, ImageTransform, FrameItem, FrameCollection } from '../types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { MAX_FILE_SIZE } from '@/lib/api-utils';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { 
   updateCustomization as updateCustomizationAction, 
   setUploadedImage, 
@@ -22,6 +24,8 @@ export const useFrameCustomizer = () => {
   const uploadedImage = useAppSelector((state) => state.frameCustomizer.uploadedImage);
   const frameImages = useAppSelector((state) => state.frameCustomizer.frameImages);
   const activeModal = useAppSelector((state) => state.frameCustomizer.activeModal);
+  const { addNotification } = useNotifications();
+  const maxFileSizeMB = Math.round(MAX_FILE_SIZE / (1024 * 1024));
 
   // Use helper functions from Redux utils
   
@@ -39,6 +43,16 @@ export const useFrameCustomizer = () => {
   };
 
   const setImage = async (file: File) => {
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      addNotification({
+        type: 'error',
+        title: 'File Too Large',
+        message: `The selected file exceeds the ${maxFileSizeMB}MB size limit. Please choose a smaller file.`,
+      });
+      return false;
+    }
+
     const base64 = await fileToBase64(file);
     dispatch(setUploadedImage({
       file,
@@ -50,22 +64,45 @@ export const useFrameCustomizer = () => {
         y: 0,
       }
     }));
+    return true;
   };
 
   const replaceImage = async (file: File) => {
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      addNotification({
+        type: 'error',
+        title: 'File Too Large',
+        message: `The selected file exceeds the ${maxFileSizeMB}MB size limit. Please choose a smaller file.`,
+      });
+      return false;
+    }
+
     const base64 = await fileToBase64(file);
     dispatch(replaceImageAction({
       file,
       url: base64
     }));
+    return true;
   };
 
   const handleImageChange = async (frameId: string, file: File) => {
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      addNotification({
+        type: 'error',
+        title: 'File Too Large',
+        message: `The selected file exceeds the ${maxFileSizeMB}MB size limit. Please choose a smaller file.`,
+      });
+      return false;
+    }
+
     const base64 = await fileToBase64(file);
     dispatch(setFrameImage({
       frameId,
       base64
     }));
+    return true;
   };
 
   const getFrameImageUrl = (frameId: string): string | null => {

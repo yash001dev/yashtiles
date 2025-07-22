@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Upload, Camera, Image } from "lucide-react";
+import { useNotifications } from "@/contexts/NotificationContext";
+import { MAX_FILE_SIZE } from "@/lib/api-utils";
 
 interface PhotoUploadProps {
   onImageSelect: (file: File) => void;
@@ -8,11 +10,41 @@ interface PhotoUploadProps {
 const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const { addNotification } = useNotifications();
+  const maxFileSizeMB = Math.round(MAX_FILE_SIZE / (1024 * 1024));
+  
+  const validateFile = (file: File): boolean => {
+    // Check file type
+    if (!(file.type === 'image/png' || file.type === 'image/jpeg')) {
+      addNotification({
+        type: "error",
+        title: "Invalid File Type",
+        message: "Please upload a valid image file (PNG or JPEG).",
+      });
+      return false;
+    }
+    
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      addNotification({
+        type: "error",
+        title: "File Too Large",
+        message: `The selected file exceeds the ${maxFileSizeMB}MB size limit. Please choose a smaller file.`,
+      });
+      return false;
+    }
+    
+    return true;
+  };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
+    if (!file) return;
+    
+    if (validateFile(file)) {
       onImageSelect(file);
+    } else if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Reset the input to allow re-selection
     }
   };
 
@@ -20,8 +52,12 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
     event.preventDefault();
     setIsDragOver(false);
     const file = event.dataTransfer.files[0];
-    if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
+    if (!file) return;
+    
+    if (validateFile(file)) {
       onImageSelect(file);
+    } else if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Reset the input to allow re-selection
     }
   };
 
