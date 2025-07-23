@@ -144,7 +144,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       dispatch({ type: 'AUTH_START' });
       const response = await authService.register({ firstName, lastName, email, password });
-      dispatch({ type: 'AUTH_SUCCESS', payload: response.user });
+      // Do NOT dispatch AUTH_SUCCESS, just finish registration
+      // Optionally, you could dispatch AUTH_LOGOUT to ensure state is clean
+      dispatch({ type: 'AUTH_LOGOUT' });
     } catch (error) {
       dispatch({ type: 'AUTH_ERROR', payload: error instanceof Error ? error.message : 'Registration failed' });
       throw error;
