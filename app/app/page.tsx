@@ -118,14 +118,6 @@ function AppContent() {
 
   const framePreviewRef = useRef<FramePreviewRef>(null);
 
-  const handleDownload = async () => {
-    if (uploadedImage && framePreviewRef.current) {
-      // Use FramePreview's download method which properly captures all materials
-      framePreviewRef.current.handleDownload();
-      closeModal();
-    }
-  };
-
   const handleBorderUpdate = (updates: {
     borderColor?: string;
     borderWidth?: number;
