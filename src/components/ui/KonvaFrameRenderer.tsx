@@ -49,6 +49,7 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
 }, ref) => {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [stageSize, setStageSize] = useState({ width, height });
+  const [isHovering, setIsHovering] = useState(false);
   const imageRef = useRef<Konva.Image>(null);
   const stageRef = useRef<Konva.Stage>(null);
   
@@ -232,7 +233,7 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
           width={stageSize.width}
           height={stageSize.height}
           className="shadow-2xl"
-          style={{ backgroundColor: 'transparent' }}
+          style={{ backgroundColor: 'transparent', cursor: isHovering ? 'pointer' : 'default' }}
         >
           <Layer>
             {/* White background for the canvas area */}
@@ -323,7 +324,9 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
 
             {/* Frame Counter */}
             {frameCount > 1 && showFrameCounter && (
-              <Group>
+              <Group
+              
+              >
                 <Rect
                   x={stageSize.width - 80}
                   y={20}
@@ -394,6 +397,8 @@ const KonvaFrameRenderer = forwardRef<KonvaFrameRendererRef, KonvaFrameRendererP
                   fill="#374151"
                   align="center"
                   verticalAlign="middle"
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
                 />
               </Group>
             )}
