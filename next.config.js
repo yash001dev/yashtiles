@@ -2,7 +2,6 @@
 const nextConfig = {
   // App directory is now stable in Next.js 14
   images: {
-    domains: ["images.unsplash.com"],
     remotePatterns: [
       {
         protocol: "https",
@@ -15,7 +14,13 @@ const nextConfig = {
         hostname: "ik.imagekit.io",
         port: "",
         pathname: "/**",
-      }
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
