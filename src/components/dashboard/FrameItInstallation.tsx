@@ -1,8 +1,8 @@
 "use client";
 
 import PlayIcon from "@/assets/PlayIcon";
+import { Image } from "@imagekit/next";
 import { CheckCircle, Clock, Shield, Wrench } from "lucide-react";
-import Image from "next/image";
 
 const installationSteps = [
   {
@@ -11,7 +11,7 @@ const installationSteps = [
     description:
       "Plan your frame arrangement by spacing out your frames on the floor, preferably leave an inch space between each frame",
     image:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop",
+      "plan-frames.png",
     icon: Wrench,
     tip: "Use painter's tape to mark positions on the wall before hanging",
   },
@@ -21,27 +21,17 @@ const installationSteps = [
     description:
       "Wipe the installation area with a dry cloth and make sure it is free of dust or dirt which might affect the adhesive strip",
     image:
-      "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&h=400&fit=crop",
+      "clean-and-prep.png",
     icon: Shield,
     tip: "Allow the wall to completely dry before applying adhesive strips",
   },
   {
     step: "03",
-    title: "Just Peel",
-    description:
-      "Slowly peel off the backing from the adhesive pad on the back of the frame",
-    image:
-      "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=600&h=400&fit=crop",
-    icon: Clock,
-    tip: "Remove backing paper gradually to avoid air bubbles",
-  },
-  {
-    step: "04",
     title: "And Stick!",
     description:
       "Press the top of the frame and firmly apply firm pressure to make sure the whole adhesive strip and the wall are evenly in contact",
     image:
-      "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=600&h=400&fit=crop",
+      "stick-frame.png",
     icon: CheckCircle,
     tip: "Hold for 30 seconds to ensure strong adhesion",
   },
@@ -104,12 +94,13 @@ const FrameItInstallation = () => {
               {installationSteps.map((step, index) => (
                 <div
                   key={index}
-                  className="group bg-white rounded-2xl p-8 hover:bg-white/50 shadow-2xl transition-all duration-300 hover:shadow-xl"
+                  className={`group bg-white rounded-2xl p-8 hover:bg-white/50 shadow-2xl transition-all duration-300 hover:shadow-xl ${index === 2 ? "md:col-span-2" : ""}`}
                 >
                   {/* Step Image */}
                   <div className="relative mb-6 overflow-hidden rounded-xl">
                     <div className="aspect-[16/10] relative">
                       <Image
+                      urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
                         src={step.image}
                         alt={step.title}
                         fill
@@ -118,7 +109,7 @@ const FrameItInstallation = () => {
                       />
 
                       {/* Step Number Overlay */}
-                      <div className="absolute top-4 left-4 bg-primary  rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg shadow-lg">
+                      <div className="absolute top-4 left-4 bg-primary text-white  rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg shadow-lg">
                         {step.step}
                       </div>
 
@@ -141,7 +132,7 @@ const FrameItInstallation = () => {
                     {/* Pro Tip */}
                     <div className="bg-gold-50 border border-gold-200 rounded-lg p-3">
                       <div className="flex items-start gap-2">
-                        <span className="text-primary font-semibold text-sm">
+                        <span className="text-primary font-semibold text-sm text-nowrap">
                           💡 Pro Tip:
                         </span>
                         <span className="text-gold-800 text-sm">

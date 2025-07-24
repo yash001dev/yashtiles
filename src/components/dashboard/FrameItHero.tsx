@@ -4,6 +4,7 @@ import ChatBubbleIcon from "@/assets/ChatBubbleIcon";
 import PhotoIcon from "@/assets/PhotoIcon";
 import WaveSeparator from "@/assets/WaveSeparator";
 import { Button } from "@/components/ui/button";
+import { Image } from "@imagekit/next";
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 
@@ -115,37 +116,30 @@ const FrameItHero = () => {
                 </div>
 
                 {/* Floating smaller frames */}
-                <div className="absolute -top-4 -left-4 bg-wood-600 p-3 rounded shadow-lg transform -rotate-12 opacity-80">
+                <div className="absolute -top-4 -left-4 bg-wood-600 p-3 rounded shadow-lg transform -rotate-12">
                   <div className="w-20 h-20 bg-cream-100 rounded flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-slate-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                  <Image
+                   urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
+                      src={`/family-img.jpg`}
+                      alt="Family Photo"
+                      width={80}
+                      height={80}
+                      className="w-20 h-20"
+                    />
                   </div>
                 </div>
 
-                <div className="absolute -bottom-2 -right-6 bg-wood-600 p-3 rounded shadow-lg transform rotate-12 opacity-80">
+                <div className="absolute -bottom-2 -right-6 bg-wood-600 p-3 rounded shadow-lg transform rotate-12">
                   <div className="w-24 h-16 bg-cream-100 rounded flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-slate-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                  <Image
+                   urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
+                      src={`/jugle-bridge.jpg`}
+                      alt="Two Friends Photo"
+                      width={80}
+                      height={80}
+
+                      className="w-[100px] h-[65px] overflow-hidden"
+                    />
                   </div>
                 </div>
               </div>

@@ -3,71 +3,75 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { Image, ImageKitProvider } from "@imagekit/next";
 
 const galleryPhotos = [
   {
     id: 1,
-    image:
-      "https://images.unsplash.com/photo-1541963463532-d68292c34d19?w=400&h=500&fit=crop&q=80",
-    frameColor: "Natural Wood",
-    alt: "Beautiful landscape in natural wood frame",
+    image: "dog.jpeg",
+    frameColor: "Pet",
+    alt: "Pet in premium frame",
   },
   {
     id: 2,
-    image:
-      "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=400&h=500&fit=crop&q=80",
-    frameColor: "Autumn Leaves",
-    alt: "Autumn leaves in warm wood frame",
+    image: "wedding-couple.jpg",
+    frameColor: "Wedding Memories",
+    alt: "Wedding Couple in premium frame",
   },
   {
     id: 3,
-    image:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=crop&q=80",
+    image: "folk-play.jpg",
     frameColor: "Portrait Frame",
     alt: "Portrait in elegant wood frame",
   },
   {
+    id: 8,
+    image: "ferrari.png",
+    frameColor: "Ferrari",
+    alt: "Ferrari in premium frame",
+  },
+  {
+    id: 9,
+    image: "bridge-india.jpg",
+    frameColor: "Bridge India",
+    alt: "Bridge India in premium frame",
+  },
+  {
+    id: 10,
+    image: "lord-ganesha.jpg",
+    frameColor: "Lord Ganesha",
+    alt: "Lord Ganesha in premium frame",
+  },
+  {
     id: 4,
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=500&fit=crop&q=80",
-    frameColor: "Mountain View",
-    alt: "Mountain landscape in premium frame",
+    image: "child-on-elephant.webp",
+    frameColor: "Child on Elephant",
+    alt: "Child on Elephant in premium frame",
   },
   {
     id: 5,
-    image:
-      "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400&h=500&fit=crop&q=80",
-    frameColor: "Pet Portrait",
-    alt: "Cute pet portrait in custom frame",
+    image: "boy-laughing.png",
+    frameColor: "Child Laughing",
+    alt: "Child Laughing in premium frame",
   },
   {
     id: 6,
-    image:
-      "https://images.unsplash.com/photo-1502780402662-acc01917174e?w=400&h=500&fit=crop&q=80",
-    frameColor: "Beach Memories",
-    alt: "Beach scene in coastal frame",
+    image: "two-friends.jpg",
+    frameColor: "Two Friends",
+    alt: "Two Friends in premium frame",
   },
   {
     id: 7,
-    image:
-      "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=500&fit=crop&q=80",
-    frameColor: "City Lights",
-    alt: "City skyline in modern frame",
-  },
-  {
-    id: 8,
-    image:
-      "https://images.unsplash.com/photo-1471879832106-c7ab9e0cee23?w=400&h=500&fit=crop&q=80",
-    frameColor: "Forest Frame",
-    alt: "Forest path in rustic frame",
+    image: "taj-mahal.jpg",
+    frameColor: "Ancient India",
+    alt: "Taj Mahal in premium frame",
   },
 ];
 
 const FrameItPhotoGallery = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [slidesToShow, setSlidesToShow] = useState(5);
+  const [slidesToShow, setSlidesToShow] = useState(6);
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -80,7 +84,6 @@ const FrameItPhotoGallery = () => {
   // Intersection Observer for performance
   useEffect(() => {
     if (!isMounted) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -90,34 +93,25 @@ const FrameItPhotoGallery = () => {
       },
       { threshold: 0.1 }
     );
-
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
     }
-
     return () => observer.disconnect();
   }, [isMounted]);
 
   // Responsive slides calculation
   useEffect(() => {
     if (!isMounted) return;
-
     const updateSlidesToShow = () => {
-      if (typeof window === 'undefined') return;
-      
+      if (typeof window === "undefined") return;
       if (window.innerWidth < 640) {
         setSlidesToShow(1);
-      } else if (window.innerWidth < 768) {
-        setSlidesToShow(2);
       } else if (window.innerWidth < 1024) {
         setSlidesToShow(3);
-      } else if (window.innerWidth < 1280) {
-        setSlidesToShow(4);
       } else {
-        setSlidesToShow(5);
+        setSlidesToShow(7);
       }
     };
-
     updateSlidesToShow();
     const handleResize = () => updateSlidesToShow();
     window.addEventListener("resize", handleResize);
@@ -127,44 +121,35 @@ const FrameItPhotoGallery = () => {
   // Auto-advance slides only when visible
   useEffect(() => {
     if (!isAutoPlaying || !isVisible || !isMounted) return;
-
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        const maxIndex = galleryPhotos.length - slidesToShow;
-        return prev >= maxIndex ? 0 : prev + 1;
-      });
+      nextSlide();
     }, 3000);
-
     return () => clearInterval(interval);
-  }, [isAutoPlaying, slidesToShow, isVisible, isMounted]);
+  }, [isAutoPlaying, isVisible, isMounted, slidesToShow, currentIndex]);
 
+  // Navigation
   const nextSlide = () => {
-    const maxIndex = galleryPhotos.length - slidesToShow;
-    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    setCurrentIndex((prev) => (prev + 1) % galleryPhotos.length);
     setIsAutoPlaying(false);
   };
-
   const prevSlide = () => {
-    const maxIndex = galleryPhotos.length - slidesToShow;
-    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+    setCurrentIndex(
+      (prev) => (prev - 1 + galleryPhotos.length) % galleryPhotos.length
+    );
     setIsAutoPlaying(false);
   };
-
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
     setIsAutoPlaying(false);
   };
 
-  const getVisiblePhotos = () => {
-    const photos = [];
-    for (let i = 0; i < slidesToShow; i++) {
-      const index = (currentIndex + i) % galleryPhotos.length;
-      photos.push(galleryPhotos[index]);
-    }
-    return photos;
-  };
+  // Dots navigation: one dot per possible window start
+  const maxDots = galleryPhotos.length;
 
-  const maxDots = Math.ceil(galleryPhotos.length - slidesToShow + 1);
+  // Calculate width and transform for sliding effect
+  const slideWidth = 100 / slidesToShow;
+  const trackWidth = (galleryPhotos.length * 100) / slidesToShow;
+  const translateX = -(currentIndex * slideWidth);
 
   // Don't render until mounted to prevent hydration mismatch
   if (!isMounted) {
@@ -211,40 +196,45 @@ const FrameItPhotoGallery = () => {
               <div
                 className="flex transition-transform duration-700 ease-in-out gap-6"
                 style={{
-                  transform: `translateX(-${currentIndex * (100 / slidesToShow) + currentIndex * (1 / slidesToShow)}%)`,
-                  width: `${(galleryPhotos.length / slidesToShow) * 100}%`,
+                  transform: `translateX(${translateX}%)`,
+                  width: `${trackWidth}%`,
                 }}
               >
                 {galleryPhotos.map((photo, index) => (
                   <div
                     key={photo.id}
                     className="flex-shrink-0 group cursor-pointer"
-                    style={{ width: `${100 / galleryPhotos.length}%` }}
+                    style={{ width: `${slideWidth}%` }}
                     onMouseEnter={() => setIsAutoPlaying(false)}
                     onMouseLeave={() => setIsAutoPlaying(true)}
                   >
                     {/* Frame Container */}
                     <div className="relative">
                       {/* Main Frame */}
-                      <div className="bg-wood-500 p-4 rounded-xl shadow-lg group-hover:shadow-2xl transition-all duration-500 transform group-hover:scale-105">
-                        <div className="bg-cream-50 p-3 rounded-lg">
+                      <div
+                        style={{
+                          borderColor: "black",
+                        }}
+                        className="border-solid border-[15px] p-4 rounded-xl shadow-lg group-hover:shadow-2xl transition-all duration-300 transform group-hover:scale-105"
+                      >
+                        <div  className="bg-cream-50 p-1 rounded-lg">
                           <div className="relative aspect-[4/5] overflow-hidden rounded">
-                            <Image
-                              src={photo.image}
-                              alt={photo.alt}
-                              fill
-                              className="object-cover transition-transform duration-700 group-hover:scale-110"
-                              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
-                              priority={index < 3} // Priority load first 3 images
-                              loading={index < 3 ? "eager" : "lazy"}
-                              quality={80}
-                            />
-
+                            <ImageKitProvider
+                              urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
+                            >
+                              <Image
+                                src={photo.image}
+                                alt={photo.alt}
+                                fill
+                                className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+                                quality={80}
+                              />
+                            </ImageKitProvider>
                             {/* Hover Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                             {/* Frame Label */}
-                            <div className="absolute bottom-2 left-2 right-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                            <div className="absolute bottom-2 left-2 right-2 transform translate-y-full group-hover:translate-y-0 transition-transform duration-200">
                               <div className="bg-white/90 backdrop-blur-sm rounded px-2 py-1">
                                 <p className="text-xs font-medium text-charcoal-900 text-center">
                                   {photo.frameColor}
@@ -253,11 +243,9 @@ const FrameItPhotoGallery = () => {
                             </div>
                           </div>
                         </div>
-
                         {/* Frame Shadow Effect */}
                         <div className="absolute inset-0 bg-gradient-to-br from-wood-300/20 to-wood-700/20 rounded-xl pointer-events-none" />
                       </div>
-
                       {/* Floating Elements for some frames */}
                       {index % 3 === 0 && (
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-gold-500 rounded-full opacity-80 animate-pulse" />
@@ -270,7 +258,6 @@ const FrameItPhotoGallery = () => {
                 ))}
               </div>
             </div>
-
             {/* Navigation Arrows */}
             <Button
               variant="outline"
@@ -281,7 +268,6 @@ const FrameItPhotoGallery = () => {
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
-
             <Button
               variant="outline"
               size="icon"
@@ -292,7 +278,6 @@ const FrameItPhotoGallery = () => {
               <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
-
           {/* Dots Navigation */}
           <div className="flex justify-center mt-8 space-x-2">
             {[...Array(maxDots)].map((_, index) => (
@@ -308,7 +293,6 @@ const FrameItPhotoGallery = () => {
               />
             ))}
           </div>
-
           {/* Call to Action */}
           <div className="text-center mt-16">
             <div className="shadow-custom-lg  rounded-2xl p-8 border border-green-500/20 max-w-2xl mx-auto">
@@ -323,7 +307,7 @@ const FrameItPhotoGallery = () => {
               <Button
                 className=" text-white font-semibold px-8 py-3 rounded-xl"
                 onClick={() => {
-                  if (isMounted && typeof window !== 'undefined') {
+                  if (isMounted && typeof window !== "undefined") {
                     window.location.href = "/contact";
                   }
                 }}

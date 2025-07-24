@@ -3,60 +3,60 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import TestimonialBadgeIcon from "@/assets/TestimonialBadgeIcon";
+import { Image } from "@imagekit/next";
 
 const testimonials = [
   {
     id: 1,
-    name: "Sarah Johnson",
-    location: "New York, NY",
+    name: "Keera Patel",
+    location: "Bhavnagar, Gujarat",
     rating: 5,
     text: "Absolutely stunning quality! The frame perfectly complements our living room, and the photo looks like a piece of art. The whole process was seamless from upload to delivery.",
     image:
-      "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face&q=80",
-    photoType: "Family Portrait",
+      "woman-windy-day.jpg",
+    photoType: "Travel Portrait",
   },
   {
     id: 2,
-    name: "Michael Chen",
-    location: "San Francisco, CA",
+    name: "Kishan Patel",
+    location: "Ahmedabad, Gujarat",
     rating: 5,
     text: "I was skeptical about ordering frames online, but FrameIt exceeded all expectations. The craftsmanship is incredible, and my travel photos have never looked better.",
     image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face&q=80",
+      "trip-rainforest.jpg",
     photoType: "Travel Photos",
   },
-  {
-    id: 3,
-    name: "Emily Rodriguez",
-    location: "Chicago, IL",
-    rating: 5,
-    text: "The customer service was outstanding! They helped me choose the perfect frame for my wedding photos. Now our hallway looks like a professional gallery.",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face&q=80",
-    photoType: "Wedding Photos",
-  },
-  {
-    id: 4,
-    name: "David Thompson",
-    location: "Austin, TX",
-    rating: 5,
-    text: "Fast shipping, perfect packaging, and the frame quality is top-notch. I've already ordered three more frames for different rooms. Highly recommend!",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&q=80",
-    photoType: "Art Prints",
-  },
-  {
-    id: 5,
-    name: "Lisa Park",
-    location: "Seattle, WA",
-    rating: 5,
-    text: "The preview feature is amazing - I could see exactly how my photo would look before ordering. The final product was even better than expected!",
-    image:
-      "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=100&h=100&fit=crop&crop=face&q=80",
-    photoType: "Pet Photos",
-  },
+  // {
+  //   id: 3,
+  //   name: "Emily Rodriguez",
+  //   location: "Chicago, IL",
+  //   rating: 5,
+  //   text: "The customer service was outstanding! They helped me choose the perfect frame for my wedding photos. Now our hallway looks like a professional gallery.",
+  //   image:
+  //     "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face&q=80",
+  //   photoType: "Wedding Photos",
+  // },
+  // {
+  //   id: 4,
+  //   name: "David Thompson",
+  //   location: "Austin, TX",
+  //   rating: 5,
+  //   text: "Fast shipping, perfect packaging, and the frame quality is top-notch. I've already ordered three more frames for different rooms. Highly recommend!",
+  //   image:
+  //     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&q=80",
+  //   photoType: "Art Prints",
+  // },
+  // {
+  //   id: 5,
+  //   name: "Lisa Park",
+  //   location: "Seattle, WA",
+  //   rating: 5,
+  //   text: "The preview feature is amazing - I could see exactly how my photo would look before ordering. The final product was even better than expected!",
+  //   image:
+  //     "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=100&h=100&fit=crop&crop=face&q=80",
+  //   photoType: "Pet Photos",
+  // },
 ];
 
 const FrameItTestimonialsSlider = () => {
@@ -170,13 +170,14 @@ const FrameItTestimonialsSlider = () => {
                       <div className="max-w-4xl mx-auto">
                         <div className="grid md:grid-cols-3 gap-8 items-center">
                           {/* Quote and Rating */}
-                          <div className="md:col-span-2">
+                          <div className="md:col-span-3">
                             <div className="flex items-center gap-1 mb-4 border-0">
                               {[...Array(testimonial.rating)].map((_, i) => (
                                 <Star
                                   key={i}
-                                  className="w-5 h-5 fill-pink-300  border-0"
+                                  className="w-5 h-5 fill-pink-300 border-0"
                                   aria-hidden="true"
+                                  stroke="pink"
                                 />
                               ))}
                             </div>
@@ -190,6 +191,7 @@ const FrameItTestimonialsSlider = () => {
                             <div className="flex items-center gap-4">
                               <div className="relative w-12 h-12 rounded-full overflow-hidden">
                                 <Image
+                                  urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
                                   src={testimonial.image}
                                   alt={testimonial.name}
                                   fill
@@ -211,16 +213,16 @@ const FrameItTestimonialsSlider = () => {
                           </div>
 
                           {/* Photo Type Badge */}
-                          <div className="md:col-span-1 flex justify-center">
-                            <div className="bg-wood-500 rounded-2xl p-6 text-center">
-                              <div className="w-16 h-16 mx-auto mb-4 bg-white/20 rounded-full flex items-center justify-center">
-                               <TestimonialBadgeIcon/>  
+                          {/* <div className="md:col-span-1 flex justify-center">
+                            <div className="bg-wood-500 rounded-2xl p-6 pb-0 text-center">
+                              <div className="w-20 h-20 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center b">
+                               <TestimonialBadgeIcon img={testimonial.image} />  
                               </div>
                               <p className="font-semibold">
                                 {testimonial.photoType}
                               </p>
                             </div>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>
