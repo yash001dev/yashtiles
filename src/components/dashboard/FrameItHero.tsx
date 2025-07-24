@@ -1,21 +1,13 @@
 "use client";
 
-import ChatBubbleIcon from "@/assets/ChatBubbleIcon";
 import PhotoIcon from "@/assets/PhotoIcon";
 import WaveSeparator from "@/assets/WaveSeparator";
 import { Button } from "@/components/ui/button";
 import { Image } from "@imagekit/next";
-import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 
-// Lazy load the chat component since it's not critical for initial render
-const FrameItChat = dynamic(() => import("./FrameItChat"), {
-  ssr: false,
-  loading: () => null
-});
 
 const FrameItHero = () => {
-  const [showChat, setShowChat] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // Prevent hydration mismatch by ensuring component is mounted
@@ -147,18 +139,7 @@ const FrameItHero = () => {
           </div>
         </div>
         
-        {/* Chat button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setShowChat(true)}
-          className="relative flex ml-auto right-3 bottom-0"
-        >
-        <ChatBubbleIcon/>
-          <span className="sr-only">Open chat</span>
-          {/* Chat notification dot */}
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse" />
-        </Button>
+        
       </div>
 
       {/* Bottom wave separator */}
@@ -166,7 +147,6 @@ const FrameItHero = () => {
        <WaveSeparator/>
       </div>
       
-      {showChat && <FrameItChat onClose={() => setShowChat(false)} />}
     </section>
   );
 };
