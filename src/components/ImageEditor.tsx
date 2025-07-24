@@ -3,7 +3,7 @@ import { X, RotateCw, ZoomIn, ZoomOut, Move, Download, RefreshCw } from 'lucide-
 import { UploadedImage, ImageTransform, FrameCustomization } from '../types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { updateActiveFrame } from '@/redux/slices/frameCustomizerSlice';
-import FrameRenderer from './ui/FrameRenderer';
+import KonvaFrameRenderer from './ui/KonvaFrameRenderer';
 
 interface ImageEditorProps {
   isOpen: boolean;
@@ -20,7 +20,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   onClose,
   image,
   customization,
-  onTransformUpdate,
+  onTransformUpdate,   
   onDownload,
   onImageReplace,
 }) => {
@@ -29,15 +29,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
   const activeFrameId = useAppSelector(state => state.frameCustomizer.frameCollection.activeFrameId);
+  const konvaRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
 
   // Ensure frame updates are saved when the editor closes
   useEffect(() => {
-    // Update the frame immediately when opened to ensure consistency
     if (isOpen && activeFrameId) {
       dispatch(updateActiveFrame());
     }
-    
-    // Update when closing/unmounting
     return () => {
       if (activeFrameId) {
         dispatch(updateActiveFrame());
@@ -51,40 +49,49 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     const file = event.target.files?.[0];
     if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
       onImageReplace(file);
-      
-      // Update the active frame in Redux to ensure changes persist
       setTimeout(() => {
         dispatch(updateActiveFrame());
       }, 100);
     }
-    
-    // Reset the input value so the same file can be selected again if needed
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleDownload = () => {
+    const dataUrl = konvaRef.current?.getCanvasDataURL();
+    if (dataUrl) {
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'edited-image.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  // Konva-based drag logic
+  const handleKonvaMouseDown = (e: any) => {
     setIsDragging(true);
+    const pos = e.target.getStage().getPointerPosition();
     setDragStart({
-      x: e.clientX - image.transform.x,
-      y: e.clientY - image.transform.y,
+      x: pos.x - image.transform.x,
+      y: pos.y - image.transform.y,
     });
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleKonvaMouseMove = (e: any) => {
     if (isDragging) {
+      const pos = e.target.getStage().getPointerPosition();
       onTransformUpdate({
-        x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y,
+        x: pos.x - dragStart.x,
+        y: pos.y - dragStart.y,
       });
     }
   };
 
-  const handleMouseUp = () => {
+  const handleKonvaMouseUp = () => {
     setIsDragging(false);
-    
-    // Update active frame in Redux when done dragging
     if (activeFrameId) {
       dispatch(updateActiveFrame());
     }
@@ -93,8 +100,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const handleScaleChange = (delta: number) => {
     const newScale = Math.max(0.5, Math.min(3, image.transform.scale + delta));
     onTransformUpdate({ scale: newScale });
-    
-    // Update Redux when scale changes
     if (activeFrameId) {
       dispatch(updateActiveFrame());
     }
@@ -102,8 +107,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   const handleRotate = () => {
     onTransformUpdate({ rotation: (image.transform.rotation + 90) % 360 });
-    
-    // Update Redux when rotation changes
     if (activeFrameId) {
       dispatch(updateActiveFrame());
     }
@@ -116,14 +119,10 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       x: 0,
       y: 0,
     });
-    
-    // Update Redux when transform is reset
     if (activeFrameId) {
       dispatch(updateActiveFrame());
     }
   };
-
-
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-2 sm:p-4">
@@ -131,9 +130,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Edit Photo</h2>
           <div className="flex items-center space-x-1 sm:space-x-2">
-        
             <button
-              onClick={onDownload}
+              onClick={handleDownload}
               className="bg-pink-500 hover:bg-pink-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm mr-10"
             >
               <Download size={16} className="sm:w-[18px] sm:h-[18px] " />
@@ -162,14 +160,15 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
               {/* Preview Area */}
               <div className="flex-1 flex items-center justify-center lg:justify-start">
                 <div className="relative shadow-2xl w-full max-w-sm lg:max-w-md xl:max-w-lg">
-                  <FrameRenderer
+                  <KonvaFrameRenderer
+                    ref={konvaRef}
                     customization={customization}
                     uploadedImage={image}
                     isEditable={true}
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseUp}
+                    onMouseDown={handleKonvaMouseDown}
+                    onMouseMove={handleKonvaMouseMove}
+                    onMouseUp={handleKonvaMouseUp}
+                    onMouseLeave={handleKonvaMouseUp}
                     showFrameCounter={false}
                     showEditOverlay={false}
                     addClassicPadding={true}
@@ -184,7 +183,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     <Move size={18} className="mr-2" />
                     Position & Scale
                   </h3>
-                  
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -205,7 +203,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                           value={image.transform.scale}
                           onChange={(e) => {
                             onTransformUpdate({ scale: parseFloat(e.target.value) });
-                            // Delay updating Redux to avoid too many updates during sliding
                             if (activeFrameId) {
                               dispatch(updateActiveFrame());
                             }
@@ -220,7 +217,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                         </button>
                       </div>
                     </div>
-
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Rotation: {image.transform.rotation}°
@@ -235,49 +231,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                         </button>
                       </div>
                     </div>
-
-                    {/* <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Position
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-xs text-gray-500 mb-1">X: {Math.round(image.transform.x)}</label>
-                          <input
-                            type="range"
-                            min="-200"
-                            max="200"
-                            value={image.transform.x}
-                            onChange={(e) => {
-                              onTransformUpdate({ x: parseInt(e.target.value) });
-                              // Delay updating Redux to avoid too many updates during sliding
-                              if (activeFrameId) {
-                                dispatch(updateActiveFrame());
-                              }
-                            }}
-                            className="w-full"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs text-gray-500 mb-1">Y: {Math.round(image.transform.y)}</label>
-                          <input
-                            type="range"
-                            min="-200"
-                            max="200"
-                            value={image.transform.y}
-                            onChange={(e) => {
-                              onTransformUpdate({ y: parseInt(e.target.value) });
-                              // Delay updating Redux to avoid too many updates during sliding
-                              if (activeFrameId) {
-                                dispatch(updateActiveFrame());
-                              }
-                            }}
-                            className="w-full"
-                          />
-                        </div>
-                      </div>
-                    </div> */}
-
                     <button
                       onClick={handleReset}
                       className="w-full p-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
@@ -286,7 +239,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     </button>
                   </div>
                 </div>
-
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h3 className="font-semibold text-gray-900 mb-2">Quick Actions</h3>
                   <div className="space-y-2">
@@ -299,7 +251,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     </button>
                   </div>
                 </div>
-
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h3 className="font-semibold text-gray-900 mb-2">Tips</h3>
                   <ul className="text-sm text-gray-600 space-y-1">
