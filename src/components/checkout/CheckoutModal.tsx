@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { X, CreditCard, MapPin, Package } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -187,8 +189,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       
       // Append other form data as JSON strings
       formData.append('order', JSON.stringify(order));
-      formData.append('surl', `${window.location.origin}/api/payu/success`);
-      formData.append('furl', `${window.location.origin}/api/payu/failure`);
+      formData.append('surl', typeof window !== 'undefined' ? `${window.location.origin}/api/payu/success` : '');
+      formData.append('furl', typeof window !== 'undefined' ? `${window.location.origin}/api/payu/failure` : '');
       formData.append('userId', user?.id || '');
       formData.append('key', key || '');
       formData.append('txnid', txnid);
@@ -211,34 +213,36 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       
       const data = await res.json();
       if (data && data.action && data.params) {
-        // Submit to PayU payment gateway using form submission
-        const paymentForm = document.createElement('form');
-        paymentForm.action = data.action;
-        paymentForm.method = 'POST';
-        paymentForm.style.display = 'none';
-        
-        // Add all parameters as hidden inputs
-        Object.entries(data.params).forEach(([key, value]) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = String(value);
-          paymentForm.appendChild(input);
-        });
-        
-        // Add udf1-udf5 if not present
-        ['udf1','udf2','udf3','udf4','udf5'].forEach((udf) => {
-          if (!data.params[udf]) {
+        if (typeof document !== 'undefined') {
+          // Submit to PayU payment gateway using form submission
+          const paymentForm = document.createElement('form');
+          paymentForm.action = data.action;
+          paymentForm.method = 'POST';
+          paymentForm.style.display = 'none';
+          
+          // Add all parameters as hidden inputs
+          Object.entries(data.params).forEach(([key, value]) => {
             const input = document.createElement('input');
             input.type = 'hidden';
-            input.name = udf;
-            input.value = '';
+            input.name = key;
+            input.value = String(value);
             paymentForm.appendChild(input);
-          }
-        });
-        
-        document.body.appendChild(paymentForm);
-        paymentForm.submit();
+          });
+          
+          // Add udf1-udf5 if not present
+          ['udf1','udf2','udf3','udf4','udf5'].forEach((udf) => {
+            if (!data.params[udf]) {
+              const input = document.createElement('input');
+              input.type = 'hidden';
+              input.name = udf;
+              input.value = '';
+              paymentForm.appendChild(input);
+            }
+          });
+          
+          document.body.appendChild(paymentForm);
+          paymentForm.submit();
+        }
       }
     };
   

@@ -68,7 +68,7 @@ const FrameItHero = () => {
                   size="lg"
                   className="border-2 border-pink-800 text-black hover:bg-pink-800 hover:text-cream-50 font-semibold px-8 py-6 text-lg rounded-xl transition-all duration-300"
                   onClick={() => {
-                    if (isMounted && typeof window !== 'undefined') {
+                    if (isMounted && typeof window !== 'undefined' && typeof document !== 'undefined') {
                       const element = document.querySelector("#showcase");
                       element?.scrollIntoView({ behavior: "smooth" });
                     }
@@ -120,11 +120,11 @@ const FrameItHero = () => {
                   <div className="w-20 h-20 bg-cream-100 rounded flex items-center justify-center">
                   <Image
                    urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
-                      src={`/family-img.jpg`}
+                      src={`/happy-family.jpg`}
                       alt="Family Photo"
                       width={80}
                       height={80}
-                      className="w-20 h-20"
+                      className="w-20 h-20 object-cover"
                     />
                   </div>
                 </div>
@@ -133,7 +133,7 @@ const FrameItHero = () => {
                   <div className="w-24 h-16 bg-cream-100 rounded flex items-center justify-center">
                   <Image
                    urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
-                      src={`/jugle-bridge.jpg`}
+                      src={`/mountains.jpg`}
                       alt="Two Friends Photo"
                       width={80}
                       height={80}

@@ -1,6 +1,6 @@
 // Temporary DOM element for decoding HTML entities and parsing HTML content.
 // This element is reused across calls for better performance.
-const tempDiv = document.createElement('div');
+const tempDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
 
 /**
  * Decodes HTML entities, strips unwanted HTML tags, and allows certain tags from the given input.
@@ -25,6 +25,7 @@ const stripAndDecodeHtml = (
   }
 
   // Use the pre-created temporary DOM element for performance
+  if (!tempDiv) return input as string;
   tempDiv.innerHTML = input as string;
 
   if (strict) {

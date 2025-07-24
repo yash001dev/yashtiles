@@ -23,6 +23,7 @@ const MaterialModal: React.FC<MaterialModalProps> = ({
       name: 'Classic Frame',
       image: 'https://images.pexels.com/photos/1090638/pexels-photo-1090638.jpeg?auto=compress&cs=tinysrgb&w=300',
       description: 'Traditional frame with mounting',
+
     },
     {
       id: 'frameless',

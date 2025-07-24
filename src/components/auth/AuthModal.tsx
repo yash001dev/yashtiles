@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { X, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';

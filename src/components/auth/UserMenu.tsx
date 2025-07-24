@@ -33,7 +33,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuthModal }) => {
 
   const handleNavigation = (path: string) => {
     setIsOpen(false);
-    window.location.href = path;
+    if (typeof window !== 'undefined') {
+      window.location.href = path;
+    }
   };
 
   const isAdmin = user?.role === 'admin';

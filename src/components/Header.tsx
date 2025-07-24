@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from "react";
 import { Frame, ShoppingCart } from "lucide-react";
 import UserMenu from "./auth/UserMenu";
