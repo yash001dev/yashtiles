@@ -20,6 +20,7 @@ interface KonvaFrameRendererProps {
   addClassicPadding?: boolean;
   width?: number;
   height?: number;
+  downloadOnlyImage?: boolean; // NEW PROP
 }
 
 // Helper for aspect ratio
@@ -111,6 +112,7 @@ const KonvaFrameRenderer = forwardRef<
   addClassicPadding = false,
   width = 400,
   height,
+  downloadOnlyImage = false, // NEW PROP
 }, ref) => {
   // Calculate aspect ratio and canvas size
   const aspect = getAspectRatio(customization.size);
@@ -192,144 +194,164 @@ const KonvaFrameRenderer = forwardRef<
   }));
 
   return (
-    <div className={className} style={{ width: canvasWidth, height: canvasHeight }}>
+    <div className={className} style={{ width: canvasWidth, height: canvasHeight, display: downloadOnlyImage ? 'none' : undefined }}>
       <Stage ref={stageRef} width={canvasWidth} height={canvasHeight} style={{ borderRadius: 6, background: 'transparent' }}>
         <Layer>
-          {/* Frame */}
-          <Rect
-            x={0}
-            y={0}
-            width={canvasWidth}
-            height={canvasHeight}
-            fill={frameColor}
-            stroke={frameBorderColor}
-            strokeWidth={frameBorder}
-            cornerRadius={6}
-            {...shadow}
-          />
-          {/* Matting/inner border */}
-          <Rect
-            x={frameBorder}
-            y={frameBorder}
-            width={canvasWidth - 2 * frameBorder}
-            height={canvasHeight - 2 * frameBorder}
-            fill={'#fff'}
-            cornerRadius={4}
-            shadowColor={'#000'}
-            shadowBlur={2}
-            shadowOpacity={0.08}
-          />
-          {/* Image group (for transform) */}
-          <Group
-            x={frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
-            y={frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
-            width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-            height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-            clipFunc={ctx => {
-              ctx.beginPath();
-              ctx.rect(0, 0, canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)), canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)));
-              ctx.closePath();
-            }}
-            draggable={isEditable}
-            onClick={uploadedImage && onImageClick ? onImageClick : undefined}
-            onMouseDown={handleGroupMouseDown}
-            onMouseMove={handleGroupMouseMove}
-            onMouseUp={handleGroupMouseUp}
-            onMouseLeave={handleGroupMouseLeave}
-            onMouseEnter={() => setHovered(true)}
-            onMouseOut={() => setHovered(false)}
-          >
-            {/* Image */}
-            {image && (
+          {/* Only render the image if downloadOnlyImage is true */}
+          {downloadOnlyImage ? (
+            image && (
               <KonvaImage
                 image={image}
-                width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                width={canvasWidth}
+                height={canvasHeight}
                 x={transform.x}
                 y={transform.y}
                 scaleX={transform.scale}
                 scaleY={transform.scale}
                 rotation={transform.rotation}
                 filters={[]}
-                // CSS filter fallback for effects (Konva doesn't support all CSS filters)
-                // You can use custom shaders for advanced effects if needed
-                // For now, we use grayscale/contrast via CSS for preview
                 style={{ filter: getEffectFilter(customization.effect) }}
-                listening={isEditable}
+                listening={false}
                 perfectDrawEnabled={false}
                 draggable={false}
               />
-            )}
-            {/* Custom Border */}
-            {showCustomBorder && (
+            )
+          ) : (
+            <>
+              {/* Frame */}
               <Rect
-                x={-customization.borderWidth!}
-                y={-customization.borderWidth!}
-                width={canvasWidth - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
-                height={canvasHeight - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
-                stroke={customization.borderColor}
-                strokeWidth={customization.borderWidth}
-                fillEnabled={false}
-                listening={false}
+                x={0}
+                y={0}
+                width={canvasWidth}
+                height={canvasHeight}
+                fill={frameColor}
+                stroke={frameBorderColor}
+                strokeWidth={frameBorder}
+                cornerRadius={6}
+                {...shadow}
               />
-            )}
-            {/* Edit overlay */}
-            {uploadedImage && showEditOverlay && onImageClick && hovered && !isEditable && (
-              <Group>
-                <Rect
-                  x={0}
-                  y={0}
-                  width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                  height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                  fill={'rgba(0,0,0,0.2)'}
-                />
-                <Group
-                  x={(canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 60}
-                  y={(canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 20}
-                >
+              {/* Matting/inner border */}
+              <Rect
+                x={frameBorder}
+                y={frameBorder}
+                width={canvasWidth - 2 * frameBorder}
+                height={canvasHeight - 2 * frameBorder}
+                fill={'#fff'}
+                cornerRadius={4}
+                shadowColor={'#000'}
+                shadowBlur={2}
+                shadowOpacity={0.08}
+              />
+              {/* Image group (for transform) */}
+              <Group
+                x={frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
+                y={frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
+                width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                clipFunc={ctx => {
+                  ctx.beginPath();
+                  ctx.rect(0, 0, canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)), canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)));
+                  ctx.closePath();
+                }}
+                draggable={isEditable}
+                onClick={uploadedImage && onImageClick ? onImageClick : undefined}
+                onMouseDown={handleGroupMouseDown}
+                onMouseMove={handleGroupMouseMove}
+                onMouseUp={handleGroupMouseUp}
+                onMouseLeave={handleGroupMouseLeave}
+                onMouseEnter={() => setHovered(true)}
+                onMouseOut={() => setHovered(false)}
+              >
+                {/* Image */}
+                {image && (
+                  <KonvaImage
+                    image={image}
+                    width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                    height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                    x={transform.x}
+                    y={transform.y}
+                    scaleX={transform.scale}
+                    scaleY={transform.scale}
+                    rotation={transform.rotation}
+                    filters={[]}
+                    style={{ filter: getEffectFilter(customization.effect) }}
+                    listening={isEditable}
+                    perfectDrawEnabled={false}
+                    draggable={false}
+                  />
+                )}
+                {/* Custom Border */}
+                {showCustomBorder && (
                   <Rect
-                    width={120}
-                    height={40}
-                    fill={'rgba(255,255,255,0.95)'}
-                    cornerRadius={20}
+                    x={-customization.borderWidth!}
+                    y={-customization.borderWidth!}
+                    width={canvasWidth - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
+                    height={canvasHeight - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
+                    stroke={customization.borderColor}
+                    strokeWidth={customization.borderWidth}
+                    fillEnabled={false}
+                    listening={false}
+                  />
+                )}
+                {/* Edit overlay */}
+                {uploadedImage && showEditOverlay && onImageClick && hovered && !isEditable && (
+                  <Group>
+                    <Rect
+                      x={0}
+                      y={0}
+                      width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                      height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                      fill={'rgba(0,0,0,0.2)'}
+                    />
+                    <Group
+                      x={(canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 60}
+                      y={(canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 20}
+                    >
+                      <Rect
+                        width={120}
+                        height={40}
+                        fill={'rgba(255,255,255,0.95)'}
+                        cornerRadius={20}
+                      />
+                      <Text
+                        text={'Click to edit'}
+                        fontSize={16}
+                        fill={'#333'}
+                        align={'center'}
+                        width={120}
+                        height={40}
+                        verticalAlign={'middle'}
+                        y={10}
+                      />
+                    </Group>
+                  </Group>
+                )}
+              </Group>
+              {/* Frame counter */}
+              {frameCount > 1 && showFrameCounter && (
+                <Group x={canvasWidth - 90} y={20}>
+                  <Rect
+                    width={70}
+                    height={28}
+                    fill={'rgba(255,255,255,0.9)'}
+                    cornerRadius={14}
+                    shadowColor={'#000'}
+                    shadowBlur={4}
+                    shadowOpacity={0.12}
                   />
                   <Text
-                    text={'Click to edit'}
-                    fontSize={16}
+                    text={`${currentFrameIndex + 1} of ${frameCount}`}
+                    fontSize={14}
                     fill={'#333'}
                     align={'center'}
-                    width={120}
-                    height={40}
+                    width={70}
+                    height={28}
                     verticalAlign={'middle'}
-                    y={10}
+                    y={6}
                   />
                 </Group>
-              </Group>
-            )}
-          </Group>
-          {/* Frame counter */}
-          {frameCount > 1 && showFrameCounter && (
-            <Group x={canvasWidth - 90} y={20}>
-              <Rect
-                width={70}
-                height={28}
-                fill={'rgba(255,255,255,0.9)'}
-                cornerRadius={14}
-                shadowColor={'#000'}
-                shadowBlur={4}
-                shadowOpacity={0.12}
-              />
-              <Text
-                text={`${currentFrameIndex + 1} of ${frameCount}`}
-                fontSize={14}
-                fill={'#333'}
-                align={'center'}
-                width={70}
-                height={28}
-                verticalAlign={'middle'}
-                y={6}
-              />
-            </Group>
+              )}
+            </>
           )}
         </Layer>
       </Stage>

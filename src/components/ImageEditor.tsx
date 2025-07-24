@@ -30,6 +30,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const dispatch = useAppDispatch();
   const activeFrameId = useAppSelector(state => state.frameCustomizer.frameCollection.activeFrameId);
   const konvaRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
+  const downloadImageRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
 
   // Ensure frame updates are saved when the editor closes
   useEffect(() => {
@@ -59,11 +60,12 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   };
 
   const handleDownload = () => {
-    const dataUrl = konvaRef.current?.getCanvasDataURL();
+    // Use the hidden KonvaFrameRenderer for print-ready image
+    const dataUrl = downloadImageRef.current?.getCanvasDataURL();
     if (dataUrl) {
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = 'edited-image.png';
+      link.download = 'print-ready-image.png';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -126,6 +128,17 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-2 sm:p-4">
+      {/* Hidden print-ready renderer for download */}
+      <div style={{ position: 'absolute', left: -9999, top: -9999 }}>
+        <KonvaFrameRenderer
+          ref={downloadImageRef}
+          customization={customization}
+          uploadedImage={image}
+          isEditable={false}
+          downloadOnlyImage={true}
+          width={800}
+        />
+      </div>
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Edit Photo</h2>
