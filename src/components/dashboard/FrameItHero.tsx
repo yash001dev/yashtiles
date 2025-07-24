@@ -57,7 +57,7 @@ const FrameItHero = () => {
                   className="text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => {
                     if (isMounted && typeof window !== 'undefined') {
-                      window.location.href = "/app";
+                      window.location.href = "/frame";
                     }
                   }}
                 >

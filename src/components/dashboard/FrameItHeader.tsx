@@ -39,7 +39,7 @@ function FrameItHeader({hideMenu=false}) {
             FAQ
           </a>
         
-          <Link href="/app">
+          <Link href="/frame">
             <Button>Start Framing</Button>
           </Link>
         </div>}

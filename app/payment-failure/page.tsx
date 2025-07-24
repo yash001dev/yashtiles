@@ -83,7 +83,7 @@ import ErrorCrossIcon from '@/assets/ErrorCrossIcon';
 
         <div className="space-y-3">
           <Link 
-            href="/app" 
+            href="/frame" 
             className="block w-full bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition font-medium"
           >
             Try Again

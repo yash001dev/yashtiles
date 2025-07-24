@@ -9,7 +9,7 @@ const galleryPhotos = [
   {
     id: 1,
     image: "dog.jpeg",
-    frameColor: "Pet",
+    frameColor: "Cute Pets",
     alt: "Pet in premium frame",
   },
   {
@@ -21,13 +21,13 @@ const galleryPhotos = [
   {
     id: 3,
     image: "folk-play.jpg",
-    frameColor: "Portrait Frame",
-    alt: "Portrait in elegant wood frame",
+    frameColor: "Folk Play",
+    alt: "Portrait in folk play in premium frame",
   },
   {
     id: 8,
     image: "ferrari.png",
-    frameColor: "Ferrari",
+    frameColor: "Modern Cars",
     alt: "Ferrari in premium frame",
   },
   {
@@ -39,25 +39,25 @@ const galleryPhotos = [
   {
     id: 10,
     image: "lord-ganesha.jpg",
-    frameColor: "Lord Ganesha",
+    frameColor: "Lord Portraits",
     alt: "Lord Ganesha in premium frame",
   },
   {
     id: 4,
     image: "child-on-elephant.webp",
-    frameColor: "Child on Elephant",
+    frameColor: "Travel Memories",
     alt: "Child on Elephant in premium frame",
   },
   {
     id: 5,
     image: "boy-laughing.png",
-    frameColor: "Child Laughing",
+    frameColor: "Loving ones Laugh",
     alt: "Child Laughing in premium frame",
   },
   {
     id: 6,
     image: "two-friends.jpg",
-    frameColor: "Two Friends",
+    frameColor: "Friendship Moments",
     alt: "Two Friends in premium frame",
   },
   {
