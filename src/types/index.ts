@@ -38,7 +38,7 @@ export interface FrameCollection {
 export interface MaterialOption {
   link: string | undefined;
   content: string;
-  id: "classic" | "frameless" | "canvas";
+  id: "classic" | "frameless" | "canvas" | "3d";
   name: string;
   image: string;
   description: string;

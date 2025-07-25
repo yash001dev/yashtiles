@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
-import { Stage, Layer, Rect, Image as KonvaImage, Group, Text } from 'react-konva';
+import { Stage, Layer, Rect, Image as KonvaImage, Group, Text, Line } from 'react-konva';
 import useImage from 'use-image';
 import { FrameCustomization, UploadedImage } from '../../types';
 
@@ -250,7 +250,7 @@ const KonvaFrameRenderer = forwardRef<
             <>
               {/* Frame */}
               {customization.material === 'classic' ? (
-                // Draw four separate borders for classic frame
+                // Draw 3D beveled classic frame using polygons
                 <>
                   {/* Main background */}
                   <Rect
@@ -262,40 +262,74 @@ const KonvaFrameRenderer = forwardRef<
                     cornerRadius={6}
                     {...shadow}
                   />
-                  {/* Top border */}
-                  <Rect
-                    x={0}
-                    y={0}
-                    width={canvasWidth}
-                    height={frameBorder}
-                    fill={classicTopBottom}
+                  {/* Top bevel (trapezoid) */}
+                  <Line
+                    points={[
+                      0, 0,
+                      canvasWidth, 0,
+                      canvasWidth - frameBorder, frameBorder,
+                      frameBorder, frameBorder
+                    ]}
+                    closed
+                    fill={'#444'} // slightly lighter than left/right
                     listening={false}
                   />
-                  {/* Bottom border */}
-                  <Rect
-                    x={0}
-                    y={canvasHeight - frameBorder}
-                    width={canvasWidth}
-                    height={frameBorder}
-                    fill={classicTopBottom}
+                  {/* Left bevel (trapezoid) */}
+                  <Line
+                    points={[
+                      0, 0,
+                      frameBorder, frameBorder,
+                      frameBorder, canvasHeight - frameBorder,
+                      0, canvasHeight
+                    ]}
+                    closed
+                    fill={'#111'} // darkest for left
                     listening={false}
                   />
-                  {/* Left border */}
-                  <Rect
-                    x={0}
-                    y={0}
-                    width={frameBorder}
-                    height={canvasHeight}
-                    fill={classicLeftRight}
+                  {/* Right bevel (trapezoid) */}
+                  <Line
+                    points={[
+                      canvasWidth, 0,
+                      canvasWidth, canvasHeight,
+                      canvasWidth - frameBorder, canvasHeight - frameBorder,
+                      canvasWidth - frameBorder, frameBorder
+                    ]}
+                    closed
+                    fill={'#222'} // mid-tone for right
                     listening={false}
                   />
-                  {/* Right border */}
-                  <Rect
-                    x={canvasWidth - frameBorder}
-                    y={0}
-                    width={frameBorder}
-                    height={canvasHeight}
-                    fill={classicLeftRight}
+                  {/* Bottom bevel (trapezoid) */}
+                  <Line
+                    points={[
+                      frameBorder, canvasHeight - frameBorder,
+                      canvasWidth - frameBorder, canvasHeight - frameBorder,
+                      canvasWidth, canvasHeight,
+                      0, canvasHeight
+                    ]}
+                    closed
+                    fill={'#222'} // similar to right bevel
+                    listening={false}
+                  />
+                  {/* Bottom left triangle */}
+                  <Line
+                    points={[
+                      0, canvasHeight,
+                      frameBorder, canvasHeight - frameBorder,
+                      0, canvasHeight - frameBorder
+                    ]}
+                    closed
+                    fill={'#000'}
+                    listening={false}
+                  />
+                  {/* Bottom right triangle */}
+                  <Line
+                    points={[
+                      canvasWidth, canvasHeight,
+                      canvasWidth, canvasHeight - frameBorder,
+                      canvasWidth - frameBorder, canvasHeight - frameBorder
+                    ]}
+                    closed
+                    fill={'#000'}
                     listening={false}
                   />
                 </>
