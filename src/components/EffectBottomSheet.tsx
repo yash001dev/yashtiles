@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react";
 import { ResponsiveBottomSheet } from "./ResponsiveBottomSheet";
 import { EffectOption, FrameCustomization } from "../types";

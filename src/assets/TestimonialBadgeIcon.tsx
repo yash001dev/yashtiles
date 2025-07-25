@@ -1,7 +1,13 @@
 import React from "react";
-const TestimonialBadgeIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg {...props} className={`w-8 h-8 ${props.className ?? ""}`} fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-    {/* Insert the path(s) from your testimonial badge SVG here */}
-  </svg>
+import { Image } from "@imagekit/next";
+const TestimonialBadgeIcon = ({img}: {img: string}) => (
+  <Image
+  urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
+  src={img}
+  alt="Testimonial Badge"
+  width={100}
+  height={100}
+  className="w-30 h-30"
+/>  
 );
 export default TestimonialBadgeIcon;

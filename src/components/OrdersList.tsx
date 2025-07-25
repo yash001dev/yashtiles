@@ -50,7 +50,7 @@ export function OrdersList({ onViewOrderDetails, className = '' }: OrdersListPro
         <p className="text-gray-600 text-center mb-4 max-w-md">
           You haven't placed any orders yet. Start shopping to see your orders here.
         </p>
-        <Button onClick={() => window.location.href = '/'}>
+        <Button onClick={() => { if (typeof window !== 'undefined') window.location.href = '/'; }}>
           Start Shopping
         </Button>
       </div>

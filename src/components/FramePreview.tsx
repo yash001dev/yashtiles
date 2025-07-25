@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { FrameCustomization, UploadedImage } from '../types';
 import FrameRenderer from './ui/FrameRenderer';

@@ -178,21 +178,22 @@ function AppContent() {
   }, [isAuthenticated, pendingAction, isAuthModalOpen]);
 
   // Keyboard shortcuts
-  React.useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      // Ctrl/Cmd + D to duplicate frame (add new frame)
-      if (
-        (event.ctrlKey || event.metaKey) &&
-        event.key === "d" &&
-        uploadedImage
-      ) {
-        event.preventDefault();
-        handleAddFrame();
-      }
-    };
-    document.addEventListener("keydown", handleKeyPress);
-    return () => document.removeEventListener("keydown", handleKeyPress);
-  }, [uploadedImage, handleAddFrame]);
+  // React.useEffect(() => {
+  //   if(!document) return;
+  //   const handleKeyPress = (event: KeyboardEvent) => {
+  //     // Ctrl/Cmd + D to duplicate frame (add new frame)
+  //     if (
+  //       (event.ctrlKey || event.metaKey) &&
+  //       event.key === "d" &&
+  //       uploadedImage
+  //     ) {
+  //       event.preventDefault();
+  //       handleAddFrame();
+  //     }
+  //   };
+  //   document.addEventListener("keydown", handleKeyPress);
+  //   return () => document.removeEventListener("keydown", handleKeyPress);
+  // }, [uploadedImage, handleAddFrame]);
 
   const [showTutorial, setShowTutorial] = React.useState(false);
 
@@ -201,7 +202,7 @@ function AppContent() {
     if (
       uploadedImage &&
       frameCollection.frames.length === 1 &&
-      !localStorage.getItem("tutorialSeen")
+      typeof window !== "undefined" && !localStorage.getItem("tutorialSeen")
     ) {
       setShowTutorial(true);
     }
@@ -209,7 +210,9 @@ function AppContent() {
 
   const handleCloseTutorial = () => {
     setShowTutorial(false);
-    localStorage.setItem("tutorialSeen", "true");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("tutorialSeen", "true");
+    }
   };
 
   // Calculate cart total including temporary frame

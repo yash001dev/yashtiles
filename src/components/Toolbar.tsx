@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Grid, Frame, Maximize, Square, Plus, Sparkles, Palette } from 'lucide-react';
 import { useMediaQuery } from '@/hooks/useMediaQuery';

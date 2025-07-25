@@ -4,6 +4,7 @@ export const downloadFramedImage = async (
   image: UploadedImage,
   customization: FrameCustomization
 ) => {
+  if (typeof document === 'undefined') return;
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   

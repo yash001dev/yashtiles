@@ -20,13 +20,19 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = 'hidden';
+      }
     } else {
-      document.body.style.overflow = 'unset';
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = 'unset';
+      }
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = 'unset';
+      }
     };
   }, [isOpen]);
 

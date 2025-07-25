@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Info } from 'lucide-react';
 import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
@@ -95,8 +97,8 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
               </button> */}
               <TooltipCard
                 // title={material.name}
-                content={material.content}
-                link={material.link}
+                content={material?.content ?? ""}
+                link={material?.link ?? ""}
                 pageName="Material"
                 className="z-[9999] w-full"
                 iconClassName="text-pink-600"

@@ -251,21 +251,37 @@ const KonvaFrameRenderer = forwardRef<
           {/* Only render the image if downloadOnlyImage is true */}
           {downloadOnlyImage ? (
             image && (
-              <KonvaImage
-                image={image}
-                width={canvasWidth}
-                height={canvasHeight}
-                x={transform.x}
-                y={transform.y}
-                scaleX={transform.scale}
-                scaleY={transform.scale}
-                rotation={transform.rotation}
-                filters={[]}
-                style={{ filter: getEffectFilter(customization.effect) }}
-                listening={false}
-                perfectDrawEnabled={false}
-                draggable={false}
-              />
+              <>
+                <KonvaImage
+                  image={image}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  x={transform.x}
+                  y={transform.y}
+                  scaleX={transform.scale}
+                  scaleY={transform.scale}
+                  rotation={transform.rotation}
+                  filters={[]}
+                  style={{ filter: getEffectFilter(customization.effect) }}
+                  listening={false}
+                  perfectDrawEnabled={false}
+                  draggable={false}
+                />
+                {/* Custom Border for download image (if present) */}
+                {showCustomBorder && (
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={canvasWidth}
+                    height={canvasHeight}
+                    stroke={customization.borderColor}
+                    strokeWidth={customization.borderWidth}
+                    fillEnabled={false}
+                    listening={false}
+                    cornerRadius={6}
+                  />
+                )}
+              </>
             )
           ) : (
             <>

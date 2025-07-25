@@ -131,6 +131,9 @@ module.exports = {
       boxShadow: {
         'custom-lg': '0px 10px 60px rgba(0, 0, 0, 0.07)',
       },
+      borderColor: {
+        'frame-border': '#BBBAB4 #C7C7BF #E5E4DF #C7C7BF',
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

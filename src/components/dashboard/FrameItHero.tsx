@@ -1,20 +1,13 @@
 "use client";
 
-import ChatBubbleIcon from "@/assets/ChatBubbleIcon";
 import PhotoIcon from "@/assets/PhotoIcon";
 import WaveSeparator from "@/assets/WaveSeparator";
 import { Button } from "@/components/ui/button";
-import dynamic from 'next/dynamic';
+import { Image } from "@imagekit/next";
 import { useState, useEffect } from 'react';
 
-// Lazy load the chat component since it's not critical for initial render
-const FrameItChat = dynamic(() => import("./FrameItChat"), {
-  ssr: false,
-  loading: () => null
-});
 
 const FrameItHero = () => {
-  const [showChat, setShowChat] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   // Prevent hydration mismatch by ensuring component is mounted
@@ -56,7 +49,7 @@ const FrameItHero = () => {
                   className="text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => {
                     if (isMounted && typeof window !== 'undefined') {
-                      window.location.href = "/app";
+                      window.location.href = "/frame";
                     }
                   }}
                 >
@@ -67,7 +60,7 @@ const FrameItHero = () => {
                   size="lg"
                   className="border-2 border-pink-800 text-black hover:bg-pink-800 hover:text-cream-50 font-semibold px-8 py-6 text-lg rounded-xl transition-all duration-300"
                   onClick={() => {
-                    if (isMounted && typeof window !== 'undefined') {
+                    if (isMounted && typeof window !== 'undefined' && typeof document !== 'undefined') {
                       const element = document.querySelector("#showcase");
                       element?.scrollIntoView({ behavior: "smooth" });
                     }
@@ -115,37 +108,30 @@ const FrameItHero = () => {
                 </div>
 
                 {/* Floating smaller frames */}
-                <div className="absolute -top-4 -left-4 bg-wood-600 p-3 rounded shadow-lg transform -rotate-12 opacity-80">
+                <div className="absolute -top-4 -left-4 bg-wood-600 p-3 rounded shadow-lg transform -rotate-12">
                   <div className="w-20 h-20 bg-cream-100 rounded flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-slate-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                  <Image
+                   urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
+                      src={`/happy-family.jpg`}
+                      alt="Family Photo"
+                      width={80}
+                      height={80}
+                      className="w-20 h-20 object-cover"
+                    />
                   </div>
                 </div>
 
-                <div className="absolute -bottom-2 -right-6 bg-wood-600 p-3 rounded shadow-lg transform rotate-12 opacity-80">
+                <div className="absolute -bottom-2 -right-6 bg-wood-600 p-3 rounded shadow-lg transform rotate-12">
                   <div className="w-24 h-16 bg-cream-100 rounded flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-slate-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                  <Image
+                   urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
+                      src={`/mountains.jpg`}
+                      alt="Two Friends Photo"
+                      width={80}
+                      height={80}
+
+                      className="w-[100px] h-[65px] overflow-hidden"
+                    />
                   </div>
                 </div>
               </div>
@@ -153,18 +139,7 @@ const FrameItHero = () => {
           </div>
         </div>
         
-        {/* Chat button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setShowChat(true)}
-          className="relative flex ml-auto right-3 bottom-0"
-        >
-        <ChatBubbleIcon/>
-          <span className="sr-only">Open chat</span>
-          {/* Chat notification dot */}
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse" />
-        </Button>
+        
       </div>
 
       {/* Bottom wave separator */}
@@ -172,7 +147,6 @@ const FrameItHero = () => {
        <WaveSeparator/>
       </div>
       
-      {showChat && <FrameItChat onClose={() => setShowChat(false)} />}
     </section>
   );
 };
