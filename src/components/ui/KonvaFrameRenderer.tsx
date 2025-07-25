@@ -252,6 +252,15 @@ const KonvaFrameRenderer = forwardRef<
           {downloadOnlyImage ? (
             image && (
               <>
+                {/* Custom border background for download image */}
+                <Rect
+                  x={0}
+                  y={0}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  fill={customization.borderColor ?? '#fff'}
+                  cornerRadius={6}
+                />
                 <KonvaImage
                   image={image}
                   width={canvasWidth}
@@ -267,20 +276,6 @@ const KonvaFrameRenderer = forwardRef<
                   perfectDrawEnabled={false}
                   draggable={false}
                 />
-                {/* Custom Border for download image (if present) */}
-                {showCustomBorder && (
-                  <Rect
-                    x={0}
-                    y={0}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                    stroke={customization.borderColor}
-                    strokeWidth={customization.borderWidth}
-                    fillEnabled={false}
-                    listening={false}
-                    cornerRadius={6}
-                  />
-                )}
               </>
             )
           ) : (
@@ -295,7 +290,7 @@ const KonvaFrameRenderer = forwardRef<
                     y={0}
                     width={canvasWidth}
                     height={canvasHeight}
-                    fill={'#fff'}
+                    fill={customization.borderColor??'#fff'}
                     cornerRadius={6}
                     {...shadow}
                   />
@@ -440,7 +435,7 @@ const KonvaFrameRenderer = forwardRef<
                   />
                 )}
                 {/* Custom Border (now inside image group, overlays image) */}
-                {showCustomBorder && (
+                {/* {showCustomBorder && (
                   <Rect
                     x={0}
                     y={0}
@@ -452,7 +447,7 @@ const KonvaFrameRenderer = forwardRef<
                     listening={false}
                     cornerRadius={6}
                   />
-                )}
+                )} */}
                 {/* Edit overlay */}
                 {uploadedImage && showEditOverlay && onImageClick && hovered && !isEditable && (
                   <Group>
