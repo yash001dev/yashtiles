@@ -61,11 +61,44 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   const handleDownload = () => {
     // Use the hidden KonvaFrameRenderer for print-ready image
-    const dataUrl = downloadImageRef.current?.getCanvasDataURL();
+    let dataUrl = undefined;
+    if (downloadImageRef.current) {
+      // Try to get JPEG data URL
+      const stage = downloadImageRef.current;
+      // getCanvasDataURL may not accept mime type, so fallback to canvas API if needed
+      const canvasDataUrl = (stage.getCanvasDataURL as any)?.('image/jpeg', 0.92);
+      if (canvasDataUrl && canvasDataUrl.startsWith('data:image/jpeg')) {
+        dataUrl = canvasDataUrl;
+      } else {
+        // fallback: get PNG and convert to JPEG
+        const pngUrl = stage.getCanvasDataURL();
+        if (pngUrl) {
+          const img = new window.Image();
+          img.onload = function () {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(img, 0, 0);
+              const jpegUrl = canvas.toDataURL('image/jpeg', 0.92);
+              const link = document.createElement('a');
+              link.href = jpegUrl;
+              link.download = 'print-ready-image.jpg';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }
+          };
+          img.src = pngUrl;
+          return;
+        }
+      }
+    }
     if (dataUrl) {
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = 'print-ready-image.png';
+      link.download = 'print-ready-image.jpg';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -185,6 +218,12 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     showFrameCounter={false}
                     showEditOverlay={false}
                     addClassicPadding={true}
+                    onImageDrag={({ x, y }) => {
+                      onTransformUpdate({ x, y });
+                      if (activeFrameId) {
+                        dispatch(updateActiveFrame());
+                      }
+                    }}
                   />
                 </div>
               </div>

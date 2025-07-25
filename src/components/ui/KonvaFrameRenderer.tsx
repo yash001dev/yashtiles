@@ -20,7 +20,8 @@ interface KonvaFrameRendererProps {
   addClassicPadding?: boolean;
   width?: number;
   height?: number;
-  downloadOnlyImage?: boolean; // NEW PROP
+  downloadOnlyImage?: boolean;
+  onImageDrag?: (pos: { x: number; y: number }) => void;
 }
 
 // Helper for aspect ratio
@@ -113,6 +114,7 @@ const KonvaFrameRenderer = forwardRef<
   width = 400,
   height,
   downloadOnlyImage = false, // NEW PROP
+  onImageDrag,
 }, ref) => {
   // Calculate aspect ratio and canvas size
   const aspect = getAspectRatio(customization.size);
@@ -130,6 +132,9 @@ const KonvaFrameRenderer = forwardRef<
   let frameColor = getFrameColor(customization.frameColor);
   let frameBorderColor = getFrameBorderColor(customization.frameColor);
   let shadow = {};
+  // Classic frame border colors
+  const classicTopBottom = '#333';
+  const classicLeftRight = '#000';
   if (customization.material === 'classic') {
     frameBorder = 15;
     shadow = {
@@ -157,7 +162,8 @@ const KonvaFrameRenderer = forwardRef<
   }
 
   // Matting/inner border
-  const matting = 10;
+  // const matting = 10; // REMOVE for classic
+  const matting = customization.material === 'classic' ? 0 : 10;
 
   // Image transform
   const transform = uploadedImage?.transform || { scale: 1, rotation: 0, x: 0, y: 0 };
@@ -177,6 +183,30 @@ const KonvaFrameRenderer = forwardRef<
   };
   const handleGroupMouseLeave = (e: any) => {
     if (isEditable && onMouseLeave) onMouseLeave();
+  };
+
+  // Drag logic for image
+  const [dragging, setDragging] = useState(false);
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+
+  const handleImageDragStart = (e: any) => {
+    if (!isEditable) return;
+    setDragging(true);
+    setDragStart({
+      x: e.target.x() - (uploadedImage?.transform.x || 0),
+      y: e.target.y() - (uploadedImage?.transform.y || 0),
+    });
+  };
+  const handleImageDragMove = (e: any) => {
+    if (!isEditable || !dragging || !onImageDrag) return;
+    const newX = e.target.x();
+    const newY = e.target.y();
+    onImageDrag({ x: newX, y: newY });
+  };
+  const handleImageDragEnd = (e: any) => {
+    setDragging(false);
+    setDragStart(null);
+    if (isEditable && onMouseUp) onMouseUp();
   };
 
   // Overlay for edit
@@ -219,29 +249,98 @@ const KonvaFrameRenderer = forwardRef<
           ) : (
             <>
               {/* Frame */}
-              <Rect
-                x={0}
-                y={0}
-                width={canvasWidth}
-                height={canvasHeight}
-                fill={frameColor}
-                stroke={frameBorderColor}
-                strokeWidth={frameBorder}
-                cornerRadius={6}
-                {...shadow}
-              />
-              {/* Matting/inner border */}
-              <Rect
-                x={frameBorder}
-                y={frameBorder}
-                width={canvasWidth - 2 * frameBorder}
-                height={canvasHeight - 2 * frameBorder}
-                fill={'#fff'}
-                cornerRadius={4}
-                shadowColor={'#000'}
-                shadowBlur={2}
-                shadowOpacity={0.08}
-              />
+              {customization.material === 'classic' ? (
+                // Draw four separate borders for classic frame
+                <>
+                  {/* Main background */}
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={canvasWidth}
+                    height={canvasHeight}
+                    fill={'#fff'}
+                    cornerRadius={6}
+                    {...shadow}
+                  />
+                  {/* Top border */}
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={canvasWidth}
+                    height={frameBorder}
+                    fill={classicTopBottom}
+                    listening={false}
+                  />
+                  {/* Bottom border */}
+                  <Rect
+                    x={0}
+                    y={canvasHeight - frameBorder}
+                    width={canvasWidth}
+                    height={frameBorder}
+                    fill={classicTopBottom}
+                    listening={false}
+                  />
+                  {/* Left border */}
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={frameBorder}
+                    height={canvasHeight}
+                    fill={classicLeftRight}
+                    listening={false}
+                  />
+                  {/* Right border */}
+                  <Rect
+                    x={canvasWidth - frameBorder}
+                    y={0}
+                    width={frameBorder}
+                    height={canvasHeight}
+                    fill={classicLeftRight}
+                    listening={false}
+                  />
+                </>
+              ) : (
+                // Other frame types
+                <Rect
+                  x={0}
+                  y={0}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  fill={frameColor}
+                  stroke={frameBorderColor}
+                  strokeWidth={frameBorder}
+                  cornerRadius={6}
+                  {...shadow}
+                />
+              )}
+              {/* Matting/inner border - only for non-classic */}
+              {customization.material !== 'classic' && (
+                <Rect
+                  x={frameBorder}
+                  y={frameBorder}
+                  width={canvasWidth - 2 * frameBorder}
+                  height={canvasHeight - 2 * frameBorder}
+                  fill={'#fff'}
+                  cornerRadius={4}
+                  shadowColor={'#000'}
+                  shadowBlur={2}
+                  shadowOpacity={0.08}
+                />
+              )}
+              {/* Custom Border (moved outside image group) */}
+              {showCustomBorder && (
+                <Rect
+                  x={frameBorder + matting - customization.borderWidth!}
+                  y={frameBorder + matting - customization.borderWidth!}
+                  width={canvasWidth - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
+                  height={canvasHeight - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
+                  stroke={customization.borderColor}
+                  strokeWidth={customization.borderWidth}
+                  fillEnabled={false}
+                  listening={false}
+                  cornerRadius={6}
+                />
+              )}
               {/* Image group (for transform) */}
               <Group
                 x={frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
@@ -277,20 +376,10 @@ const KonvaFrameRenderer = forwardRef<
                     style={{ filter: getEffectFilter(customization.effect) }}
                     listening={isEditable}
                     perfectDrawEnabled={false}
-                    draggable={false}
-                  />
-                )}
-                {/* Custom Border */}
-                {showCustomBorder && (
-                  <Rect
-                    x={-customization.borderWidth!}
-                    y={-customization.borderWidth!}
-                    width={canvasWidth - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
-                    height={canvasHeight - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
-                    stroke={customization.borderColor}
-                    strokeWidth={customization.borderWidth}
-                    fillEnabled={false}
-                    listening={false}
+                    draggable={isEditable}
+                    onDragStart={handleImageDragStart}
+                    onDragMove={handleImageDragMove}
+                    onDragEnd={handleImageDragEnd}
                   />
                 )}
                 {/* Edit overlay */}
