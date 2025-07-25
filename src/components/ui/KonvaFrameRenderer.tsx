@@ -361,20 +361,6 @@ const KonvaFrameRenderer = forwardRef<
                   shadowOpacity={0.08}
                 />
               )}
-              {/* Custom Border (moved outside image group) */}
-              {showCustomBorder && (
-                <Rect
-                  x={frameBorder + matting - customization.borderWidth!}
-                  y={frameBorder + matting - customization.borderWidth!}
-                  width={canvasWidth - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
-                  height={canvasHeight - 2 * (frameBorder + matting) + 2 * customization.borderWidth!}
-                  stroke={customization.borderColor}
-                  strokeWidth={customization.borderWidth}
-                  fillEnabled={false}
-                  listening={false}
-                  cornerRadius={6}
-                />
-              )}
               {/* Image group (for transform) */}
               <Group
                 x={frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
@@ -414,6 +400,20 @@ const KonvaFrameRenderer = forwardRef<
                     onDragStart={handleImageDragStart}
                     onDragMove={handleImageDragMove}
                     onDragEnd={handleImageDragEnd}
+                  />
+                )}
+                {/* Custom Border (now inside image group, overlays image) */}
+                {showCustomBorder && (
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                    height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                    stroke={customization.borderColor}
+                    strokeWidth={customization.borderWidth}
+                    fillEnabled={false}
+                    listening={false}
+                    cornerRadius={6}
                   />
                 )}
                 {/* Edit overlay */}
