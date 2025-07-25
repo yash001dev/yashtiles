@@ -295,7 +295,7 @@ const KonvaFrameRenderer = forwardRef<
                       canvasWidth - frameBorder, frameBorder
                     ]}
                     closed
-                    fill={'#222'} // mid-tone for right
+                    fill={'#111'} // mid-tone for right
                     listening={false}
                   />
                   {/* Bottom bevel (trapezoid) */}
@@ -318,7 +318,7 @@ const KonvaFrameRenderer = forwardRef<
                       0, canvasHeight - frameBorder
                     ]}
                     closed
-                    fill={'#000'}
+                    fill={'#111'}
                     listening={false}
                   />
                   {/* Bottom right triangle */}
@@ -329,7 +329,7 @@ const KonvaFrameRenderer = forwardRef<
                       canvasWidth - frameBorder, canvasHeight - frameBorder
                     ]}
                     closed
-                    fill={'#000'}
+                    fill={'#111'}
                     listening={false}
                   />
                 </>
