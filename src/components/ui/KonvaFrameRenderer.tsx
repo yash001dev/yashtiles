@@ -93,6 +93,22 @@ const getEffectFilter = (effect: string) => {
   }
 };
 
+// Utility to lighten or darken a hex color
+function shadeColor(hex: string, percent: number): string {
+  // Remove # if present
+  hex = hex.replace(/^#/, '');
+  // Parse r, g, b
+  let r = parseInt(hex.substring(0,2),16);
+  let g = parseInt(hex.substring(2,4),16);
+  let b = parseInt(hex.substring(4,6),16);
+  // Adjust each channel
+  r = Math.min(255, Math.max(0, Math.round(r + (percent/100)*255)));
+  g = Math.min(255, Math.max(0, Math.round(g + (percent/100)*255)));
+  b = Math.min(255, Math.max(0, Math.round(b + (percent/100)*255)));
+  // Return as hex
+  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+}
+
 const KonvaFrameRenderer = forwardRef<
   { getCanvasDataURL: () => string | undefined },
   KonvaFrameRendererProps
@@ -131,6 +147,11 @@ const KonvaFrameRenderer = forwardRef<
   let frameBorder = 0;
   let frameColor = getFrameColor(customization.frameColor);
   let frameBorderColor = getFrameBorderColor(customization.frameColor);
+  // Compute bevel colors based on frameBorderColor
+  const bevelTop = shadeColor(frameBorderColor, 30);    // lighter
+  const bevelLeft = shadeColor(frameBorderColor, -30);   // darker
+  const bevelRight = shadeColor(frameBorderColor, -15);  // slightly dark
+  const bevelBottom = shadeColor(frameBorderColor, 30); // darkest
   let shadow = {};
   // Classic frame border colors
   const classicTopBottom = '#333';
@@ -271,7 +292,7 @@ const KonvaFrameRenderer = forwardRef<
                       frameBorder, frameBorder
                     ]}
                     closed
-                    fill={'#444'} // slightly lighter than left/right
+                    fill={bevelTop}
                     listening={false}
                   />
                   {/* Left bevel (trapezoid) */}
@@ -283,7 +304,7 @@ const KonvaFrameRenderer = forwardRef<
                       0, canvasHeight
                     ]}
                     closed
-                    fill={'#111'} // darkest for left
+                    fill={bevelLeft}
                     listening={false}
                   />
                   {/* Right bevel (trapezoid) */}
@@ -295,7 +316,7 @@ const KonvaFrameRenderer = forwardRef<
                       canvasWidth - frameBorder, frameBorder
                     ]}
                     closed
-                    fill={'#111'} // mid-tone for right
+                    fill={bevelRight}
                     listening={false}
                   />
                   {/* Bottom bevel (trapezoid) */}
@@ -307,7 +328,7 @@ const KonvaFrameRenderer = forwardRef<
                       0, canvasHeight
                     ]}
                     closed
-                    fill={'#222'} // similar to right bevel
+                    fill={bevelBottom}
                     listening={false}
                   />
                   {/* Bottom left triangle */}
@@ -318,7 +339,7 @@ const KonvaFrameRenderer = forwardRef<
                       0, canvasHeight - frameBorder
                     ]}
                     closed
-                    fill={'#111'}
+                    fill={bevelLeft}
                     listening={false}
                   />
                   {/* Bottom right triangle */}
@@ -329,7 +350,7 @@ const KonvaFrameRenderer = forwardRef<
                       canvasWidth - frameBorder, canvasHeight - frameBorder
                     ]}
                     closed
-                    fill={'#111'}
+                    fill={bevelRight}
                     listening={false}
                   />
                 </>
