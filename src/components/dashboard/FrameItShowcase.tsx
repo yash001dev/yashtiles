@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { Image } from "@imagekit/next";
 
 const showcaseItems = [
   {
@@ -11,7 +11,7 @@ const showcaseItems = [
     title: "Living Room Layout",
     description: "Modern family portrait in elegant wooden frame",
     image:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop",
+      "living-room-frame.png",
     frameColor: "Natural Oak",
   },
   {
@@ -19,7 +19,7 @@ const showcaseItems = [
     title: "Minimal Frame",
     description: "Clean lines for contemporary spaces",
     image:
-      "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=600&h=400&fit=crop",
+      "minimal-frame.png",
     frameColor: "White Ash",
   },
   {
@@ -27,7 +27,7 @@ const showcaseItems = [
     title: "Vintage Frame Set",
     description: "Classic collection with warm wood tones",
     image:
-      "https://images.unsplash.com/photo-1582037928769-181f2644ecb7?w=600&h=400&fit=crop",
+      "vintage-frame.png",
     frameColor: "Walnut",
   },
   {
@@ -35,7 +35,7 @@ const showcaseItems = [
     title: "Gallery Wall",
     description: "Mixed sizes creating stunning focal point",
     image:
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop",
+      "gallery-wall-frame.png",
     frameColor: "Black Oak",
   },
   {
@@ -94,7 +94,7 @@ const FrameItShowcase = () => {
                 {getVisibleItems().map((item, index) => (
                   <div
                     key={item.id}
-                    className={`relative flex-shrink-0 w-full md:w-1/3 group cursor-pointer ${
+                    className={`relative flex-shrink-0 w-full md:w-1/3 group  ${
                       index === 1
                         ? "md:scale-105 z-10"
                         : "md:scale-95 opacity-75"
@@ -106,6 +106,7 @@ const FrameItShowcase = () => {
                       <div className="shadow-lg p-3 rounded-lg">
                         <div className="relative aspect-[4/3] overflow-hidden rounded">
                           <Image
+                            urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                             src={item.image}
                             alt={item.title}
                             fill

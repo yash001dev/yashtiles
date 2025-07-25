@@ -4,155 +4,22 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Image, ImageKitProvider } from "@imagekit/next";
-
-const galleryPhotos = [
-  {
-    id: 1,
-    image: "dog.jpeg",
-    frameColor: "Cute Pets",
-    alt: "Pet in premium frame",
-  },
-  {
-    id: 2,
-    image: "wedding-couple.jpg",
-    frameColor: "Wedding Memories",
-    alt: "Wedding Couple in premium frame",
-  },
-  {
-    id: 3,
-    image: "folk-play.jpg",
-    frameColor: "Folk Play",
-    alt: "Portrait in folk play in premium frame",
-  },
-  {
-    id: 8,
-    image: "ferrari.png",
-    frameColor: "Modern Cars",
-    alt: "Ferrari in premium frame",
-  },
-  {
-    id: 9,
-    image: "bridge-india.jpg",
-    frameColor: "Bridge India",
-    alt: "Bridge India in premium frame",
-  },
-  {
-    id: 10,
-    image: "lord-ganesha.jpg",
-    frameColor: "Lord Portraits",
-    alt: "Lord Ganesha in premium frame",
-  },
-  {
-    id: 4,
-    image: "child-on-elephant.webp",
-    frameColor: "Travel Memories",
-    alt: "Child on Elephant in premium frame",
-  },
-  {
-    id: 5,
-    image: "boy-laughing.png",
-    frameColor: "Loving ones Laugh",
-    alt: "Child Laughing in premium frame",
-  },
-  {
-    id: 6,
-    image: "two-friends.jpg",
-    frameColor: "Friendship Moments",
-    alt: "Two Friends in premium frame",
-  },
-  {
-    id: 7,
-    image: "taj-mahal.jpg",
-    frameColor: "Ancient India",
-    alt: "Taj Mahal in premium frame",
-  },
-];
+import ReusableSwiper, { SwiperSlide } from "@/components/ui/ReusableSwiper";
+import { galleryPhotos } from "@/components/common/GalleryPhotos";
 
 const FrameItPhotoGallery = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [slidesToShow, setSlidesToShow] = useState(6);
-  const [isVisible, setIsVisible] = useState(false);
+  // Responsive slides calculation using Swiper's breakpoints
+  // No need for manual state/effects for carousel logic
   const [isMounted, setIsMounted] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  // Prevent hydration mismatch by ensuring component is mounted
+  const prevRef = useRef<HTMLButtonElement | null>(null);
+  const nextRef = useRef<HTMLButtonElement | null>(null);
+  const swiperRef = useRef<any>(null);
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Intersection Observer for performance
-  useEffect(() => {
-    if (!isMounted) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.1 }
-    );
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-    return () => observer.disconnect();
-  }, [isMounted]);
-
-  // Responsive slides calculation
-  useEffect(() => {
-    if (!isMounted) return;
-    const updateSlidesToShow = () => {
-      if (typeof window === "undefined") return;
-      if (window.innerWidth < 640) {
-        setSlidesToShow(1);
-      } else if (window.innerWidth < 1024) {
-        setSlidesToShow(3);
-      } else {
-        setSlidesToShow(7);
-      }
-    };
-    updateSlidesToShow();
-    const handleResize = () => updateSlidesToShow();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isMounted]);
-
-  // Auto-advance slides only when visible
-  useEffect(() => {
-    if (!isAutoPlaying || !isVisible || !isMounted) return;
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, isVisible, isMounted, slidesToShow, currentIndex]);
-
-  // Navigation
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % galleryPhotos.length);
-    setIsAutoPlaying(false);
-  };
-  const prevSlide = () => {
-    setCurrentIndex(
-      (prev) => (prev - 1 + galleryPhotos.length) % galleryPhotos.length
-    );
-    setIsAutoPlaying(false);
-  };
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-    setIsAutoPlaying(false);
-  };
-
-  // Dots navigation: one dot per possible window start
-  const maxDots = galleryPhotos.length;
-
-  // Calculate width and transform for sliding effect
-  const slideWidth = 100 / slidesToShow;
-  const trackWidth = (galleryPhotos.length * 100) / slidesToShow;
-  const translateX = -(currentIndex * slideWidth);
-
-  // Don't render until mounted to prevent hydration mismatch
   if (!isMounted) {
+    // Skeleton loader to prevent hydration mismatch
     return (
       <section className="py-20 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
@@ -175,7 +42,7 @@ const FrameItPhotoGallery = () => {
   }
 
   return (
-    <section ref={sectionRef} className="py-20 bg-white overflow-hidden">
+    <section className="py-20 bg-white overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -190,43 +57,70 @@ const FrameItPhotoGallery = () => {
             </p>
           </div>
 
-          {/* Photo Gallery Slider */}
+          {/* Photo Gallery Swiper Carousel */}
           <div className="relative">
-            <div className="rounded-2xl">
-              <div
-                className="flex transition-transform duration-700 ease-in-out gap-6"
-                style={{
-                  transform: `translateX(${translateX}%)`,
-                  width: `${trackWidth}%`,
-                }}
-              >
-                {galleryPhotos.map((photo, index) => (
-                  <div
-                    key={photo.id}
-                    className="flex-shrink-0 group cursor-pointer"
-                    style={{ width: `${slideWidth}%` }}
-                    onMouseEnter={() => setIsAutoPlaying(false)}
-                    onMouseLeave={() => setIsAutoPlaying(true)}
-                  >
-                    {/* Frame Container */}
+            {/* Custom Navigation Buttons */}
+            <Button
+              ref={prevRef}
+              variant="outline"
+              size="icon"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-10"
+              aria-label="Previous photo"
+              style={{ pointerEvents: 'auto' }}
+              onClick={() => swiperRef.current && swiperRef.current.slidePrev()}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+            <Button
+              ref={nextRef}
+              variant="outline"
+              size="icon"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-10"
+              aria-label="Next photo"
+              style={{ pointerEvents: 'auto' }}
+              onClick={() => swiperRef.current && swiperRef.current.slideNext()}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+            <ReusableSwiper
+              swiperProps={{
+                effect: "coverflow",
+                grabCursor: true,
+                centeredSlides: true,
+                slidesPerView: "auto",
+                loop: true,
+                coverflowEffect: {
+                  rotate: 50,
+                  stretch: 0,
+                  depth: 100,
+                  modifier: 1,
+                  slideShadows: true,
+                },
+                autoplay: { delay: 3000, disableOnInteraction: false },
+                pagination: { clickable: true },
+              }}
+              prevButton={prevRef}
+              nextButton={nextRef}
+              onSwiperInit={(swiper) => { swiperRef.current = swiper; }}
+            >
+              {galleryPhotos.map((photo, index) => (
+                <SwiperSlide key={photo.id} style={{ width: 300 }}>
+                  {/* Frame Container */}
+                  <div className="flex-shrink-0 group cursor-pointer" >
                     <div className="relative">
                       {/* Main Frame */}
                       <div
-                        style={{
-                          borderColor: "black",
-                        }}
-                        className="border-solid border-[15px] p-4 rounded-xl shadow-lg group-hover:shadow-2xl transition-all duration-300 transform group-hover:scale-105"
+                        style={{ borderColor: 'black' }}
+                        className="border-solid border-[15px]  p-4 rounded-xl shadow-lg group-hover:shadow-2xl transition-all duration-300 transform  h-full"
                       >
-                        <div  className="bg-cream-50 p-1 rounded-lg">
+                        <div className="bg-cream-50 p-1 rounded-lg h-full ">
                           <div className="relative aspect-[4/5] overflow-hidden rounded">
-                            <ImageKitProvider
-                              urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}
-                            >
+                            <ImageKitProvider urlEndpoint={`${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}`}>
                               <Image
                                 src={photo.image}
                                 alt={photo.alt}
                                 fill
-                                className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                className="object-cover transition-transform duration-300 h-full ease-in-out"
                                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
                                 quality={80}
                               />
@@ -255,44 +149,11 @@ const FrameItPhotoGallery = () => {
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-            {/* Navigation Arrows */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-10"
-              aria-label="Previous photo"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-10"
-              aria-label="Next photo"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
+                </SwiperSlide>
+              ))}
+            </ReusableSwiper>
           </div>
-          {/* Dots Navigation */}
-          <div className="flex justify-center mt-8 space-x-2">
-            {[...Array(maxDots)].map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentIndex
-                    ? "bg-primary scale-125"
-                    : "bg-gray-300 hover:bg-gray-400"
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
+
           {/* Call to Action */}
           <div className="text-center mt-16">
             <div className="shadow-custom-lg  rounded-2xl p-8 border border-green-500/20 max-w-2xl mx-auto">
