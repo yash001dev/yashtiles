@@ -1,6 +1,7 @@
 import { Instagram, Facebook, Twitter, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import FooterNewsletterForm from '@/components/common/FooterNewsletterForm';
 
 const footerLinks = {
   quickLinks: [
@@ -49,22 +50,8 @@ const FrameItFooter = () => {
               </div>
 
               {/* Newsletter signup */}
-              <div className="bg-white/80 text-black shadow-lg rounded-xl p-6">
-                <h4 className="font-semibold mb-3">Stay Updated</h4>
-                <p className="text-sm  mb-4">
-                  Get framing tips, design inspiration, and exclusive offers.
-                </p>
-                <div className="flex gap-2">
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="bg-white/10 border-black/20 text-black placeholder:text-black/50 "
-                  />
-                  <Button className="  px-6">
-                    Subscribe
-                  </Button>
-                </div>
-              </div>
+              
+              <FooterNewsletterForm />
             </div>
 
             {/* Links sections */}
