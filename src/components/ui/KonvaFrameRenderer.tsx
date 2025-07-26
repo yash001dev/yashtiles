@@ -132,12 +132,24 @@ const KonvaFrameRenderer = forwardRef<
   downloadOnlyImage = false, // NEW PROP
   onImageDrag,
 }, ref) => {
+  // Responsive width logic
+  const [responsiveWidth, setResponsiveWidth] = useState<number>(typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setResponsiveWidth(Math.min(400, window.innerWidth - 32));
+    };
+    window.addEventListener('resize', handleResize);
+    // Set initial width
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Calculate aspect ratio and canvas size
   const aspect = getAspectRatio(customization.size);
-  const canvasWidth = width;
-  const canvasHeight = height || width / aspect;
+  const canvasWidth = responsiveWidth;
+  const canvasHeight = height || responsiveWidth / aspect;
 
-  console.log("EDITNG:",uploadedImage && showEditOverlay && onImageClick && !isEditable)
 
   const sampleImage = 'https://picsum.photos/id/237/200/300';
   const imageToShow = uploadedImage?.url || sampleImage;
@@ -192,6 +204,40 @@ const KonvaFrameRenderer = forwardRef<
   // Border
   const showCustomBorder = customization.border && customization.borderWidth && customization.borderColor;
 
+  // --- Aspect ratio fit logic ---
+  // Calculate available area for image
+  const availableWidth = customization.material === 'frameless'
+    ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0)
+    : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
+  const availableHeight = customization.material === 'frameless'
+    ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0)
+    : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
+
+  // Get natural image size
+  const naturalWidth = image?.width || 1;
+  const naturalHeight = image?.height || 1;
+  const imageAspect = naturalWidth / naturalHeight;
+  const areaAspect = availableWidth / availableHeight;
+
+  let displayWidth = availableWidth;
+  let displayHeight = availableHeight;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  if (image) {
+    if (imageAspect > areaAspect) {
+      // Image is wider than area
+      displayWidth = availableWidth;
+      displayHeight = availableWidth / imageAspect;
+      offsetY = (availableHeight - displayHeight) / 2;
+    } else {
+      // Image is taller than area
+      displayHeight = availableHeight;
+      displayWidth = availableHeight * imageAspect;
+      offsetX = (availableWidth - displayWidth) / 2;
+    }
+  }
+
   // Mouse events for editing
   const handleGroupMouseDown = (e: any) => {
     if (isEditable && onMouseDown) onMouseDown(e);
@@ -230,7 +276,7 @@ const KonvaFrameRenderer = forwardRef<
     if (isEditable && onMouseUp) onMouseUp();
   };
 
-  // Overlay for edit
+  // Overlay for edit 
   const [hovered, setHovered] = useState(false);
 
   const stageRef = useRef<any>(null);
@@ -277,10 +323,10 @@ const KonvaFrameRenderer = forwardRef<
                 )}
                 <KonvaImage
                   image={image}
-                  width={customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth}
-                  height={customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight}
-                  x={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) + transform.x : transform.x}
-                  y={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) + transform.y : transform.y}
+                  width={displayWidth}
+                  height={displayHeight}
+                  x={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) + offsetX + (transform.x || 0) : offsetX + (transform.x || 0)}
+                  y={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) + offsetY + (transform.y || 0) : offsetY + (transform.y || 0)}
                   scaleX={transform.scale}
                   scaleY={transform.scale}
                   rotation={transform.rotation}
@@ -424,14 +470,14 @@ const KonvaFrameRenderer = forwardRef<
               <Group
                 x={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
                 y={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
-                width={customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                height={customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                width={availableWidth}
+                height={availableHeight}
                 clipFunc={ctx => {
                   ctx.beginPath();
                   if (customization.material === 'frameless') {
-                    ctx.rect(0, 0, canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0), canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0));
+                    ctx.rect(0, 0, availableWidth, availableHeight);
                   } else {
-                    ctx.rect(0, 0, canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)), canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)));
+                    ctx.rect(0, 0, availableWidth, availableHeight);
                   }
                   ctx.closePath();
                 }}
@@ -448,10 +494,10 @@ const KonvaFrameRenderer = forwardRef<
                 {image && (
                   <KonvaImage
                     image={image}
-                    width={customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                    height={customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                    x={transform.x}
-                    y={transform.y}
+                    width={displayWidth}
+                    height={displayHeight}
+                    x={offsetX + (transform.x || 0)}
+                    y={offsetY + (transform.y || 0)}
                     scaleX={transform.scale}
                     scaleY={transform.scale}
                     rotation={transform.rotation}
