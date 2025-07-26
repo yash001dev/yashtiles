@@ -1,8 +1,11 @@
+
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FrameItHeader from "@/components/dashboard/FrameItHeader";
 import FrameItFooter from "@/components/dashboard/FrameItFooter";
 import { Input } from "@/components/ui/input";
+import dynamic from 'next/dynamic';
+const ContactForm = dynamic(() => import('@/components/common/ContactForm'), { ssr: false });
 
 
 export const metadata = {
@@ -41,87 +44,7 @@ export default function ContactPage() {
                   Send us a Message
                 </h2>
 
-                <form className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label
-                        htmlFor="firstName"
-                        className="block text-sm font-medium text-charcoal-800 mb-2"
-                      >
-                        First Name
-                      </label>
-                      <Input
-                        id="firstName"
-                        type="text"
-                        placeholder="John"
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="lastName"
-                        className="block text-sm font-medium text-charcoal-800 mb-2"
-                      >
-                        Last Name
-                      </label>
-                      <Input
-                        id="lastName"
-                        type="text"
-                        placeholder="Doe"
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-charcoal-800 mb-2"
-                    >
-                      Email Address
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="john@example.com"
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="subject"
-                      className="block text-sm font-medium text-charcoal-800 mb-2"
-                    >
-                      Subject
-                    </label>
-                    <Input
-                      id="subject"
-                      type="text"
-                      placeholder="How can we help you?"
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="message"
-                      className="block text-sm font-medium text-charcoal-800 mb-2"
-                    >
-                      Message
-                    </label>
-                    <textarea
-                      id="message"
-                      rows={6}
-                      placeholder="Tell us about your framing needs..."
-                      className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2  focus:border-transparent resize-none"
-                    />
-                  </div>
-
-                  <Button className="w-full   font-semibold py-3 text-lg">
-                    Send Message
-                  </Button>
-                </form>
+                <ContactForm />
               </div>
 
               {/* Contact Information */}
