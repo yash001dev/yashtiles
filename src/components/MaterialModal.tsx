@@ -23,19 +23,24 @@ const MaterialModal: React.FC<MaterialModalProps> = ({
       name: 'Classic Frame',
       image: 'https://images.pexels.com/photos/1090638/pexels-photo-1090638.jpeg?auto=compress&cs=tinysrgb&w=300',
       description: 'Traditional frame with mounting',
-
+      link: undefined,
+      content: ''
     },
     {
       id: 'frameless',
       name: 'Frameless',
       image: 'https://images.pexels.com/photos/1090641/pexels-photo-1090641.jpeg?auto=compress&cs=tinysrgb&w=300',
       description: 'Clean, modern look',
+      link: undefined,
+      content: ''
     },
     {
       id: 'canvas',
       name: 'Canvas',
       image: 'https://images.pexels.com/photos/1090644/pexels-photo-1090644.jpeg?auto=compress&cs=tinysrgb&w=300',
       description: 'Textured canvas finish',
+      link: undefined,
+      content: ''
     },
   ];
 

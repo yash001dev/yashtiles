@@ -1,5 +1,5 @@
 export interface FrameCustomization {
-  material: "classic" | "frameless" | "canvas";
+  material: "classic" | "frameless" | "canvas" | "3d";
   frameColor: "black" | "white" | "oak";
   size:
     | "8x8"
