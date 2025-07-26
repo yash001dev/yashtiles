@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Stage, Layer, Rect, Image as KonvaImage, Group, Text, Line } from 'react-konva';
 import useImage from 'use-image';
+import { Edit } from 'lucide-react';
 import { FrameCustomization, UploadedImage } from '../../types';
 
 interface KonvaFrameRendererProps {
@@ -291,7 +292,35 @@ const KonvaFrameRenderer = forwardRef<
   }));
 
   return (
-    <div className={className} style={{ width: canvasWidth, height: canvasHeight, display: downloadOnlyImage ? 'none' : undefined }}>
+    <div className={className} style={{ width: canvasWidth, height: canvasHeight, display: downloadOnlyImage ? 'none' : undefined, position: 'relative' }}>
+      {/* Edit icon in top-right corner */}
+      {uploadedImage && showEditOverlay && onImageClick && !downloadOnlyImage && (
+        <button
+          type="button"
+          aria-label="Edit Image"
+          onClick={onImageClick}
+          style={{
+            position: 'absolute',
+            top: 8,
+            right:20,
+            zIndex: 10,
+            background: 'rgba(255,255,255,0.85)',
+            border: 'none',
+            borderRadius: '50%',
+            width: 32,
+            height: 32,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+            cursor: 'pointer',
+            padding: 0,
+          }}
+        >
+          {/* Simple pencil SVG icon */}
+          <Edit size={18} color="#374151" />
+        </button>
+      )}
       <Stage ref={stageRef} width={canvasWidth} height={canvasHeight} style={{ borderRadius: 6, background: 'transparent' }}>
         <Layer>
           {/* Only render the image if downloadOnlyImage is true */}
