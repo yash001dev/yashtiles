@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center space-x-2">
               <Frame className="h-8 w-8 text-primary" />
               <span className="text-2xl font-bold text-foreground">
-                <Link href="/">FrameIt</Link>
+                <Link href="/">{process.env.NEXT_PUBLIC_APP_NAME}</Link>
               </span>
             </div>
             <div className="flex items-center space-x-4">

@@ -4,9 +4,9 @@ import { ArrowLeft, RefreshCw, Shield, Clock, CheckCircle } from "lucide-react";
 import FrameItHeader from "@/components/dashboard/FrameItHeader";
 
 export const metadata = {
-  title: "Returns & Exchanges - FrameIt",
+  title: "Returns & Exchanges - " + process.env.NEXT_PUBLIC_APP_NAME,
   description:
-    "Learn about FrameIt's hassle-free return and exchange policy. 7-Day guarantee for your complete satisfaction.",
+    "Learn about " + process.env.NEXT_PUBLIC_APP_NAME + "'s hassle-free return and exchange policy. 7-Day guarantee for your complete satisfaction.",
 };
 
 const ReturnsPage = () => {
@@ -116,7 +116,7 @@ const ReturnsPage = () => {
                 </div>
                 <h3 className="font-bold  mb-3">Contact Us</h3>
                 <p className="text-sm ">
-                  Email us at returns@frameit.com or call 1-555-FRAME-IT with
+                  Email us at returns@photoframix.com or call 1-555-FRAME-IT with
                   your order number
                 </p>
               </div>
@@ -304,7 +304,7 @@ const ReturnsPage = () => {
                 Contact Support
               </Link>
               <a
-                href="mailto:returns@frameit.com"
+                href="mailto:returns@photoframix.com"
                 className="inline-flex items-center justify-center px-8 py-3 bg-primary  font-semibold rounded-xl border text-white border-cream-50/20  transition-colors duration-300"
               >
                 Email Returns Team
@@ -313,7 +313,7 @@ const ReturnsPage = () => {
 
             <div className="mt-8 pt-8 border-t borderd-dark-green">
               <p className="">
-                <strong>Quick Contact:</strong> returns@frameit.com |
+                <strong>Quick Contact:</strong> returns@photoframix.com |
                 1-555-FRAME-IT
               </p>
             </div>

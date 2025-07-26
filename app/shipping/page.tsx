@@ -4,9 +4,9 @@ import { ArrowLeft, Truck, Clock, Shield, MapPin } from "lucide-react";
 import FrameItHeader from "@/components/dashboard/FrameItHeader";
 
 export const metadata = {
-  title: "Shipping Information - FrameIt",
+  title: "Shipping Information - " + process.env.NEXT_PUBLIC_APP_NAME,
   description:
-    "Learn about FrameIt shipping options, delivery times, and packaging to ensure your frames arrive safely.",
+    "Learn about " + process.env.NEXT_PUBLIC_APP_NAME + " shipping options, delivery times, and packaging to ensure your frames arrive safely.",
 };
 
 const ShippingPage = () => {

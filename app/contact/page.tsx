@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 
 
 export const metadata = {
-  title: "Contact Us - FrameIt",
+  title: "Contact Us - " + process.env.NEXT_PUBLIC_APP_NAME,
   description:
-    "Get in touch with FrameIt. We're here to help with your photo framing needs.",
+    "Get in touch with " + process.env.NEXT_PUBLIC_APP_NAME + ". We're here to help with your photo framing needs.",
 };
 
 const ContactPage = () => {
@@ -139,9 +139,9 @@ const ContactPage = () => {
                       <h3 className="font-semibold text-charcoal-900 mb-1">
                         Email Us
                       </h3>
-                      <p className="text-charcoal-800/70">hello@frameit.com</p>
+                      <p className="text-charcoal-800/70">hello@photoframix.com</p>
                       <p className="text-charcoal-800/70">
-                        support@frameit.com
+                        support@photoframix.com
                       </p>
                     </div>
                   </div>

@@ -73,7 +73,7 @@ const FrameItInstallation = () => {
               Installation & Care Guide
             </h2> */}
             <p className="text-lg text-charcoal-800/70 max-w-2xl mx-auto">
-              Follow these simple steps to perfectly install your FrameIt frames
+              Follow these simple steps to perfectly install your {process.env.NEXT_PUBLIC_APP_NAME} frames
               and keep them looking beautiful for years to come.
             </p>
           </div>
@@ -197,7 +197,7 @@ const FrameItInstallation = () => {
                 <div className="text-center md:text-left">
                   <h4 className="font-bold text-xl mb-2">Quality Guarantee</h4>
                   <p className="text-cream-50/80">
-                    All FrameIt frames come with a 2-year quality warranty
+                    All {process.env.NEXT_PUBLIC_APP_NAME} frames come with a 2-year quality warranty
                   </p>
                 </div>
                 <div className="text-center">

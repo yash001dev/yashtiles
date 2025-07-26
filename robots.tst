@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://frameit.com/sitemap.xml
+Sitemap: https://photoframix.com/sitemap.xml

@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-    siteUrl: 'https://frameit.com',
+    siteUrl: 'https://photoframix.com',
     generateRobotsTxt: true,
     // ...other options
   };

@@ -22,9 +22,9 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { name: "Instagram", icon: Instagram, href: "https://instagram.com/frameit" },
-  { name: "Facebook", icon: Facebook, href: "https://facebook.com/frameit" },
-  { name: "Twitter", icon: Twitter, href: "https://twitter.com/frameit" },
+  { name: "Instagram", icon: Instagram, href: "https://instagram.com/" + process.env.NEXT_PUBLIC_APP_NAME },
+  { name: "Facebook", icon: Facebook, href: "https://facebook.com/" + process.env.NEXT_PUBLIC_APP_NAME },
+  { name: "Twitter", icon: Twitter, href: "https://twitter.com/" + process.env.NEXT_PUBLIC_APP_NAME },
 ];
 
 const FrameItFooter = () => {
@@ -38,7 +38,7 @@ const FrameItFooter = () => {
             <div className="lg:col-span-4">
               <div className="mb-6">
                 <h3 className="text-2xl font-bold text-primary mb-4">
-                  FrameIt
+                  {process.env.NEXT_PUBLIC_APP_NAME}
                 </h3>
                 <p className=" leading-relaxed mb-6">
                   Transform your precious memories into stunning wall art with
@@ -124,10 +124,10 @@ const FrameItFooter = () => {
                     <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-primary" />
                       <a
-                        href="mailto:hello@frameit.com"
+                        href="mailto:hello@photoframix.com"
                         className=" hover:text-primary transition-colors duration-300"
                       >
-                        hello@frameit.com
+                        hello@photoframix.com
                       </a>
                     </div>
                     <p className="">1-555-FRAME-IT</p>
@@ -145,7 +145,7 @@ const FrameItFooter = () => {
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             {/* Copyright */}
             <p className="text-sm">
-              © 2025 FrameIt. All rights reserved. Made with ❤️ for your
+              © 2025 {process.env.NEXT_PUBLIC_APP_NAME}. All rights reserved. Made with ❤️ for your
               memories.
             </p>
 

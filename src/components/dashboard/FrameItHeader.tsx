@@ -15,7 +15,7 @@ function FrameItHeader({hideMenu=false}) {
           <Frame className="h-8 w-8 text-primary" />
           <span className="text-2xl font-bold text-foreground">
             <Link href="/">
-            FrameIt
+            {process.env.NEXT_PUBLIC_APP_NAME}
             </Link>
           </span>
         </div>
