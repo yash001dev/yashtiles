@@ -22,6 +22,7 @@ import {
 } from "../../src/contexts/NotificationContext";
 import { useFrameCustomizer } from "../../src/hooks/useFrameCustomizer";
 import { downloadFramedImage } from "../../src/utils/downloadImage";
+import HangBottomSheet from "../../src/components/HangBottomSheet";
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
@@ -331,12 +332,12 @@ function AppContent() {
           currentSize={customization.size}
           onSelect={(size) => updateCustomization({ size })}
         />
-        <EffectBottomSheet
+        {/* <EffectBottomSheet
           isOpen={activeModal === "effect"}
           onClose={closeModal}
           currentEffect={customization.effect}
           onSelect={(effect) => updateCustomization({ effect })}
-        />
+        /> */}
         <BorderBottomSheet
           isOpen={activeModal === "border"}
           onClose={closeModal}
@@ -346,6 +347,12 @@ function AppContent() {
           onToggle={(border) => updateCustomization({ border })}
           onBorderUpdate={handleBorderUpdate}
           uploadedImage={uploadedImage}
+        />
+        <HangBottomSheet
+          isOpen={activeModal === "hang"}
+          onClose={closeModal}
+          currentHangType={customization.hangType}
+          onSelect={(hangType) => updateCustomization({ hangType })}
         />
         {uploadedImage && (
           <ImageEditor

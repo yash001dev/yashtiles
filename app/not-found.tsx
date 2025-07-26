@@ -3,15 +3,6 @@ import { Button } from "@/components/ui/button";
 import type { FrameCustomization } from "@/types";
 import { Frame as FrameIcon } from "lucide-react";
 
-const notFoundFrame: FrameCustomization = {
-  material: "classic",
-  frameColor: "black",
-  size: "12x12",
-  effect: "dramatic",
-  border: true,
-  borderColor: "#e11d48",
-  borderWidth: 8,
-};
 
 export default function NotFound() {
   return (

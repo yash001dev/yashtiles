@@ -16,8 +16,9 @@ const initialState: FrameCustomizerState = {
     size: '8x8',
     effect: 'original',
     border: true,
-    borderColor: '#000000',
+    borderColor: '#FFFFFF',
     borderWidth: 2,
+    hangType: 'stickable_tape',
   },
   frameCollection: {
     frames: [],

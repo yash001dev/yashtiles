@@ -91,7 +91,7 @@ const FrameItChat: React.FC<FrameItChatProps> = ({ onClose }) => {
               <span className="text-sm font-semibold text-primary">AI</span>
             </div>
             <div>
-              <h3 className="font-semibold">FrameIt Support</h3>
+              <h3 className="font-semibold">{process.env.NEXT_PUBLIC_APP_NAME} Support</h3>
               <p className="text-xs text-muted-foreground">We’re here to help!</p>
             </div>
           </div>

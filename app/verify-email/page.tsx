@@ -59,12 +59,12 @@ function VerifyEmailContent() {
   }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Header with Logo */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Frame className="h-12 w-12 text-purple-600" />
+            <Frame className="h-12 w-12 text-pink-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">{process.env.NEXT_PUBLIC_APP_NAME}</h1>
           <p className="text-gray-600 mt-2">Email Verification</p>
@@ -78,8 +78,8 @@ function VerifyEmailContent() {
               <div className="space-y-4">
                 <div className="flex justify-center">
                   <div className="relative">
-                    <Mail className="h-16 w-16 text-purple-600" />
-                    <Loader2 className="h-6 w-6 text-purple-600 animate-spin absolute -bottom-1 -right-1" />
+                    <Mail className="h-16 w-16 text-pink-600" />
+                    <Loader2 className="h-6 w-6 text-pink-600 animate-spin absolute -bottom-1 -right-1" />
                   </div>
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900">
@@ -89,7 +89,7 @@ function VerifyEmailContent() {
                   Please wait while we verify your email address...
                 </p>
                 <div className="flex justify-center">
-                  <div className="w-8 h-1 bg-purple-600 rounded-full animate-pulse"></div>
+                  <div className="w-8 h-1 bg-pink-600 rounded-full animate-pulse"></div>
                 </div>
               </div>
             )}
@@ -119,7 +119,7 @@ function VerifyEmailContent() {
                   </div>
                   <Link 
                     href="/frame" 
-                    className="inline-flex items-center justify-center w-full bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors space-x-2"
+                    className="inline-flex items-center justify-center w-full bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors space-x-2"
                   >
                     <span>Start Designing</span>
                     <ArrowRight className="h-4 w-4" />
@@ -155,7 +155,7 @@ function VerifyEmailContent() {
                   </Link>
                   <Link 
                     href="/frame" 
-                    className="inline-flex items-center justify-center w-full bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors space-x-2"
+                    className="inline-flex items-center justify-center w-full bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors space-x-2"
                   >
                     <span>Try Design Page</span>
                     <ArrowRight className="h-4 w-4" />
@@ -169,7 +169,7 @@ function VerifyEmailContent() {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-sm text-gray-500">
-            Need help? <a href="mailto:support@yashtiles.com" className="text-purple-600 hover:text-purple-700">Contact Support</a>
+            Need help? <a href="mailto:support@yashtiles.com" className="text-pink-600 hover:text-pink-700">Contact Support</a>
           </p>
         </div>
       </div>
@@ -180,9 +180,9 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-50 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 text-purple-600 animate-spin mx-auto" />
+          <Loader2 className="h-8 w-8 text-pink-600 animate-spin mx-auto" />
           <p className="text-gray-600 mt-2">Loading...</p>
         </div>
       </div>

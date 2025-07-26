@@ -21,7 +21,7 @@ const FrameItPhotoGallery = () => {
   if (!isMounted) {
     // Skeleton loader to prevent hydration mismatch
     return (
-      <section className="py-20 bg-white overflow-hidden">
+      <section className="py-10 md:py-20 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
@@ -42,7 +42,7 @@ const FrameItPhotoGallery = () => {
   }
 
   return (
-    <section className="py-20 bg-white overflow-hidden">
+    <section className="py-10 md:py-20 bg-white overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}

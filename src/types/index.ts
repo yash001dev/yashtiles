@@ -1,3 +1,12 @@
+export interface HangOption {
+  id: "stickable_tape" | "standard_hook";
+  name: string;
+  image: string;
+  description: string;
+  content: string;
+  price: number;
+}
+
 export interface FrameCustomization {
   material: "classic" | "frameless" | "canvas" | "3d";
   frameColor: "black" | "white" | "oak";
@@ -21,6 +30,7 @@ export interface FrameCustomization {
   border: boolean;
   borderColor?: string;
   borderWidth?: number;
+  hangType: "stickable_tape" | "standard_hook";
 }
 
 export interface FrameItem {

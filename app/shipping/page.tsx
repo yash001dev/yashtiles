@@ -31,7 +31,7 @@ const ShippingPage = () => {
       </section>
 
       {/* Shipping Options */}
-      <section className="py-20 bg-white">
+      <section className=" py-10 md:py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -102,7 +102,7 @@ const ShippingPage = () => {
       </section>
 
       {/* Shipping Process */}
-      <section className="py-20 bg-cream-100">
+      <section className=" py-10 md:py-20 bg-cream-100">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -171,7 +171,7 @@ const ShippingPage = () => {
       </section>
 
       {/* Packaging & Protection */}
-      <section className="py-20 bg-white">
+      <section className=" py-10 md:py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">

@@ -40,11 +40,11 @@ const faqs = [
 
 const FrameItFAQ = () => {
   return (
-    <section className="py-20 bg-white" id="faq">
+    <section className="py-10 md:py-20 bg-white" id="faq">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-charcoal-900 mb-4">
               Frequently Asked Questions
             </h2>
@@ -55,15 +55,15 @@ const FrameItFAQ = () => {
           </div>
 
           {/* FAQ Accordion */}
-          <div className="rounded-2xl p-8">
+          <div className="rounded-2xl p-2 md:p-8">
             <Accordion type="single" collapsible className="space-y-4">
               {faqs.map((faq, index) => (
                 <AccordionItem
                   key={index}
                   value={`item-${index}`}
-                  className="bg-white rounded-xl border border-primary/50 px-6 shadow-sm hover:shadow-md transition-shadow duration-300"
+                  className="bg-white rounded-xl border border-primary/50 px-3 md:px-6 shadow-sm hover:shadow-md transition-shadow duration-300"
                 >
-                  <AccordionTrigger className="text-left font-semibold text-primary hover:text-pink-800 transition-colors duration-300 py-6">
+                  <AccordionTrigger className="text-left font-semibold text-primary hover:text-pink-800 transition-colors duration-300 py-2 md:py-6">
                     {faq.question}
                   </AccordionTrigger>
                   <AccordionContent className="text-charcoal-800/80 leading-relaxed pb-6">

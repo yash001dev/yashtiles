@@ -81,13 +81,13 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
 
             {/* Content */}
             <div className="space-y-3">
-              <h3 className="text-2xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-pink-600">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 transition-colors duration-300 group-hover:text-pink-600">
                 Upload Your Photo
               </h3>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 text-sm md:text-lg">
                 Drag and drop or click to select
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-xs md:text-sm text-gray-500">
                 PNG or JPEG files only • Max 10MB
               </p>
             </div>
@@ -103,7 +103,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
               </span>
             </div>
 
-            <ul className="text-gray-600 !text-sm text-left ">
+            <ul className="text-gray-600 !text-xs md:!text-sm text-left ">
               <li>  &gt;   Upload your favorite photos and get them delivered as beautifully framed art. </li>
               <li> &gt; Premium quality, handcrafted frames that turn your memories into masterpieces.</li>
             </ul>

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Info } from 'lucide-react';
 import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
 import { MaterialOption, FrameCustomization } from '../types';
 import TooltipCard from './common/TooltipCard';

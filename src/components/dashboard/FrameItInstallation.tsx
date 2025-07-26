@@ -64,10 +64,10 @@ const careInstructions = [
 
 const FrameItInstallation = () => {
   return (
-    <section className="py-20 bg-white">
+    <section className="py-10 md:py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}n
+          {/* Header */}
           <div className="text-center mb-16">
             {/* <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-charcoal-900 mb-4">
               Installation & Care Guide

@@ -123,7 +123,7 @@ const FrameItTestimonialsSlider = () => {
   // Don't render until mounted to prevent hydration mismatch
   if (!isMounted) {
     return (
-      <section className="py-20 bg-dark-green  overflow-hidden">
+      <section className=" py-10 md:py-20 bg-dark-green  overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -143,7 +143,7 @@ const FrameItTestimonialsSlider = () => {
   }
 
   return (
-    <section ref={sectionRef} className="py-20 bg-dark-green  overflow-hidden">
+    <section ref={sectionRef} className=" py-10 md:py-20 bg-dark-green  overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}

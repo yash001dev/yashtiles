@@ -206,8 +206,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
           <div className="p-4 sm:p-6">
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 min-h-0">
               {/* Preview Area */}
-              <div className="flex-1 flex items-center justify-center lg:justify-start">
-                <div className="relative shadow-2xl w-full max-w-sm lg:max-w-md xl:max-w-lg">
+              <div className="flex-1 flex items-center justify-center">
+                <div className="relative shadow-2xl w-full max-w-sm ">
                   <KonvaFrameRenderer
                     ref={konvaRef}
                     customization={customization}
@@ -218,7 +218,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     onMouseUp={handleKonvaMouseUp}
                     onMouseLeave={handleKonvaMouseUp}
                     showFrameCounter={false}
-                    showEditOverlay={false}
+                    showEditOverlay={true}
                     addClassicPadding={true}
                     onImageDrag={({ x, y }) => {
                       onTransformUpdate({ x, y });
@@ -271,7 +271,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                         </button>
                       </div>
                     </div>
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Rotation: {image.transform.rotation}°
                       </label>
@@ -284,7 +284,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                           <span>Rotate 90°</span>
                         </button>
                       </div>
-                    </div>
+                    </div> */}
                     <button
                       onClick={handleReset}
                       className="w-full p-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"

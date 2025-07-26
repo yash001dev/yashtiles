@@ -19,7 +19,7 @@ const ReturnsPage = () => {
       <section className="py-16 bg-dark-green ">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold  mb-6">
+            <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold  mb-6">
               Returns & Exchanges
             </h1>
             <p className="text-lg md:text-xl /80 max-w-2xl mx-auto mb-8">
@@ -40,14 +40,14 @@ const ReturnsPage = () => {
       </section>
 
       {/* Return Policy Overview */}
-      <section className="py-20 bg-white">
+      <section className=" py-10 md:py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-charcoal-900 mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-charcoal-900 mb-4">
                 Our Return Policy
               </h2>
-              <p className="text-lg text-charcoal-800/70">
+              <p className="text-sm md:text-lg text-charcoal-800/70">
                 Simple, straightforward, and designed with your satisfaction in
                 mind.
               </p>
@@ -58,7 +58,7 @@ const ReturnsPage = () => {
                 <div className="bg-pink-300 p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
                   <Clock className="w-8 h-8 " />
                 </div>
-                <h3 className="text-xl font-bold text-charcoal-900 mb-4">
+                <h3 className="text-lg md:text-xl font-bold text-charcoal-900 mb-4">
                   7-Day Window
                 </h3>
                 <p className="text-charcoal-800/70">
@@ -71,7 +71,7 @@ const ReturnsPage = () => {
                 <div className="bg-pink-300 p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
                   <RefreshCw className="w-8 h-8 " />
                 </div>
-                <h3 className="text-xl font-bold text-charcoal-900 mb-4">
+                <h3 className="text-lg md:text-xl font-bold text-charcoal-900 mb-4">
                   Free Exchanges
                 </h3>
                 <p className="text-charcoal-800/70">
@@ -84,7 +84,7 @@ const ReturnsPage = () => {
                 <div className="bg-pink-300 p-4 rounded-full w-16 h-16 mx-auto mb-6 flex items-center justify-center">
                   <CheckCircle className="w-8 h-8 " />
                 </div>
-                <h3 className="text-xl font-bold text-charcoal-900 mb-4">
+                <h3 className="text-lg md:text-xl font-bold text-charcoal-900 mb-4">
                   Full Refunds
                 </h3>
                 <p className="text-charcoal-800/70">
@@ -97,14 +97,14 @@ const ReturnsPage = () => {
       </section>
 
       {/* Return Process */}
-      <section className="py-20 bg-dark-green ">
+      <section className=" py-10 md:py-20 bg-dark-green ">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold  mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold  mb-4">
                 How to Return Your Frame
               </h2>
-              <p className="text-lg /70">
+              <p className="text-sm md:text-lg /70">
                 Simple steps to process your return or exchange.
               </p>
             </div>
@@ -163,13 +163,13 @@ const ReturnsPage = () => {
       </section>
 
       {/* Conditions & FAQ */}
-      <section className="py-20 bg-white">
+      <section className=" py-10 md:py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16">
               {/* Return Conditions */}
               <div>
-                <h2 className="text-3xl font-bold text-charcoal-900 mb-8">
+                <h2 className="text-2xl md:text-4xl font-bold text-charcoal-900 mb-8">
                   Return Conditions
                 </h2>
 
@@ -230,7 +230,7 @@ const ReturnsPage = () => {
 
               {/* FAQ */}
               <div>
-                <h2 className="text-3xl font-bold text-charcoal-900 mb-8">
+                <h2 className="text-2xl md:text-4xl font-bold text-charcoal-900 mb-8">
                   Common Questions
                 </h2>
 
@@ -285,13 +285,13 @@ const ReturnsPage = () => {
       </section>
 
       {/* Contact CTA */}
-      <section className="py-20 bg-white  text-black">
+      <section className=" py-10 md:py-20 bg-white  text-black">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <h2 className="text-2xl md:text-4xl font-bold mb-6">
               Need Help with Your Return?
             </h2>
-            <p className="text-lg  mb-8">
+            <p className="text-sm md:text-lg  mb-8">
               Our customer service team is here to make your return process as
               smooth as possible.
             </p>

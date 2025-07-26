@@ -480,36 +480,49 @@ const KonvaFrameRenderer = forwardRef<
                   />
                 )} */}
                 {/* Edit overlay */}
-                {uploadedImage && showEditOverlay && onImageClick && hovered && !isEditable && (
-                  <Group>
-                    <Rect
-                      x={0}
-                      y={0}
-                      width={customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                      height={customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                      fill={'rgba(0,0,0,0.2)'}
-                    />
-                    <Group
-                      x={(customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 60}
-                      y={(customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 20}
-                    >
-                      <Rect
-                        width={120}
-                        height={40}
-                        fill={'rgba(255,255,255,0.95)'}
-                        cornerRadius={20}
-                      />
-                      <Text
-                        text={'Click to edit'}
-                        fontSize={16}
-                        fill={'#333'}
-                        align={'center'}
-                        width={120}
-                        height={40}
-                        verticalAlign={'middle'}
-                        y={10}
-                      />
-                    </Group>
+                {uploadedImage && showEditOverlay && onImageClick  && (
+                  <Group
+                  opacity={0}
+                  onMouseEnter={(e) => {
+                    const parent = e.target.getParent();
+                    if (parent) {
+                      parent.opacity(1);
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    const parent = e.target.getParent();
+                    if (parent) {
+                      parent.opacity(0);
+                    }
+                  }}
+                  >
+                     <Rect
+                  x={(canvasWidth - 100) / 2}
+                  y={(canvasHeight - 30) / 2}
+                  width={100}
+                  height={30}
+                  fill="rgba(0, 0, 0, 0.2)"
+                />
+                <Rect
+                  x={(canvasWidth - 100) / 2}
+                  y={(canvasHeight - 30) / 2}
+                  width={100}
+                  height={30}
+                  fill="rgba(255, 255, 255, 0.95)"
+                  cornerRadius={15}
+                />
+                <Text
+                  x={(canvasWidth - 100) / 2}
+                  y={(canvasHeight - 30) / 2}
+                  width={100}
+                  height={30}
+                  text="Edit Image"
+                  fontSize={12}
+                  fill="#374151"
+                  align="center"
+                  verticalAlign="middle"
+                />
+                 
                   </Group>
                 )}
               </Group>

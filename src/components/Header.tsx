@@ -31,10 +31,10 @@ const Header: React.FC<HeaderProps> = ({
     <>
       <header className="w-full bg-white shadow-sm border-b border-gray-100 relative z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16 gap-8 md:gap-0">
             <div className="flex items-center space-x-2">
               <Frame className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-foreground">
+              <span className="text-xl md:text-2xl font-bold text-foreground">
                 <Link href="/">{process.env.NEXT_PUBLIC_APP_NAME}</Link>
               </span>
             </div>
@@ -45,7 +45,6 @@ const Header: React.FC<HeaderProps> = ({
               >
                 <ShoppingCart size={18} />
                 <span className="hidden sm:inline">₹{cartTotal}</span>
-                <span className="sm:hidden">₹{cartTotal}</span>
               </button>
 
               <UserMenu onOpenAuthModal={handleOpenAuthModal} />

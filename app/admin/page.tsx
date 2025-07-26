@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
             
             <div className="bg-white p-6 rounded-lg shadow-sm border">
               <h3 className="text-sm font-medium text-gray-500">Customers</h3>
-              <p className="text-2xl font-bold text-purple-600">0</p>
+              <p className="text-2xl font-bold text-pink-600">0</p>
               <p className="text-xs text-gray-500 mt-1">Active users</p>
             </div>
           </div>

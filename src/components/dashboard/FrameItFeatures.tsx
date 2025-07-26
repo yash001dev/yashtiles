@@ -29,13 +29,13 @@ const features = [
 
 const FrameItFeatures = () => {
   return (
-    <section className="py-20  text-black" id="features">
+    <section className="py-10 md:py-20  text-black" id="features">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold  mb-4">
-              Why Choose FrameIt?
+              Why Choose {process.env.NEXT_PUBLIC_APP_NAME}?
             </h2>
             <p className="text-lg  max-w-2xl mx-auto">
               We&apos;re passionate about transforming your precious memories into

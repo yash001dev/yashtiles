@@ -72,7 +72,7 @@ const FrameItShowcase = () => {
   };
 
   return (
-    <section id="work" className="py-20 bg-dark-green ">
+    <section id="work" className=" py-10 md:py-20 bg-dark-green ">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}

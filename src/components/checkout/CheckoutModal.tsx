@@ -129,7 +129,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       
       const txnid = Date.now().toString();
       const amount = cartTotal;
-      const productinfo = 'FrameIt Custom Frame';
+      const productinfo = 'PhotoFramix Custom Frame';
       const firstname = shippingAddress.firstName;
       const email = shippingAddress.email;
       const key = process.env.NEXT_PUBLIC_PAYU_KEY;

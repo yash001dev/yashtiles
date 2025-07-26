@@ -16,7 +16,7 @@ export function OrderStatusBadge({ status, className }: OrderStatusBadgeProps) {
       case 'processing':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'shipped':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-pink-100 text-pink-800 border-pink-200';
       case 'delivered':
         return 'bg-green-100 text-green-800 border-green-200';
       case 'cancelled':
