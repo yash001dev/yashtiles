@@ -39,19 +39,19 @@ const FrameItFooter = dynamic(() => import("@/components/dashboard/FrameItFooter
   ssr: true
 });
 export const metadata = {
-  title: "FrameIt – Custom Photo Framing Online",
-  description: "Transform your memories into stunning wall art with FrameIt. Premium frames, fast shipping, and a 7-day satisfaction guarantee.",
+  title: "PhotoFramix – Custom Photo Framing Online",
+  description: "Transform your memories into stunning wall art with PhotoFramix. Premium frames, fast shipping, and a 7-day satisfaction guarantee.",
   openGraph: {
-    title: "FrameIt – Custom Photo Framing Online",
-    description: "Transform your memories into stunning wall art with FrameIt. Premium frames, fast shipping, and a 7-day satisfaction guarantee.",
-    url: "https://frameit.com/",
-    siteName: "FrameIt",
+    title: "PhotoFramix – Custom Photo Framing Online",
+    description: "Transform your memories into stunning wall art with PhotoFramix. Premium frames, fast shipping, and a 7-day satisfaction guarantee.",
+    url: "https://photoframix.com/",
+    siteName: "PhotoFramix",
     images: [
       {
         url: "/favicon.svg",
         width: 1200,
         height: 630,
-        alt: "FrameIt - Custom Photo Framing",
+        alt: "PhotoFramix - Custom Photo Framing",
       },
     ],
     locale: "en_IN",

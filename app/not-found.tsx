@@ -19,7 +19,7 @@ export default function NotFound() {
       <div className="flex items-center space-x-2 mb-8">
         <FrameIcon className="h-8 w-8 text-primary" />
         <span className="text-2xl font-bold text-foreground">
-          <Link href="/">FrameIt</Link>
+          <Link href="/">{process.env.NEXT_PUBLIC_APP_NAME}</Link>
         </span>
       </div>
      

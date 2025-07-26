@@ -22,7 +22,7 @@ const testimonials = [
     name: "Kishan Patel",
     location: "Ahmedabad, Gujarat",
     rating: 5,
-    text: "I was skeptical about ordering frames online, but FrameIt exceeded all expectations. The craftsmanship is incredible, and my travel photos have never looked better.",
+    text: "I was skeptical about ordering frames online, but " + process.env.NEXT_PUBLIC_APP_NAME + " exceeded all expectations. The craftsmanship is incredible, and my travel photos have never looked better.",
     image:
       "trip-rainforest.jpg",
     photoType: "Travel Photos",
@@ -132,7 +132,7 @@ const FrameItTestimonialsSlider = () => {
               </h2>
               <p className="text-lg  max-w-2xl mx-auto">
                 Don&apos;t just take our word for it. Here&apos;s what real customers say
-                about their FrameIt experience.
+                about their {process.env.NEXT_PUBLIC_APP_NAME} experience.
               </p>
             </div>
             <div className="animate-pulse h-96 bg-green-800 rounded-lg"></div>
@@ -153,7 +153,7 @@ const FrameItTestimonialsSlider = () => {
             </h2>
             <p className="text-lg  max-w-2xl mx-auto">
               Don&apos;t just take our word for it. Here&apos;s what real customers say
-              about their FrameIt experience.
+              about their {process.env.NEXT_PUBLIC_APP_NAME} experience.
             </p>
           </div>
 

@@ -5,9 +5,9 @@ import FrameItInstallation from "@/components/dashboard/FrameItInstallation";
 import FrameItFooter from "@/components/dashboard/FrameItFooter";
 
 export const metadata = {
-  title: "Installation & Care Guide - FrameIt",
+  title: "Installation & Care Guide - " + process.env.NEXT_PUBLIC_APP_NAME,
   description:
-    "Learn how to easily install and care for your FrameIt frames with our step-by-step guide.",
+    "Learn how to easily install and care for your " + process.env.NEXT_PUBLIC_APP_NAME + " frames with our step-by-step guide.",
 };
 
 const InstallationPage = () => {
@@ -27,7 +27,7 @@ const InstallationPage = () => {
 
             <div className="flex items-center gap-8">
               <Link href="/" className="text-2xl font-bold text-primary">
-                FrameIt
+                {process.env.NEXT_PUBLIC_APP_NAME}
               </Link>
 
               <nav className="hidden md:flex items-center gap-6">
@@ -57,7 +57,7 @@ const InstallationPage = () => {
               Installation & Care Guide
             </h1>
             <p className="text-lg md:text-xl /80 max-w-2xl mx-auto mb-8">
-              Everything you need to know to perfectly install your FrameIt
+              Everything you need to know to perfectly install your {process.env.NEXT_PUBLIC_APP_NAME}
               frames and keep them looking beautiful for years to come.
             </p>
 

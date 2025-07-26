@@ -148,7 +148,7 @@ const FrameItShowcase = () => {
               variant="outline"
               size="icon"
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 text-primary backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-20"
+              className="absolute left-4 top-1/3 -translate-y-1/2 bg-white/80 text-primary backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-20"
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
@@ -157,7 +157,7 @@ const FrameItShowcase = () => {
               variant="outline"
               size="icon"
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 text-primary backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-20"
+              className="absolute right-4 top-1/3  -translate-y-1/2 bg-white/80 text-primary backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-20"
             >
               <ChevronRight className="w-5 h-5" />
             </Button>

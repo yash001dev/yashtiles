@@ -36,7 +36,7 @@ const FrameItChat: React.FC<FrameItChatProps> = ({ onClose }) => {
     }
 
     if (message.includes("hello") || message.includes("hi")) {
-      return "Hi there! 👋 I’m FrameIt’s AI assistant. Ask me anything about our frames, pricing, delivery, or setup.";
+      return "Hi there! 👋 I’m " + process.env.NEXT_PUBLIC_APP_NAME + "'s AI assistant. Ask me anything about our frames, pricing, delivery, or setup.";
     }
 
     return "I'm here to help! Ask me about:\n• Frame styles\n• Sizing options\n• Pricing & shipping\n• Installation help";

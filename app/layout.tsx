@@ -24,8 +24,8 @@ const prompt = Prompt({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://frameit.com"),
-  title: "FrameIt - Transform Your Memories Into Stunning Wall Art",
+  metadataBase: new URL("https://photoframix.com"),
+  title: process.env.NEXT_PUBLIC_APP_NAME + " - Transform Your Memories Into Stunning Wall Art",
   description:
     "Upload your favorite photos and get them delivered as beautifully framed art. Premium quality, handcrafted frames that turn your memories into masterpieces.",
   keywords: [
@@ -38,24 +38,24 @@ export const metadata: Metadata = {
     "photo gifts",
     "wall decoration",
   ],
-  authors: [{ name: "FrameIt" }],
-  creator: "FrameIt",
-  publisher: "FrameIt",
+  authors: [{ name: process.env.NEXT_PUBLIC_APP_NAME }],
+  creator: process.env.NEXT_PUBLIC_APP_NAME,
+  publisher: process.env.NEXT_PUBLIC_APP_NAME,
   icons: {
     icon: '/favicon.svg',
   },
   openGraph: {
-    title: "FrameIt - Transform Your Memories Into Stunning Wall Art",
+    title: process.env.NEXT_PUBLIC_APP_NAME + " - Transform Your Memories Into Stunning Wall Art",
     description:
       "Upload your favorite photos and get them delivered as beautifully framed art.",
-    url: "https://frameit.com",
-    siteName: "FrameIt",
+    url: "https://photoframix.com",
+    siteName: process.env.NEXT_PUBLIC_APP_NAME,
     images: [
       {
         url: "/favicon.svg",
         width: 1200,
         height: 630,
-        alt: "FrameIt - Custom Photo Framing",
+        alt: process.env.NEXT_PUBLIC_APP_NAME + " - Custom Photo Framing",
       },
     ],
     locale: "en_US",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FrameIt - Transform Your Memories Into Stunning Wall Art",
+    title: process.env.NEXT_PUBLIC_APP_NAME + " - Transform Your Memories Into Stunning Wall Art",
     description:
       "Upload your favorite photos and get them delivered as beautifully framed art.",
     images: ["/og-image.jpg"],
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://frameit.com",
+    canonical: "https://" + process.env.NEXT_PUBLIC_APP_NAME + ".com",
   },
   verification: {
     google: "your-google-verification-code",
@@ -108,18 +108,18 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "FrameIt",
-              "url": "https://frameit.com",
-              "logo": "https://frameit.com/logo.png",
+              "name": "PhotoFramix",
+              "url": "https://" + process.env.NEXT_PUBLIC_APP_NAME + ".com",
+              "logo": "https://" + process.env.NEXT_PUBLIC_APP_NAME + ".com/logo.png",
               "description": "Transform your memories into stunning wall art with premium quality, handcrafted frames.",
               "sameAs": [
-                "https://facebook.com/frameit",
-                "https://instagram.com/frameit",
-                "https://twitter.com/frameit"
+                "https://facebook.com/" + process.env.NEXT_PUBLIC_APP_NAME,
+                "https://instagram.com/" + process.env.NEXT_PUBLIC_APP_NAME,
+                "https://twitter.com/" + process.env.NEXT_PUBLIC_APP_NAME
               ],
               "contactPoint": {
                 "@type": "ContactPoint",
-                "telephone": "+1-555-FRAMEIT",
+                "telephone": "+1-555-PhotoFramix",
                 "contactType": "customer service"
               }
             })
