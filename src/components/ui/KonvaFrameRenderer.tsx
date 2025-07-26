@@ -165,7 +165,7 @@ const KonvaFrameRenderer = forwardRef<
       shadowOpacity: 0.6,
     };
   } else if (customization.material === 'frameless') {
-    frameBorder = 4;
+    frameBorder = 0; // No traditional frame border
     shadow = {
       shadowColor: 'black',
       shadowBlur: 8,
@@ -184,7 +184,7 @@ const KonvaFrameRenderer = forwardRef<
 
   // Matting/inner border
   // const matting = 10; // REMOVE for classic
-  const matting = customization.material === 'classic' ? 0 : 10;
+  const matting = customization.material === 'classic' || customization.material === 'frameless' ? 0 : 10;
 
   // Image transform
   const transform = uploadedImage?.transform || { scale: 1, rotation: 0, x: 0, y: 0 };
@@ -252,21 +252,35 @@ const KonvaFrameRenderer = forwardRef<
           {downloadOnlyImage ? (
             image && (
               <>
-                {/* Custom border background for download image */}
-                <Rect
-                  x={0}
-                  y={0}
-                  width={canvasWidth}
-                  height={canvasHeight}
-                  fill={customization.borderColor ?? '#fff'}
-                  cornerRadius={6}
-                />
+                {customization.material === 'frameless' ? (
+                  // Border rectangle illusion for frameless download
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={canvasWidth}
+                    height={canvasHeight}
+                    fill={customization.borderColor ?? '#fff'}
+                    stroke={getFrameBorderColor(customization.frameColor)}
+                    strokeWidth={showCustomBorder ? customization.borderWidth! : 2}
+                    cornerRadius={6}
+                  />
+                ) : (
+                  // Regular border background for other materials
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={canvasWidth}
+                    height={canvasHeight}
+                    fill={customization.borderColor ?? '#fff'}
+                    cornerRadius={6}
+                  />
+                )}
                 <KonvaImage
                   image={image}
-                  width={canvasWidth}
-                  height={canvasHeight}
-                  x={transform.x}
-                  y={transform.y}
+                  width={customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth}
+                  height={customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight}
+                  x={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) + transform.x : transform.x}
+                  y={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) + transform.y : transform.y}
                   scaleX={transform.scale}
                   scaleY={transform.scale}
                   rotation={transform.rotation}
@@ -365,6 +379,19 @@ const KonvaFrameRenderer = forwardRef<
                     listening={false}
                   />
                 </>
+              ) : customization.material === 'frameless' ? (
+                // Border rectangle illusion for frameless
+                <Rect
+                  x={0}
+                  y={0}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                  fill={customization.borderColor ?? '#fff'}
+                  stroke={getFrameBorderColor(customization.frameColor)}
+                  strokeWidth={showCustomBorder ? customization.borderWidth! : 2}
+                  cornerRadius={6}
+                  {...shadow}
+                />
               ) : (
                 // Other frame types
                 <Rect
@@ -386,7 +413,7 @@ const KonvaFrameRenderer = forwardRef<
                   y={frameBorder}
                   width={canvasWidth - 2 * frameBorder}
                   height={canvasHeight - 2 * frameBorder}
-                  fill={'#fff'}
+                  fill={customization.borderColor ?? '#fff'}
                   cornerRadius={4}
                   shadowColor={'#000'}
                   shadowBlur={2}
@@ -395,13 +422,17 @@ const KonvaFrameRenderer = forwardRef<
               )}
               {/* Image group (for transform) */}
               <Group
-                x={frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
-                y={frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
-                width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                x={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
+                y={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
+                width={customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                height={customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
                 clipFunc={ctx => {
                   ctx.beginPath();
-                  ctx.rect(0, 0, canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)), canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)));
+                  if (customization.material === 'frameless') {
+                    ctx.rect(0, 0, canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0), canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0));
+                  } else {
+                    ctx.rect(0, 0, canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)), canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)));
+                  }
                   ctx.closePath();
                 }}
                 draggable={isEditable}
@@ -417,8 +448,8 @@ const KonvaFrameRenderer = forwardRef<
                 {image && (
                   <KonvaImage
                     image={image}
-                    width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                    height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                    width={customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                    height={customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
                     x={transform.x}
                     y={transform.y}
                     scaleX={transform.scale}
@@ -454,13 +485,13 @@ const KonvaFrameRenderer = forwardRef<
                     <Rect
                       x={0}
                       y={0}
-                      width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                      height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                      width={customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
+                      height={customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
                       fill={'rgba(0,0,0,0.2)'}
                     />
                     <Group
-                      x={(canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 60}
-                      y={(canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 20}
+                      x={(customization.material === 'frameless' ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 60}
+                      y={(customization.material === 'frameless' ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))) / 2 - 20}
                     >
                       <Rect
                         width={120}
