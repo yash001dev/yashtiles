@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const footerLinks = {
-  company: [
+  quickLinks: [
     // { name: "About Us", href: "/about" },
     // { name: "Our Story", href: "/story" },
+    { name: "Home", href: "/" },
     { name: "Installation Guide", href: "/installation" },
   ],
   support: [
@@ -17,7 +18,7 @@ const footerLinks = {
   legal: [
     { name: "Privacy Policy", href: "/privacy" },
     { name: "Terms of Service", href: "/terms" },
-    { name: "Cookie Policy", href: "/cookies" },
+    // { name: "Cookie Policy", href: "/cookies" },
   ],
 };
 
@@ -69,11 +70,11 @@ const FrameItFooter = () => {
             {/* Links sections */}
             <div className="lg:col-span-8">
               <div className="grid md:grid-cols-3 gap-8">
-                {/* Company */}
+                {/* Quick Links */}
                 <div>
-                  <h4 className="font-semibold mb-4">Company</h4>
+                  <h4 className="font-semibold mb-4">Quick Links</h4>
                   <ul className="space-y-3">
-                    {footerLinks.company.map((link) => (
+                    {footerLinks.quickLinks.map((link) => (
                       <li key={link.name}>
                         <a
                           href={link.href}

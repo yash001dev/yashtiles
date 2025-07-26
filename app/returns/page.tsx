@@ -9,12 +9,10 @@ export const metadata = {
     "Learn about " + process.env.NEXT_PUBLIC_APP_NAME + "'s hassle-free return and exchange policy. 7-Day guarantee for your complete satisfaction.",
 };
 
-const ReturnsPage = () => {
+export default function ReturnsPage() {
   return (
-    <div className="min-h-screen">
-      {/* Navigation Header */}
-      <FrameItHeader hideMenu />
-
+    <>
+      <FrameItHeader />
       {/* Hero Section */}
       <section className="py-16 bg-dark-green ">
         <div className="container mx-auto px-4">
@@ -322,8 +320,6 @@ const ReturnsPage = () => {
       </section>
 
       <FrameItFooter />
-    </div>
+    </>
   );
 };
-
-export default ReturnsPage;
