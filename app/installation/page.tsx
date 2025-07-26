@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import FrameItInstallation from "@/components/dashboard/FrameItInstallation";
 import FrameItFooter from "@/components/dashboard/FrameItFooter";
+import FrameItHeader from '@/components/dashboard/FrameItHeader'
 
 export const metadata = {
   title: "Installation & Care Guide - " + process.env.NEXT_PUBLIC_APP_NAME,
@@ -10,45 +11,10 @@ export const metadata = {
     "Learn how to easily install and care for your " + process.env.NEXT_PUBLIC_APP_NAME + " frames with our step-by-step guide.",
 };
 
-const InstallationPage = () => {
+export default function InstallationPage() {
   return (
-    <div className="min-h-screen">
-      {/* Navigation Header */}
-      <header className="bg-white border-b border-cream-300 py-4 w-full">
-        <div className="px-4">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-charcoal-800 hover:text-gold-600 transition-colors duration-300"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back to Home
-            </Link>
-
-            <div className="flex items-center gap-8">
-              <Link href="/" className="text-2xl font-bold text-primary">
-                {process.env.NEXT_PUBLIC_APP_NAME}
-              </Link>
-
-              <nav className="hidden md:flex items-center gap-6">
-                <Link
-                  href="/contact"
-                  className="text-charcoal-800 hover:text-gold-600 transition-colors duration-300"
-                >
-                  Contact
-                </Link>
-                <Link
-                  href="/installation"
-                  className="text-primary font-semibold"
-                >
-                  Installation Guide
-                </Link>
-              </nav>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <>
+      <FrameItHeader />
       {/* Hero Section */}
       <section className="py-16 bg-dark-green ">
         <div className="container mx-auto px-4">
@@ -190,8 +156,6 @@ const InstallationPage = () => {
       </section>
 
       <FrameItFooter />
-    </div>
+    </>
   );
-};
-
-export default InstallationPage;
+}

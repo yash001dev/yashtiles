@@ -11,10 +11,10 @@ export const metadata = {
     "Get in touch with " + process.env.NEXT_PUBLIC_APP_NAME + ". We're here to help with your photo framing needs.",
 };
 
-const ContactPage = () => {
+export default function ContactPage() {
   return (
-    <div className="min-h-screen">
-         <FrameItHeader hideMenu={true}/>
+    <>
+      <FrameItHeader />
       {/* Hero Section */}
       <section className=" py-10 md:py-20 bg-dark-green ">
         <div className="container mx-auto px-4">
@@ -284,8 +284,6 @@ const ContactPage = () => {
       </section>
 
       <FrameItFooter />
-    </div>
+    </>
   );
 };
-
-export default ContactPage;
