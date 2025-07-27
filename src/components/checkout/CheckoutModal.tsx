@@ -10,6 +10,7 @@ import { useCheckout, CheckoutData } from '../../hooks/useCheckout';
 import AuthModal from '../auth/AuthModal';
 import { API_BASE_URL } from '@/lib/auth';
 import { base64ToFile } from '@/redux/utils';
+import { Input } from '@/components/ui/input';
 
 // Zod schema for form validation
 const shippingSchema = z.object({
@@ -361,7 +362,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <input
+                    <Input
                       type="text"
                       placeholder="First name"
                       {...register('firstName')}
@@ -374,7 +375,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     )}
                   </div>
                   <div>
-                    <input
+                    <Input
                       type="text"
                       placeholder="Last name"
                       {...register('lastName')}
@@ -387,7 +388,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     )}
                   </div>
                   <div>
-                    <input
+                    <Input
                       type="email"
                       placeholder="Email address"
                       {...register('email')}
@@ -400,7 +401,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     )}
                   </div>
                   <div>
-                    <input
+                    <Input
                       type="tel"
                       placeholder="Phone number"
                       {...register('phone')}
@@ -413,7 +414,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     )}
                   </div>
                   <div className="md:col-span-2">
-                    <input
+                    <Input
                       type="text"
                       placeholder="Street address"
                       {...register('address')}
@@ -426,7 +427,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     )}
                   </div>
                   <div>
-                    <input
+                    <Input
                       type="text"
                       placeholder="City"
                       {...register('city')}
@@ -439,7 +440,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     )}
                   </div>
                   <div>
-                    <input
+                    <Input
                       type="text"
                       placeholder="State/Province"
                       {...register('state')}
@@ -452,7 +453,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                     )}
                   </div>
                   <div>
-                    <input
+                    <Input
                       type="text"
                       placeholder="ZIP/Postal code"
                       {...register('zipCode')}

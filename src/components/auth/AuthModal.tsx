@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNotifications } from "../../contexts/NotificationContext";
 import { GoogleLogin } from "@react-oauth/google";
 import { z } from "zod";
+import { Input } from "@/components/ui/input";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -234,15 +235,15 @@ const AuthModal: React.FC<AuthModalProps> = ({
               }`}
               size={20}
             />
-            <input
+            <Input
               type="email"
               name="email"
               placeholder="Email address"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border ${
+              className={`${
                 formErrors.email ? "border-red-500" : "border-gray-300"
-              } rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none bg-white transition-all duration-200`}
+              }`}
             />
           </div>
           {formErrors.email && (
@@ -258,15 +259,15 @@ const AuthModal: React.FC<AuthModalProps> = ({
               }`}
               size={20}
             />
-            <input
+            <Input
               type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
               value={formData.password}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-12 py-3 border ${
+              className={`${
                 formErrors.password ? "border-red-500" : "border-gray-300"
-              } rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none bg-white transition-all duration-200`}
+              }`}
             />
             <button
               type="button"
@@ -350,15 +351,15 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 }`}
                 size={20}
               />
-              <input
+              <Input
                 type="text"
                 name="firstName"
                 placeholder="First name"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 border ${
+                className={`${
                   formErrors.firstName ? "border-red-500" : "border-gray-300"
-                } rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none bg-white transition-all duration-200`}
+                }`}
               />
             </div>
             {formErrors.firstName && (
@@ -375,15 +376,15 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 }`}
                 size={20}
               />
-              <input
+              <Input
                 type="text"
                 name="lastName"
                 placeholder="Last name"
                 value={formData.lastName}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 border ${
+                className={`${
                   formErrors.lastName ? "border-red-500" : "border-gray-300"
-                } rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none bg-white transition-all duration-200`}
+                }`}
               />
             </div>
             {formErrors.lastName && (
@@ -402,15 +403,15 @@ const AuthModal: React.FC<AuthModalProps> = ({
               }`}
               size={20}
             />
-            <input
+            <Input
               type="email"
               name="email"
               placeholder="Email address"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border ${
+              className={`${
                 formErrors.email ? "border-red-500" : "border-gray-300"
-              } rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none bg-white transition-all duration-200`}
+              }`}
             />
           </div>
           {formErrors.email && (
@@ -426,15 +427,15 @@ const AuthModal: React.FC<AuthModalProps> = ({
               }`}
               size={20}
             />
-            <input
+            <Input
               type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
               value={formData.password}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-12 py-3 border ${
+              className={`${
                 formErrors.password ? "border-red-500" : "border-gray-300"
-              } rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none bg-white transition-all duration-200`}
+              }`}
             />
             <button
               type="button"
@@ -459,17 +460,17 @@ const AuthModal: React.FC<AuthModalProps> = ({
               }`}
               size={20}
             />
-            <input
+            <Input
               type={showPassword ? "text" : "password"}
               name="confirmPassword"
               placeholder="Confirm password"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 border ${
+              className={`${
                 formErrors.confirmPassword
                   ? "border-red-500"
                   : "border-gray-300"
-              } rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none bg-white transition-all duration-200`}
+              }`}
             />
           </div>
           {formErrors.confirmPassword && (
@@ -518,14 +519,16 @@ const AuthModal: React.FC<AuthModalProps> = ({
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
             size={20}
           />
-          <input
+          <Input
             type="email"
             name="email"
             placeholder="Email address"
             value={formData.email}
             onChange={handleInputChange}
             required
-            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none bg-white transition-all duration-200"
+            className={`${
+              formErrors.email ? "border-red-500" : "border-gray-300"
+            }`}
           />
         </div>
       </div>
@@ -558,7 +561,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
             size={20}
           />
-          <input
+          <Input
             type="email"
             name="email"
             placeholder="Email address"
@@ -570,14 +573,14 @@ const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         <div className="relative">
-          <input
+          <Input
             type="text"
             name="resetToken"
             placeholder="Reset token"
             value={formData.resetToken}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none transition-all duration-200"
+          
           />
         </div>
 
@@ -586,14 +589,14 @@ const AuthModal: React.FC<AuthModalProps> = ({
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
             size={20}
           />
-          <input
+          <Input
             type={showPassword ? "text" : "password"}
             name="password"
             placeholder="New password"
             value={formData.password}
             onChange={handleInputChange}
             required
-            className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 focus:outline-none transition-all duration-200"
+          
           />
           <button
             type="button"

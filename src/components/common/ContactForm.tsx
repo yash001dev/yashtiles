@@ -82,7 +82,7 @@ const ContactForm = ({ className }: ContactFormProps) => {
       </div>
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-charcoal-800 mb-2">Message</label>
-        <textarea id="message" rows={6} placeholder="Tell us about your framing needs..." className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2  focus:border-transparent resize-none" {...register('message')} aria-invalid={!!errors.message} required />
+        <textarea id="message" rows={6} placeholder="Tell us about your framing needs..." className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none  focus:border-transparent resize-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500" {...register('message')} aria-invalid={!!errors.message} required />
         {errors.message && <p className="text-red-600 text-xs mt-1">{errors.message.message}</p>}
       </div>
       <Button className="w-full   font-semibold py-3 text-lg" type="submit" disabled={isSubmitting}>

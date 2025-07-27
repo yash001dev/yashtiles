@@ -10,6 +10,7 @@ const ContactForm = dynamic(() => import('@/components/common/ContactForm'), { s
 
 export const metadata = {
   title: "Contact Us - " + process.env.NEXT_PUBLIC_APP_NAME,
+  
   description:
     "Get in touch with " + process.env.NEXT_PUBLIC_APP_NAME + ". We're here to help with your photo framing needs.",
 };

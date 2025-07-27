@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Loader2, Lock, Eye, EyeOff, Home, ArrowRight, Frame, Shield } from 'lucide-react';
 import { authService } from '../../src/lib/auth';
+import { Input } from '@/components/ui/input';
 
 interface ResetPasswordState {
   status: 'validating' | 'ready' | 'resetting' | 'success' | 'error';
@@ -142,7 +143,7 @@ function ResetPasswordContent() {
     if (score <= 1) return 'bg-red-500';
     if (score <= 2) return 'bg-orange-500';
     if (score <= 3) return 'bg-yellow-500';
-    if (score <= 4) return 'bg-blue-500';
+    if (score <= 4) return 'bg-pink-500';
     return 'bg-green-500';
   };
 
@@ -155,12 +156,12 @@ function ResetPasswordContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-indigo-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Header with Logo */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Frame className="h-12 w-12 text-blue-600" />
+            <Frame className="h-12 w-12 text-pink-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">{process.env.NEXT_PUBLIC_APP_NAME}</h1>
           <p className="text-gray-600 mt-2">Reset Your Password</p>
@@ -168,12 +169,11 @@ function ResetPasswordContent() {
 
         {/* Reset Password Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <div className="text-center mb-6">
+          <div className="text-center">
             <div className="flex justify-center mb-4">
               <div className="relative">
-                <Shield className="h-16 w-16 text-blue-600" />
                 {resetState.status === 'validating' && (
-                  <Loader2 className="h-6 w-6 text-blue-600 animate-spin absolute -bottom-1 -right-1" />
+                  <Loader2 className="h-6 w-6 text-pink-600 animate-spin absolute -bottom-1 -right-1" />
                 )}
               </div>
             </div>
@@ -189,7 +189,7 @@ function ResetPasswordContent() {
                 Please wait while we validate your password reset link...
               </p>
               <div className="flex justify-center">
-                <div className="w-8 h-1 bg-blue-600 rounded-full animate-pulse"></div>
+                <div className="w-8 h-1 bg-pink-600 rounded-full animate-pulse"></div>
               </div>
             </div>
           )}
@@ -213,12 +213,11 @@ function ResetPasswordContent() {
                     New Password
                   </label>
                   <div className="relative">
-                    <input
+                    <Input
                       id="newPassword"
                       type={showPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12"
                       placeholder="Enter your new password"
                       required
                     />
@@ -268,12 +267,11 @@ function ResetPasswordContent() {
                     Confirm Password
                   </label>
                   <div className="relative">
-                    <input
+                    <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-12"
                       placeholder="Confirm your new password"
                       required
                     />
@@ -297,7 +295,7 @@ function ResetPasswordContent() {
                 <button
                   type="submit"
                   disabled={!newPassword || !confirmPassword || newPassword !== confirmPassword || passwordStrength.score < 3}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+                  className="w-full bg-pink-600 text-white py-3 px-4 rounded-lg hover:bg-pink-700 focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                 >
                   <Lock className="h-4 w-4" />
                   <span>Reset Password</span>
@@ -310,7 +308,7 @@ function ResetPasswordContent() {
           {resetState.status === 'resetting' && (
             <div className="text-center space-y-4">
               <div className="flex justify-center">
-                <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+                <Loader2 className="h-8 w-8 text-pink-600 animate-spin" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900">
                 Resetting Password
@@ -344,7 +342,7 @@ function ResetPasswordContent() {
                 </div>
                 <Link 
                   href="/" 
-                  className="inline-flex items-center justify-center w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors space-x-2"
+                  className="inline-flex items-center justify-center w-full bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors space-x-2"
                 >
                   <span>Go to Login</span>
                   <ArrowRight className="h-4 w-4" />
@@ -384,7 +382,7 @@ function ResetPasswordContent() {
                     setNewPassword('');
                     setConfirmPassword('');
                   }}
-                  className="inline-flex items-center justify-center w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors space-x-2"
+                  className="inline-flex items-center justify-center w-full bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors space-x-2"
                 >
                   <span>Try Again</span>
                   <ArrowRight className="h-4 w-4" />
@@ -397,7 +395,7 @@ function ResetPasswordContent() {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-sm text-gray-500">
-            Need help? <a href="mailto:support@yashtiles.com" className="text-blue-600 hover:text-blue-700">Contact Support</a>
+            Need help? <a href="mailto:support@photoframix.com" className="text-pink-600 hover:text-pink-700">Contact Support</a>
           </p>
         </div>
       </div>
@@ -408,9 +406,9 @@ function ResetPasswordContent() {
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-indigo-50 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 text-blue-600 animate-spin mx-auto" />
+          <Loader2 className="h-8 w-8 text-pink-600 animate-spin mx-auto" />
           <p className="text-gray-600 mt-2">Loading...</p>
         </div>
       </div>

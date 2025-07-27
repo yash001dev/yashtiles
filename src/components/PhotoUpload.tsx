@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import { Upload, Camera, Image } from "lucide-react";
+import { Input } from '@/components/ui/input';
 
 interface PhotoUploadProps {
   onImageSelect: (file: File) => void;
@@ -51,7 +52,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
           onDragLeave={handleDragLeave}
           onClick={() => fileInputRef.current?.click()}
         >
-          <input
+          <Input
             ref={fileInputRef}
             type="file"
             accept="image/png,image/jpeg"

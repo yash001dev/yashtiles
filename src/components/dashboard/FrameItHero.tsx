@@ -61,7 +61,7 @@ const FrameItHero = () => {
                   className="border-2 border-pink-800 text-black hover:bg-pink-800 hover:text-cream-50 font-semibold px-8 py-6 text-lg rounded-xl transition-all duration-300"
                   onClick={() => {
                     if (isMounted && typeof window !== 'undefined' && typeof document !== 'undefined') {
-                      const element = document.querySelector("#showcase");
+                      const element = document.querySelector("#work");
                       element?.scrollIntoView({ behavior: "smooth" });
                     }
                   }}

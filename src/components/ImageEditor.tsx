@@ -6,6 +6,7 @@ import { UploadedImage, ImageTransform, FrameCustomization } from '../types';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { updateActiveFrame } from '@/redux/slices/frameCustomizerSlice';
 import KonvaFrameRenderer from './ui/KonvaFrameRenderer';
+import { Input } from '@/components/ui/input';
 
 interface ImageEditorProps {
   isOpen: boolean;
@@ -194,7 +195,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
           </div>
         </div>
 
-        <input
+        <Input
           ref={fileInputRef}
           type="file"
           accept="image/png,image/jpeg"
