@@ -32,7 +32,7 @@ const FramePreview: React.FC<FramePreviewProps> = ({
             currentFrameIndex={currentFrameIndex}
             showFrameCounter={true}
             showEditOverlay={true}
-            isEditable={true}
+            isEditable={false}
           />
         </div>
         
