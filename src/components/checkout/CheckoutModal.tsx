@@ -97,7 +97,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
         price: frame.price, // Or frame.price if available
         size: frame.customization.size,
         frameType: frame.customization.material,
-        imageUrl: frame.image,
+        // imageUrl: frame.image,
         frameColor: frame.customization.frameColor,
         borderColor: frame.customization.borderColor,
         borderWidth: frame.customization.borderWidth,
