@@ -366,21 +366,39 @@ const KonvaFrameRenderer = forwardRef<
                     cornerRadius={6}
                   />
                 )}
-                <KonvaImage
-                  image={image}
-                  width={displayWidth}
-                  height={displayHeight}
-                  x={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) + offsetX + (transform.x || 0) : offsetX + (transform.x || 0)}
-                  y={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) + offsetY + (transform.y || 0) : offsetY + (transform.y || 0)}
-                  scaleX={transform.scale}
-                  scaleY={transform.scale}
-                  rotation={transform.rotation}
-                  filters={[]}
-                  style={{ filter: getEffectFilter(customization.effect) }}
+                {/* Image group with same positioning as regular view */}
+                <Group
+                  x={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
+                  y={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
+                  width={availableWidth}
+                  height={availableHeight}
+                  clipFunc={ctx => {
+                    ctx.beginPath();
+                    if (customization.material === 'frameless') {
+                      ctx.rect(0, 0, availableWidth, availableHeight);
+                    } else {
+                      ctx.rect(0, 0, availableWidth, availableHeight);
+                    }
+                    ctx.closePath();
+                  }}
                   listening={false}
-                  perfectDrawEnabled={false}
-                  draggable={false}
-                />
+                >
+                  <KonvaImage
+                    image={image}
+                    width={displayWidth}
+                    height={displayHeight}
+                    x={offsetX + (transform.x || 0)}
+                    y={offsetY + (transform.y || 0)}
+                    scaleX={transform.scale}
+                    scaleY={transform.scale}
+                    rotation={transform.rotation}
+                    filters={[]}
+                    style={{ filter: getEffectFilter(customization.effect) }}
+                    listening={false}
+                    perfectDrawEnabled={false}
+                    draggable={false}
+                  />
+                </Group>
               </>
             )
           ) : (
