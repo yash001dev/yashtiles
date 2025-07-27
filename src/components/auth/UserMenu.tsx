@@ -80,8 +80,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuthModal }) => {
           <div
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
-          />
-          
+          />          
           {/* Dropdown menu */}
           <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
             <div className="px-4 py-3 border-b border-gray-100">
@@ -100,13 +99,13 @@ const UserMenu: React.FC<UserMenuProps> = ({ onOpenAuthModal }) => {
                 My Orders
               </button>
               
-              <button
+              {/* <button
                 onClick={() => setIsOpen(false)}
                 className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
               >
                 <Settings size={16} className="mr-3" />
                 Account Settings
-              </button>
+              </button> */}
             </div>
 
             {/* Admin Section - Only visible for admin users */}
