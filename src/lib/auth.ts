@@ -147,7 +147,7 @@ class AuthService {
   }
 
   // User registration
-  async register(data: RegisterData): Promise<AuthResponse> {
+  async register(data: RegisterData): Promise<{ message: string; user: User }> {
     const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
       method: "POST",
       headers: {
@@ -161,14 +161,12 @@ class AuthService {
       throw new Error(error.message || "Registration failed");
     }
 
-    const authResponse: AuthResponse = await response.json();
-    this.setTokens(authResponse.tokens);
-
-    // Store user data
-    if (typeof window !== "undefined") {
-      localStorage.setItem("user", JSON.stringify(authResponse.user));
-    }
-
+    const authResponse = await response.json();
+    
+    // Registration doesn't provide tokens - user needs to verify email first
+    // Don't set tokens or store user data yet since they're not authenticated
+    // Only store user data temporarily for email verification flow
+    
     return authResponse;
   }
 

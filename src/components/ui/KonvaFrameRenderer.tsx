@@ -226,16 +226,32 @@ const KonvaFrameRenderer = forwardRef<
   let offsetY = 0;
 
   if (image) {
-    if (imageAspect > areaAspect) {
-      // Image is wider than area
-      displayWidth = availableWidth;
-      displayHeight = availableWidth / imageAspect;
-      offsetY = (availableHeight - displayHeight) / 2;
+    if (customization.material === 'frameless' || customization.material === 'canvas') {
+      // For frameless and canvas, use "cover" approach to fill the entire frame
+      if (imageAspect > areaAspect) {
+        // Image is wider than area - scale to cover height
+        displayHeight = availableHeight;
+        displayWidth = availableHeight * imageAspect;
+        offsetX = (availableWidth - displayWidth) / 2;
+      } else {
+        // Image is taller than area - scale to cover width
+        displayWidth = availableWidth;
+        displayHeight = availableWidth / imageAspect;
+        offsetY = (availableHeight - displayHeight) / 2;
+      }
     } else {
-      // Image is taller than area
-      displayHeight = availableHeight;
-      displayWidth = availableHeight * imageAspect;
-      offsetX = (availableWidth - displayWidth) / 2;
+      // For classic frames, use "fit" approach to maintain aspect ratio
+      if (imageAspect > areaAspect) {
+        // Image is wider than area
+        displayWidth = availableWidth;
+        displayHeight = availableWidth / imageAspect;
+        offsetY = (availableHeight - displayHeight) / 2;
+      } else {
+        // Image is taller than area
+        displayHeight = availableHeight;
+        displayWidth = availableHeight * imageAspect;
+        offsetX = (availableWidth - displayWidth) / 2;
+      }
     }
   }
 

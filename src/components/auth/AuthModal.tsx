@@ -155,7 +155,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
             setIsLoading(false);
             return;
           }
-          await register(
+          const response = await register(
             formData.firstName,
             formData.lastName,
             formData.email,
@@ -163,10 +163,11 @@ const AuthModal: React.FC<AuthModalProps> = ({
           );
           addNotification({
             type: "success",
-            title: `Welcome to ${process.env.NEXT_PUBLIC_APP_NAME} !`,
-            message: "Your account has been created successfully.",
+            title: "Registration successful!",
+            message: response.message || "Please check your email to verify your account.",
           });
-          handleClose();
+          setMessage(response.message || "Please check your email to verify your account.");
+          setMode("login"); // Switch to login mode after registration
           break;
         }
 

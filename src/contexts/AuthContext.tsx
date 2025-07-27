@@ -24,7 +24,7 @@ type AuthAction =
 // Auth context interface
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
-  register: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
+  register: (firstName: string, lastName: string, email: string, password: string) => Promise<{ message: string; user: User }>;
   googleLogin: (googleToken: string) => Promise<void>;
   logout: () => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
@@ -144,7 +144,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       dispatch({ type: 'AUTH_START' });
       const response = await authService.register({ firstName, lastName, email, password });
-      dispatch({ type: 'AUTH_SUCCESS', payload: response.user });
+      // Registration successful but user needs to verify email
+      // Don't set authentication state yet - user is not fully authenticated
+      dispatch({ type: 'AUTH_LOGOUT' }); // Clear any existing auth state
+      return response; // Return the response so UI can show verification message
     } catch (error) {
       dispatch({ type: 'AUTH_ERROR', payload: error instanceof Error ? error.message : 'Registration failed' });
       throw error;
