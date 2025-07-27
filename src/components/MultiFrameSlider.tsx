@@ -94,7 +94,7 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
                     className="w-full h-full object-cover"
                   />
                   {/* Frame overlay to simulate the actual frame */}
-                  <div className="absolute inset-0 border-2 border-black opacity-50 pointer-events-none" />
+                  {/* <div className="absolute inset-0 border-2 border-black opacity-50 pointer-events-none" /> */}
                 </div>
               </div>
             </SwiperSlide>
@@ -133,7 +133,7 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
                       className="w-full h-full object-cover"
                     />
                     {/* Frame overlay to simulate the actual frame */}
-                    <div className="absolute inset-0 border-2 border-black opacity-50 pointer-events-none" />
+                    {/* <div className="absolute inset-0 border-2 border-black opacity-50 pointer-events-none" /> */}
                   </button>
                   
                   {/* Remove button */}
