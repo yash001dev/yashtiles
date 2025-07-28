@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   creator: process.env.NEXT_PUBLIC_APP_NAME,
   publisher: process.env.NEXT_PUBLIC_APP_NAME,
   icons: {
-    icon: '/favicon.svg',
+    icon: '/favicon/favicon.ico',
   },
   openGraph: {
     title: process.env.NEXT_PUBLIC_APP_NAME + " - Transform Your Memories Into Stunning Wall Art",
@@ -97,9 +97,10 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link rel="preconnect" href="https://images.unsplash.com" />
-        <link rel="icon" href="../src/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
+        
         <meta name="theme-color" content="#166534" />
         <meta name="color-scheme" content="light dark" />
         <script
