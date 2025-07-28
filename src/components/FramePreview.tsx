@@ -12,9 +12,9 @@ interface FramePreviewProps {
   currentFrameIndex?: number;
 }
 
-const FramePreview: React.FC<FramePreviewProps> = ({ 
-  customization, 
-  uploadedImage, 
+const FramePreview: React.FC<FramePreviewProps> = ({
+  customization,
+  uploadedImage,
   onImageClick,
   frameCount = 0,
   currentFrameIndex = 0
@@ -33,9 +33,10 @@ const FramePreview: React.FC<FramePreviewProps> = ({
             showFrameCounter={true}
             showEditOverlay={true}
             isEditable={false}
+            frameId={frameCount.toString()}
           />
         </div>
-        
+
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-gray-500 whitespace-nowrap animate-slideUp">
           {customization.size.replace('x', ' × ')} • {customization.material} • {customization.frameColor}
         </div>

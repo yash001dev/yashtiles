@@ -11,6 +11,7 @@ import AuthModal from '../auth/AuthModal';
 import { API_BASE_URL } from '@/lib/auth';
 import { base64ToFile } from '@/redux/utils';
 import { Input } from '@/components/ui/input';
+import { useAppSelector } from '../../redux/hooks';
 
 // Zod schema for form validation
 const shippingSchema = z.object({
@@ -42,6 +43,9 @@ interface CheckoutModalProps {
 const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items }) => {
   const { isAuthenticated, user } = useAuth();
   const { processCheckout, isLoading, error, clearError } = useCheckout();
+  
+  // Access print-ready images from Redux
+  const printReadyImages = useAppSelector((state) => state.frameCustomizer.printReadyImages);
   
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'razorpay'>('stripe');
@@ -154,18 +158,21 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       // 2. Prepare FormData for PayU initiation with frame images
       const formData = new FormData();
       
-      // Convert image URLs to File objects and append to FormData
+      // Convert print-ready images to File objects and append to FormData
       const imagePromises = items.map(async (item, index) => {
-        if (item.image) {
+        // Use print-ready image if available, otherwise fall back to original image
+        const imageToUse = printReadyImages[item.id] || item.image;
+        
+        if (imageToUse) {
           try {
             // Check if it's a data URL or regular URL
-            if (item.image.startsWith('data:')) {
+            if (imageToUse.startsWith('data:')) {
               // Handle data URLs (base64 images) using our utility function
-              const file = base64ToFile(item.image, `frame-${index + 1}.jpg`);
+              const file = base64ToFile(imageToUse, `frame-${index + 1}.jpg`);
               formData.append('frameImages', file);
             } else {
               // Handle regular URLs
-              const response = await fetch(item.image, { 
+              const response = await fetch(imageToUse, { 
                 mode: 'cors',
                 headers: {
                   'Accept': 'image/*'
@@ -273,6 +280,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
     }
   };
 
+  console.log("PRINT READY IMAGES:", printReadyImages);
+
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -297,26 +306,30 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                 Order Summary
               </h3>
               <div className="space-y-3">
-                {items.map((item, index) => (
-                  <div key={item.id} className="flex items-center justify-between border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
-                    <div className="flex items-center space-x-3">
-                      {item.image && (
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-16 h-16 object-cover rounded-lg"
-                        />
-                      )}
-                      <div>
-                        <p className="font-medium text-gray-900">{item.name} {items.length > 1 ? `${index + 1}` : ''}</p>
-                        <p className="text-sm text-gray-600">
-                          {item.customization.size} • {item.customization.material} • {item.customization.frameColor}
-                        </p>
+                {items.map((item, index) => {
+                  console.log("itemL",item)
+                  const previewImage = printReadyImages[item.id] || item.image;
+                  return (
+                    <div key={item.id} className="flex items-center justify-between border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">
+                      <div className="flex items-center space-x-3">
+                        {previewImage && (
+                          <img
+                            src={previewImage}
+                            alt={item.name}
+                            className="w-16 h-16 object-cover rounded-lg border border-pink-200"
+                          />
+                        )}
+                        <div>
+                          <p className="font-medium text-gray-900">{item.name} {items.length > 1 ? `${index + 1}` : ''}</p>
+                          <p className="text-sm text-gray-600">
+                            {item.customization.size} • {item.customization.material} • {item.customization.frameColor}
+                          </p>
+                        </div>
                       </div>
+                      <p className="font-semibold text-gray-900">₹{item.price}</p>
                     </div>
-                    <p className="font-semibold text-gray-900">₹{item.price}</p>
-                  </div>
-                ))}
+                  );
+                })}
                 
                 {/* Total */}
                 {items.length > 1 && (

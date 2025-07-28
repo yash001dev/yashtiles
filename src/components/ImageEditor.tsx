@@ -32,6 +32,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
   const activeFrameId = useAppSelector(state => state.frameCustomizer.frameCollection.activeFrameId);
+  const newState= useAppSelector(state => state.frameCustomizer.frameCollection);
+  console.log("newState:",newState)
   const konvaRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
   const downloadImageRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
 
@@ -161,7 +163,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       dispatch(updateActiveFrame());
     }
   };
-
+  console.log(  "active:",activeFrameId)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-2 sm:p-4">
       {/* Hidden print-ready renderer for download */}
@@ -173,6 +175,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
           isEditable={false}
           downloadOnlyImage={true}
           width={800}
+          frameId={activeFrameId?activeFrameId.toString():'0'}
         />
       </div>
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
@@ -227,6 +230,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                         dispatch(updateActiveFrame());
                       }
                     }}
+                    frameId={activeFrameId?activeFrameId.toString():'0'}
                   />
                 </div>
               </div>

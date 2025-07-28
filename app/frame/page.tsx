@@ -233,6 +233,14 @@ function AppContent() {
     return total;
   }, [frameCollection.frames, uploadedImage, customization.size]);
 
+  // Unique id for temporary frame (persisted for session)
+  const [tempFrameId] = React.useState(() => {
+    if (typeof window !== "undefined" && window.crypto?.randomUUID) {
+      return window.crypto.randomUUID();
+    }
+    return "temp-frame-" + Date.now();
+  });
+
   // Generate checkout items including temporary frame
   const generateCheckoutItems = React.useMemo(() => {
     const items = [];
@@ -251,7 +259,7 @@ function AppContent() {
     // Add temporary frame if no actual frames exist
     if (frameCollection.frames.length === 0 && uploadedImage) {
       items.push({
-        id: "temp-frame-" + Date.now(),
+        id: tempFrameId,
         name: "Custom Frame",
         price: getSizePrice(customization.size),
         customization,
@@ -260,7 +268,7 @@ function AppContent() {
     }
 
     return items;
-  }, [frameCollection.frames, uploadedImage, customization]);
+  }, [frameCollection.frames, uploadedImage, customization, tempFrameId]);
 
   return (
     <div className="min-h-screen">

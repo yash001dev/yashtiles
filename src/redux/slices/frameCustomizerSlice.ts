@@ -6,6 +6,7 @@ interface FrameCustomizerState {
   frameCollection: FrameCollection;
   uploadedImage: UploadedImage | null;
   frameImages: { [key: string]: string };
+  printReadyImages: { [key: string]: string }; // Store print-ready images from KonvaFrameRenderer
   activeModal: string | null;
 }
 
@@ -26,6 +27,7 @@ const initialState: FrameCustomizerState = {
   },
   uploadedImage: null,
   frameImages: {},
+  printReadyImages: {},
   activeModal: null,
 };
 
@@ -170,6 +172,13 @@ export const frameCustomizerSlice = createSlice({
     setActiveModal: (state, action: PayloadAction<string | null>) => {
       state.activeModal = action.payload;
     },
+
+    setPrintReadyImage: (state, action: PayloadAction<{ frameId: string; dataUrl: string }>) => {
+      state.printReadyImages = {
+        ...state.printReadyImages,
+        [action.payload.frameId]: action.payload.dataUrl,
+      };
+    },
   },
 });
 
@@ -183,7 +192,8 @@ export const {
   removeFrameFromCollection,
   selectFrame,
   updateActiveFrame,
-  setActiveModal
+  setActiveModal,
+  setPrintReadyImage
 } = frameCustomizerSlice.actions;
 
 export default frameCustomizerSlice.reducer;

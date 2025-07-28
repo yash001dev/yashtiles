@@ -55,7 +55,7 @@ export interface MaterialOption {
 }
 
 export interface FrameColorOption {
-  id: "black" | "white" | "oak";
+  id: "black" | "white" | "brown";
   name: string;
   color: string;
   description: string;
