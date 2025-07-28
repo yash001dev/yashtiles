@@ -3,6 +3,8 @@ import { Stage, Layer, Rect, Image as KonvaImage, Group, Text, Line } from 'reac
 import useImage from 'use-image';
 import { Edit } from 'lucide-react';
 import { FrameCustomization, UploadedImage } from '../../types';
+import { useAppDispatch } from '../../redux/hooks';
+import { setPrintReadyImage } from '../../redux/slices/frameCustomizerSlice';
 
 interface KonvaFrameRendererProps {
   customization: FrameCustomization;
@@ -23,6 +25,7 @@ interface KonvaFrameRendererProps {
   height?: number;
   downloadOnlyImage?: boolean;
   onImageDrag?: (pos: { x: number; y: number }) => void;
+  frameId?: string; // ID of the frame for storing print-ready image
 }
 
 // Helper for aspect ratio
@@ -99,15 +102,15 @@ function shadeColor(hex: string, percent: number): string {
   // Remove # if present
   hex = hex.replace(/^#/, '');
   // Parse r, g, b
-  let r = parseInt(hex.substring(0,2),16);
-  let g = parseInt(hex.substring(2,4),16);
-  let b = parseInt(hex.substring(4,6),16);
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
   // Adjust each channel
-  r = Math.min(255, Math.max(0, Math.round(r + (percent/100)*255)));
-  g = Math.min(255, Math.max(0, Math.round(g + (percent/100)*255)));
-  b = Math.min(255, Math.max(0, Math.round(b + (percent/100)*255)));
+  r = Math.min(255, Math.max(0, Math.round(r + (percent / 100) * 255)));
+  g = Math.min(255, Math.max(0, Math.round(g + (percent / 100) * 255)));
+  b = Math.min(255, Math.max(0, Math.round(b + (percent / 100) * 255)));
   // Return as hex
-  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
 
 const KonvaFrameRenderer = forwardRef<
@@ -132,7 +135,10 @@ const KonvaFrameRenderer = forwardRef<
   height,
   downloadOnlyImage = false, // NEW PROP
   onImageDrag,
+  frameId,
 }, ref) => {
+  const dispatch = useAppDispatch();
+
   // Responsive width logic
   const [responsiveWidth, setResponsiveWidth] = useState<number>(typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400);
 
@@ -298,10 +304,38 @@ const KonvaFrameRenderer = forwardRef<
 
   const stageRef = useRef<any>(null);
 
+  // Function to generate and store print-ready image
+  const generatePrintReadyImage = () => {
+    if (stageRef.current && frameId) {
+      const dataUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
+      console.log("dataUrl", dataUrl);
+      dispatch(setPrintReadyImage({ frameId, dataUrl }));
+      return dataUrl;
+    }
+    return undefined;
+  };
+
+  // Auto-generate print-ready image when component updates
+  useEffect(() => {
+     console.log('Frme id:',frameId)
+    if (frameId && uploadedImage && image) {
+      // Small delay to ensure canvas is fully rendered
+      const timer = setTimeout(() => {
+        generatePrintReadyImage();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [frameId, uploadedImage, customization, image]);
+
   useImperativeHandle(ref, () => ({
     getCanvasDataURL: () => {
       if (stageRef.current) {
-        return stageRef.current.toDataURL({ pixelRatio: 2 });
+        const dataUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
+        // Also store it in Redux if frameId is available
+        if (frameId) {
+          dispatch(setPrintReadyImage({ frameId, dataUrl }));
+        }
+        return dataUrl;
       }
       return undefined;
     },
@@ -318,7 +352,7 @@ const KonvaFrameRenderer = forwardRef<
           style={{
             position: 'absolute',
             top: 8,
-            right:20,
+            right: 20,
             zIndex: 10,
             background: 'rgba(255,255,255,0.85)',
             border: 'none',
@@ -413,7 +447,7 @@ const KonvaFrameRenderer = forwardRef<
                     y={0}
                     width={canvasWidth}
                     height={canvasHeight}
-                    fill={customization.borderColor??'#fff'}
+                    fill={customization.borderColor ?? '#fff'}
                     cornerRadius={6}
                     {...shadow}
                   />
@@ -589,49 +623,49 @@ const KonvaFrameRenderer = forwardRef<
                   />
                 )} */}
                 {/* Edit overlay */}
-                {uploadedImage && showEditOverlay && onImageClick  && (
+                {uploadedImage && showEditOverlay && onImageClick && (
                   <Group
-                  opacity={0}
-                  onMouseEnter={(e) => {
-                    const parent = e.target.getParent();
-                    if (parent) {
-                      parent.opacity(1);
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    const parent = e.target.getParent();
-                    if (parent) {
-                      parent.opacity(0);
-                    }
-                  }}
+                    opacity={0}
+                    onMouseEnter={(e) => {
+                      const parent = e.target.getParent();
+                      if (parent) {
+                        parent.opacity(1);
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      const parent = e.target.getParent();
+                      if (parent) {
+                        parent.opacity(0);
+                      }
+                    }}
                   >
-                     <Rect
-                  x={(canvasWidth - 100) / 2}
-                  y={(canvasHeight - 30) / 2}
-                  width={100}
-                  height={30}
-                  fill="rgba(0, 0, 0, 0.2)"
-                />
-                <Rect
-                  x={(canvasWidth - 100) / 2}
-                  y={(canvasHeight - 30) / 2}
-                  width={100}
-                  height={30}
-                  fill="rgba(255, 255, 255, 0.95)"
-                  cornerRadius={15}
-                />
-                <Text
-                  x={(canvasWidth - 100) / 2}
-                  y={(canvasHeight - 30) / 2}
-                  width={100}
-                  height={30}
-                  text="Edit Image"
-                  fontSize={12}
-                  fill="#374151"
-                  align="center"
-                  verticalAlign="middle"
-                />
-                 
+                    <Rect
+                      x={(canvasWidth - 100) / 2}
+                      y={(canvasHeight - 30) / 2}
+                      width={100}
+                      height={30}
+                      fill="rgba(0, 0, 0, 0.2)"
+                    />
+                    <Rect
+                      x={(canvasWidth - 100) / 2}
+                      y={(canvasHeight - 30) / 2}
+                      width={100}
+                      height={30}
+                      fill="rgba(255, 255, 255, 0.95)"
+                      cornerRadius={15}
+                    />
+                    <Text
+                      x={(canvasWidth - 100) / 2}
+                      y={(canvasHeight - 30) / 2}
+                      width={100}
+                      height={30}
+                      text="Edit Image"
+                      fontSize={12}
+                      fill="#374151"
+                      align="center"
+                      verticalAlign="middle"
+                    />
+
                   </Group>
                 )}
               </Group>
