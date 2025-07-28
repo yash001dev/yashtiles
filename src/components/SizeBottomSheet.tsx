@@ -33,8 +33,8 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
     { id: '24x18', name: '24" × 18"', dimensions: 'Landscape format', aspectRatio: 24/18, price: 2400 },
     { id: '24x32', name: '24" × 32"', dimensions: 'Large portrait', aspectRatio: 24/32, price: 4200 },
     { id: '32x24', name: '32" × 24"', dimensions: 'Large landscape', aspectRatio: 32/24, price: 4200 },
-    { id: '8x11', name: '8" × 11"', dimensions: 'Portrait format', aspectRatio: 8/11, price: 0 },
-    { id: '11x8', name: '11" × 8"', dimensions: 'Landscape format', aspectRatio: 11/8, price: 0 },
+    // { id: '8x11', name: '8" × 11"', dimensions: 'Portrait format', aspectRatio: 8/11, price: 0 },
+    // { id: '11x8', name: '11" × 8"', dimensions: 'Landscape format', aspectRatio: 11/8, price: 0 },
     
   ];
 
