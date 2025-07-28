@@ -64,8 +64,10 @@ const getFrameColor = (color: string) => {
   switch (color) {
     case 'white':
       return '#fff';
-    case 'oak':
-      return '#fef3c7'; // amber-100
+    // case 'oak':
+    //   return '#fef3c7'; // amber-100
+    case 'brown':
+      return '#a0522d'; // brown
     default:
       return '#111'; // black
   }
@@ -75,8 +77,10 @@ const getFrameBorderColor = (color: string) => {
   switch (color) {
     case 'white':
       return '#e5e7eb'; // gray-200
-    case 'oak':
-      return '#fde68a'; // amber-200
+    // case 'oak':
+    //   return '#fde68a'; // amber-200
+    case 'brown':
+      return '#8b5c2d'; // darker brown
     default:
       return '#1f2937'; // gray-800
   }
@@ -621,52 +625,7 @@ const KonvaFrameRenderer = forwardRef<
                     cornerRadius={6}
                   />
                 )} */}
-                {/* Edit overlay */}
-                {uploadedImage && showEditOverlay && onImageClick && (
-                  <Group
-                    opacity={0}
-                    onMouseEnter={(e) => {
-                      const parent = e.target.getParent();
-                      if (parent) {
-                        parent.opacity(1);
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      const parent = e.target.getParent();
-                      if (parent) {
-                        parent.opacity(0);
-                      }
-                    }}
-                  >
-                    <Rect
-                      x={(canvasWidth - 100) / 2}
-                      y={(canvasHeight - 30) / 2}
-                      width={100}
-                      height={30}
-                      fill="rgba(0, 0, 0, 0.2)"
-                    />
-                    <Rect
-                      x={(canvasWidth - 100) / 2}
-                      y={(canvasHeight - 30) / 2}
-                      width={100}
-                      height={30}
-                      fill="rgba(255, 255, 255, 0.95)"
-                      cornerRadius={15}
-                    />
-                    <Text
-                      x={(canvasWidth - 100) / 2}
-                      y={(canvasHeight - 30) / 2}
-                      width={100}
-                      height={30}
-                      text="Edit Image"
-                      fontSize={12}
-                      fill="#374151"
-                      align="center"
-                      verticalAlign="middle"
-                    />
-
-                  </Group>
-                )}
+               
               </Group>
               {/* Frame counter */}
               {frameCount > 1 && showFrameCounter && (

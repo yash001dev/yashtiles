@@ -34,7 +34,7 @@ const faqs = [
   {
     question: "What frame materials do you offer?",
     answer:
-      "We specialize in premium wood frames including Oak, Walnut, Birch, and Ash in various finishes. All our frames are handcrafted by skilled artisans using sustainable materials. We also offer metal frames in classic colors for a more modern look.",
+      "We specialize in premium wood frames including Brown, Walnut, Birch, and Ash in various finishes. All our frames are handcrafted by skilled artisans using sustainable materials. We also offer metal frames in classic colors for a more modern look.",
   },
 ];
 
