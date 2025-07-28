@@ -416,6 +416,7 @@ function AppContent() {
           />
         )}
         {/* Floating Add Button for mobile */}
+       {activeModal !== "imageEditor" &&
         <FloatingAddButton
           onAddFrame={handleAddFrame}
           hasFrames={frameCollection.frames.length > 0}
@@ -424,7 +425,7 @@ function AppContent() {
             setPendingAction("cart");
             setIsAuthModalOpen(true);
           }}
-        />{" "}
+        />}
         {/* Loading Overlay */}
         <LoadingOverlay 
           isVisible={isLoading} 
