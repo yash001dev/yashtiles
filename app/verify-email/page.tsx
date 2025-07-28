@@ -121,7 +121,7 @@ function VerifyEmailContent() {
                     href="/frame" 
                     className="inline-flex items-center justify-center w-full bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors space-x-2"
                   >
-                    <span>Start Designing</span>
+                    <span>Start Photo Framing</span>
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>

@@ -30,11 +30,17 @@ const FrameBottomSheet: React.FC<FrameBottomSheetProps> = ({
       color: 'bg-white border border-gray-200',
       description: 'Clean white finish',
     },
+    // {
+    //   id: 'oak',
+    //   name: 'Oak',
+    //   color: 'bg-gradient-to-br from-amber-100 to-amber-200',
+    //   description: 'Natural wood grain',
+    // },
     {
-      id: 'oak',
-      name: 'Oak',
-      color: 'bg-gradient-to-br from-amber-100 to-amber-200',
-      description: 'Natural wood grain',
+      id: 'brown',
+      name: 'Brown',
+      color: 'bg-amber-800', // distinct brown, not too close to black
+      description: 'Warm brown finish',
     },
   ];
 
