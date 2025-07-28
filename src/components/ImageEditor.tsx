@@ -33,7 +33,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const dispatch = useAppDispatch();
   const activeFrameId = useAppSelector(state => state.frameCustomizer.frameCollection.activeFrameId);
   const newState= useAppSelector(state => state.frameCustomizer.frameCollection);
-  console.log("newState:",newState)
   const konvaRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
   const downloadImageRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
 

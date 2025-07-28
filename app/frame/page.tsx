@@ -15,6 +15,7 @@ import FloatingAddButton from "../../src/components/FloatingAddButton";
 import TutorialTooltip from "../../src/components/TutorialTooltip";
 import CheckoutModal from "../../src/components/checkout/CheckoutModal";
 import AuthModal from "../../src/components/auth/AuthModal";
+import LoadingOverlay from "../../src/components/ui/LoadingOverlay";
 import { AuthProvider, useAuth } from "../../src/contexts/AuthContext";
 import {
   NotificationProvider,
@@ -54,6 +55,9 @@ function AppContent() {
   const [pendingAction, setPendingAction] = React.useState<
     "cart" | "checkout" | null
   >(null);
+  // State for loading overlay
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [loadingMessage, setLoadingMessage] = React.useState("Processing your image...");
   // Update active frame when customization or image changes
   React.useEffect(() => {
     if (frameCollection.activeFrameId && uploadedImage) {
@@ -96,21 +100,59 @@ function AppContent() {
   }, [uploadedImage, addFrameToCollection]);
 
   const handleImageUpload = async (file: File) => {
-    await setImage(file);
-    // Automatically add the first frame when image is uploaded
-    setTimeout(() => {
-      if (frameCollection.frames.length === 0) {
-        handleAddFrame();
-      }
-    }, 100);
+    // Show loading overlay for first-time upload
+    setLoadingMessage("Processing your image and preparing frame customization tools...");
+    setIsLoading(true);
+    
+    try {
+      // Store uploaded image in Redux immediately
+      await setImage(file);
+      // Frame addition will be handled by useEffect below
+      
+      // Add a small delay to show the loading animation
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setIsLoading(false);
+    }
   };
+  // Add first frame to Redux when image is uploaded and no frames exist
+  React.useEffect(() => {
+    if (uploadedImage && frameCollection.frames.length === 0) {
+      addFrameToCollection();
+    }
+  }, [uploadedImage, frameCollection.frames.length, addFrameToCollection]);
 
   const handleFrameImageUpload = async (frameId: string, file: File) => {
-    await handleImageChange(frameId, file);
+    setLoadingMessage("Updating frame image...");
+    setIsLoading(true);
+    try {
+      await handleImageChange(frameId, file);
+      // Add a small delay to show the loading animation
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 800);
+    } catch (error) {
+      console.error('Error uploading frame image:', error);
+      setIsLoading(false);
+    }
   };
 
   const handleImageReplace = async (file: File) => {
-    await replaceImage(file);
+    setLoadingMessage("Replacing your image...");
+    setIsLoading(true);
+    try {
+      await replaceImage(file);
+      // Add a small delay to show the loading animation
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Error replacing image:', error);
+      setIsLoading(false);
+    }
   };
 
   const handleAddToCart = () => {
@@ -221,7 +263,7 @@ function AppContent() {
     let total = 0;
 
     // Add price from actual frames
-    total += frameCollection.frames.reduce((sum, frame) => {
+    total += frameCollection.frames.reduce((sum: number, frame: any) => {
       return sum + getSizePrice(frame.customization.size);
     }, 0);
 
@@ -246,7 +288,7 @@ function AppContent() {
     const items = [];
 
     // Add actual frames
-    frameCollection.frames.forEach((frame, index) => {
+    frameCollection.frames.forEach((frame: any, index: number) => {
       items.push({
         id: frame.id,
         name: `Custom Frame ${index + 1}`,
@@ -305,7 +347,7 @@ function AppContent() {
               onImageClick={handleImageClick}
               frameCount={frameCollection.frames.length}
               currentFrameIndex={frameCollection.frames.findIndex(
-                (f) => f.id === frameCollection.activeFrameId
+                (f: any) => f.id === frameCollection.activeFrameId
               )}
             />
           )}
@@ -383,6 +425,11 @@ function AppContent() {
             setIsAuthModalOpen(true);
           }}
         />{" "}
+        {/* Loading Overlay */}
+        <LoadingOverlay 
+          isVisible={isLoading} 
+          message={loadingMessage} 
+        />
         {/* Tutorial Tooltip */}
         <TutorialTooltip show={showTutorial} onClose={handleCloseTutorial} />
         {/* Auth Modal */}

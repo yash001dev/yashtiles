@@ -79,6 +79,7 @@ export const useFrameCustomizer = () => {
   };
 
   const addFrameToCollection = () => {
+    console.log("Adding frame to collection with uploadedImage:", uploadedImage);
     if (uploadedImage) {
       dispatch(addFrameToCollectionAction());
     }
