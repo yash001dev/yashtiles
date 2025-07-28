@@ -308,7 +308,6 @@ const KonvaFrameRenderer = forwardRef<
   const generatePrintReadyImage = () => {
     if (stageRef.current && frameId) {
       const dataUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
-      console.log("dataUrl", dataUrl);
       dispatch(setPrintReadyImage({ frameId, dataUrl }));
       return dataUrl;
     }

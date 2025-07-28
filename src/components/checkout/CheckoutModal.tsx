@@ -280,7 +280,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
     }
   };
 
-  console.log("PRINT READY IMAGES:", printReadyImages);
 
   return (
     <>
@@ -307,7 +306,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
               </h3>
               <div className="space-y-3">
                 {items.map((item, index) => {
-                  console.log("itemL",item)
                   const previewImage = printReadyImages[item.id] || item.image;
                   return (
                     <div key={item.id} className="flex items-center justify-between border-b border-gray-200 pb-3 last:border-b-0 last:pb-0">

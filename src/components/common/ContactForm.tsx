@@ -36,7 +36,6 @@ const ContactForm = ({ className }: ContactFormProps) => {
   const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(data: ContactFormValues) {
-    console.log("data", data);  
     setSuccess(null);
     setError(null);
     try {

@@ -96,14 +96,16 @@ function AppContent() {
   }, [uploadedImage, addFrameToCollection]);
 
   const handleImageUpload = async (file: File) => {
+    // Store uploaded image in Redux immediately
     await setImage(file);
-    // Automatically add the first frame when image is uploaded
-    setTimeout(() => {
-      if (frameCollection.frames.length === 0) {
-        handleAddFrame();
-      }
-    }, 100);
+    // Frame addition will be handled by useEffect below
   };
+  // Add first frame to Redux when image is uploaded and no frames exist
+  React.useEffect(() => {
+    if (uploadedImage && frameCollection.frames.length === 0) {
+      addFrameToCollection();
+    }
+  }, [uploadedImage, frameCollection.frames.length, addFrameToCollection]);
 
   const handleFrameImageUpload = async (frameId: string, file: File) => {
     await handleImageChange(frameId, file);
