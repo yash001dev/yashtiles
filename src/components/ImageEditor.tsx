@@ -30,6 +30,21 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [tempTransform, setTempTransform] = useState<Partial<ImageTransform> | null>(null);
+  
+  // Local state for smooth editing without Redux updates
+  const [localTransform, setLocalTransform] = useState<ImageTransform>(image.transform);
+  const [hasChanges, setHasChanges] = useState(false);
+  
+  // Refs to track current values for cleanup
+  const hasChangesRef = useRef(false);
+  const localTransformRef = useRef<ImageTransform>(image.transform);
+  
+  // Update refs when state changes
+  useEffect(() => {
+    hasChangesRef.current = hasChanges;
+    localTransformRef.current = localTransform;
+  }, [hasChanges, localTransform]);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
   const activeFrameId = useAppSelector(state => state.frameCustomizer.frameCollection.activeFrameId);
@@ -37,14 +52,49 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const konvaRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
   const downloadImageRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
 
-  // Helper function to get canvas center coordinates
-  const getCanvasCenter = () => {
-    // Default responsive width calculation (same as in KonvaFrameRenderer)
+  // Helper function to calculate actual image display dimensions based on material and constraints
+  const getActualImageDimensions = () => {
     const responsiveWidth = typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400;
+    const aspect = customization.size === '8x8' || customization.size === '12x12' || customization.size === '18x18' ? 1 : 0.8;
+    const canvasHeight = responsiveWidth / aspect;
+    
+    // Calculate available space after borders and frames
+    const frameBorder = customization.material === 'classic' ? 20 : 0;
+    const matting = customization.material === 'classic' ? 30 : 0;
+    const showCustomBorder = customization.border && customization.borderWidth && customization.borderColor;
+    const customBorderWidth = showCustomBorder ? customization.borderWidth! : 0;
+    
+    const availableWidth = customization.material === 'frameless' || customization.material === 'canvas'
+      ? responsiveWidth - 2 * (customBorderWidth + (customization.material === 'canvas' ? frameBorder : 0))
+      : responsiveWidth - 2 * (frameBorder + matting + customBorderWidth);
+      
+    const availableHeight = customization.material === 'frameless' || customization.material === 'canvas'
+      ? canvasHeight - 2 * (customBorderWidth + (customization.material === 'canvas' ? frameBorder : 0))
+      : canvasHeight - 2 * (frameBorder + matting + customBorderWidth);
+
+    // For this calculation, assume square aspect ratio for simplicity
+    // In a real scenario, you'd want to get the actual image aspect ratio
     return {
-      x: responsiveWidth / 2,
-      y: responsiveWidth / 2 // assuming square for simplicity, actual height varies by aspect ratio
+      width: availableWidth,
+      height: availableHeight,
+      centerX: responsiveWidth / 2,
+      centerY: canvasHeight / 2
     };
+  };
+
+  // Update local state when image prop changes
+  useEffect(() => {
+    setLocalTransform(image.transform);
+    setHasChanges(false);
+  }, [image.transform]);
+
+  // Function to save local changes to Redux
+  const handleSave = () => {
+    onTransformUpdate(localTransform);
+    setHasChanges(false);
+    if (activeFrameId) {
+      dispatch(updateActiveFrame());
+    }
   };
 
   // Helper function to get drag boundaries based on border settings
@@ -84,15 +134,24 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   // Ensure frame updates are saved when the editor closes
   useEffect(() => {
+    // Only run initial setup when editor opens
     if (isOpen && activeFrameId) {
       dispatch(updateActiveFrame());
     }
+  }, [isOpen, activeFrameId, dispatch]);
+
+  // Handle auto-save on close
+  useEffect(() => {
     return () => {
-      if (activeFrameId) {
-        dispatch(updateActiveFrame());
+      // Auto-save when unmounting if there are unsaved changes
+      if (hasChangesRef.current) {
+        onTransformUpdate(localTransformRef.current);
+        if (activeFrameId) {
+          dispatch(updateActiveFrame());
+        }
       }
     };
-  }, [isOpen, activeFrameId, dispatch]);
+  }, []); // Empty dependency array to only run on unmount
 
   if (!isOpen) return null;
 
@@ -100,6 +159,14 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     const file = event.target.files?.[0];
     if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
       onImageReplace(file);
+      // Reset local transform when replacing image
+      setLocalTransform({
+        scale: 1,
+        rotation: 0,
+        x: 0,
+        y: 0,
+      });
+      setHasChanges(false);
       setTimeout(() => {
         dispatch(updateActiveFrame());
       }, 100);
@@ -155,15 +222,14 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     }
   };
 
-  // Konva-based drag logic with smooth dragging
+  // Smooth drag logic with local state
   const handleKonvaMouseDown = (e: any) => {
     setIsDragging(true);
     const pos = e.target.getStage().getPointerPosition();
     setDragStart({
-      x: pos.x - image.transform.x,
-      y: pos.y - image.transform.y,
+      x: pos.x - localTransform.x,
+      y: pos.y - localTransform.y,
     });
-    // Clear any temporary transform
     setTempTransform(null);
   };
 
@@ -176,7 +242,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       // Apply boundary constraints
       const constrainedPos = constrainPosition(newX, newY);
       
-      // Use temporary state during dragging to avoid flickering
+      // Update temp transform for smooth dragging
       setTempTransform({
         x: constrainedPos.x,
         y: constrainedPos.y,
@@ -187,64 +253,63 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const handleKonvaMouseUp = () => {
     setIsDragging(false);
     
-    // Apply the final transform when dragging ends
+    // Apply the final transform to local state
     if (tempTransform) {
-      onTransformUpdate(tempTransform);
+      setLocalTransform(prev => ({
+        ...prev,
+        ...tempTransform
+      }));
       setTempTransform(null);
-      
-      // Update Redux state only once at the end
-      if (activeFrameId) {
-        setTimeout(() => {
-          dispatch(updateActiveFrame());
-        }, 16); // Small delay to ensure smooth transition
-      }
+      setHasChanges(true);
     }
   };
 
   const handleScaleChange = (delta: number) => {
-    const newScale = Math.max(0.5, Math.min(3, currentTransform.scale + delta));
+    const newScale = Math.max(0.5, Math.min(3, localTransform.scale + delta));
     
-    // Get accurate canvas center
-    const canvasCenter = getCanvasCenter();
-    const scaleRatio = newScale / currentTransform.scale;
+    // Get image dimensions and center
+    const { width, height, centerX, centerY } = getActualImageDimensions();
     
-    // Calculate new position to maintain visual center during scaling
-    const newX = canvasCenter.x - (canvasCenter.x - currentTransform.x) * scaleRatio;
-    const newY = canvasCenter.y - (canvasCenter.y - currentTransform.y) * scaleRatio;
+    // Calculate current image center position
+    const currentImageCenterX = localTransform.x + (width * localTransform.scale) / 2;
+    const currentImageCenterY = localTransform.y + (height * localTransform.scale) / 2;
     
-    // Apply boundary constraints to the new position
+    // Calculate new position to maintain image center
+    const newX = currentImageCenterX - (width * newScale) / 2;
+    const newY = currentImageCenterY - (height * newScale) / 2;
+    
+    // Apply boundary constraints
     const constrainedPos = constrainPosition(newX, newY);
     
-    onTransformUpdate({ 
+    setLocalTransform(prev => ({
+      ...prev,
       scale: newScale,
       x: constrainedPos.x,
       y: constrainedPos.y
-    });
-    if (activeFrameId) {
-      dispatch(updateActiveFrame());
-    }
+    }));
+    setHasChanges(true);
   };
 
   const handleRotate = () => {
-    onTransformUpdate({ rotation: (currentTransform.rotation + 90) % 360 });
-    if (activeFrameId) {
-      dispatch(updateActiveFrame());
-    }
+    setLocalTransform(prev => ({
+      ...prev,
+      rotation: (prev.rotation + 90) % 360
+    }));
+    setHasChanges(true);
   };
 
   const handleReset = () => {
-    onTransformUpdate({
+    setLocalTransform({
       scale: 1,
       rotation: 0,
       x: 0,
       y: 0,
     });
-    if (activeFrameId) {
-      dispatch(updateActiveFrame());
-    }
+    setHasChanges(true);
   };
+  
   // Get current transform including temporary state during dragging
-  const currentTransform = tempTransform ? { ...image.transform, ...tempTransform } : image.transform;
+  const currentTransform = tempTransform ? { ...localTransform, ...tempTransform } : localTransform;
 
   console.log(  "active:",activeFrameId)
   return (
@@ -265,14 +330,14 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Edit Photo</h2>
           <div className="flex items-center space-x-1 sm:space-x-2">
-            {/* Uncomment when download functionality is implemented}
-            {/* <button
-              onClick={handleDownload}
-              className="bg-pink-500 hover:bg-pink-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm mr-10"
-            >
-              <Download size={16} className="sm:w-[18px] sm:h-[18px] " />
-              <span className="hidden sm:inline">Download</span>
-            </button> */}
+            {hasChanges && (
+              <button
+                onClick={handleSave}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm"
+              >
+                Save Changes
+              </button>
+            )}
             <button
               onClick={onClose}
               className="p-1 hover:bg-gray-100 rounded-full transition-colors duration-200"
@@ -309,26 +374,23 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     showEditOverlay={true}
                     addClassicPadding={true}
                     onImageDrag={({ x, y }) => {
-                      // Apply boundary constraints to image drag with throttling
+                      // Apply boundary constraints to image drag
                       const constrainedPos = constrainPosition(x, y);
                       
                       if (isDragging) {
-                        // Use temporary state during dragging
+                        // Use temporary state during dragging for smooth experience
                         setTempTransform({
                           x: constrainedPos.x, 
                           y: constrainedPos.y 
                         });
                       } else {
-                        // Apply immediately if not in mouse drag mode
-                        onTransformUpdate({ 
+                        // Update local state directly for non-mouse drag
+                        setLocalTransform(prev => ({
+                          ...prev,
                           x: constrainedPos.x, 
                           y: constrainedPos.y 
-                        });
-                        if (activeFrameId) {
-                          setTimeout(() => {
-                            dispatch(updateActiveFrame());
-                          }, 16);
-                        }
+                        }));
+                        setHasChanges(true);
                       }
                     }}
                     frameId={activeFrameId?activeFrameId.toString():'0'}
@@ -363,24 +425,28 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                           value={currentTransform.scale}
                           onChange={(e) => {
                             const newScale = parseFloat(e.target.value);
-                            const canvasCenter = getCanvasCenter();
-                            const scaleRatio = newScale / currentTransform.scale;
                             
-                            // Maintain visual center during scaling
-                            const newX = canvasCenter.x - (canvasCenter.x - currentTransform.x) * scaleRatio;
-                            const newY = canvasCenter.y - (canvasCenter.y - currentTransform.y) * scaleRatio;
+                            // Get image dimensions and current center
+                            const { width, height } = getActualImageDimensions();
+                            
+                            // Calculate current image center position
+                            const currentImageCenterX = localTransform.x + (width * localTransform.scale) / 2;
+                            const currentImageCenterY = localTransform.y + (height * localTransform.scale) / 2;
+                            
+                            // Calculate new position to maintain image center
+                            const newX = currentImageCenterX - (width * newScale) / 2;
+                            const newY = currentImageCenterY - (height * newScale) / 2;
                             
                             // Apply boundary constraints
                             const constrainedPos = constrainPosition(newX, newY);
                             
-                            onTransformUpdate({ 
+                            setLocalTransform(prev => ({
+                              ...prev,
                               scale: newScale,
                               x: constrainedPos.x,
                               y: constrainedPos.y
-                            });
-                            if (activeFrameId) {
-                              dispatch(updateActiveFrame());
-                            }
+                            }));
+                            setHasChanges(true);
                           }}
                           className="flex-1"
                         />
@@ -424,15 +490,27 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                       <RefreshCw size={16} />
                       <span>Replace Image</span>
                     </button>
+                    {hasChanges && (
+                      <button
+                        onClick={handleSave}
+                        className="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center justify-center space-x-2 text-sm font-medium"
+                      >
+                        <span>💾</span>
+                        <span>Save Changes</span>
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4">
                   <h3 className="font-semibold text-gray-900 mb-2">Tips</h3>
                   <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Use scale slider to resize</li>
-                    <li>• Rotate in 90° increments</li>
-                    <li>• Replace image anytime</li>
-                    <li>• Download when satisfied</li>
+                    <li>• Drag image to reposition</li>
+                    <li>• Use scale controls to resize</li>
+                    <li>• Changes saved automatically on close</li>
+                    <li>• Click "Save Changes" to apply immediately</li>
+                    {hasChanges && (
+                      <li className="text-blue-600 font-medium">• You have unsaved changes</li>
+                    )}
                   </ul>
                 </div>
               </div>
