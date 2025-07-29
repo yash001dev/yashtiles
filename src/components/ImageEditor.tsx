@@ -249,13 +249,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Edit Photo</h2>
           <div className="flex items-center space-x-1 sm:space-x-2">
-            <button
+            {/* <button
               onClick={handleDownload}
               className="bg-pink-500 hover:bg-pink-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm mr-10"
             >
               <Download size={16} className="sm:w-[18px] sm:h-[18px] " />
               <span className="hidden sm:inline">Download</span>
-            </button>
+            </button> */}
             <button
               onClick={onClose}
               className="p-1 hover:bg-gray-100 rounded-full transition-colors duration-200"
