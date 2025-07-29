@@ -228,6 +228,8 @@ const KonvaFrameRenderer = forwardRef<
 
   let displayWidth = availableWidth;
   let displayHeight = availableHeight;
+  
+
   let offsetX = 0;
   let offsetY = 0;
 
@@ -303,11 +305,14 @@ const KonvaFrameRenderer = forwardRef<
   const [hovered, setHovered] = useState(false);
 
   const stageRef = useRef<any>(null);
+  const downloadStageRef = useRef<any>(null); // Separate stage for download
 
   // Function to generate and store print-ready image
   const generatePrintReadyImage = () => {
-    if (stageRef.current && frameId) {
-      const dataUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
+    // Use download stage if available, otherwise fall back to main stage
+    const targetStage = downloadStageRef.current || stageRef.current;
+    if (targetStage && frameId) {
+      const dataUrl = targetStage.toDataURL({ pixelRatio: 2 });
       dispatch(setPrintReadyImage({ frameId, dataUrl }));
       return dataUrl;
     }
@@ -328,8 +333,10 @@ const KonvaFrameRenderer = forwardRef<
 
   useImperativeHandle(ref, () => ({
     getCanvasDataURL: () => {
-      if (stageRef.current) {
-        const dataUrl = stageRef.current.toDataURL({ pixelRatio: 2 });
+      // Use download stage for better quality output
+      const targetStage = downloadStageRef.current || stageRef.current;
+      if (targetStage) {
+        const dataUrl = targetStage.toDataURL({ pixelRatio: 2 });
         // Also store it in Redux if frameId is available
         if (frameId) {
           dispatch(setPrintReadyImage({ frameId, dataUrl }));
@@ -372,72 +379,8 @@ const KonvaFrameRenderer = forwardRef<
       )}
       <Stage ref={stageRef} width={canvasWidth} height={canvasHeight} style={{ borderRadius: 6, background: 'transparent' }}>
         <Layer>
-          {/* Only render the image if downloadOnlyImage is true */}
-          {downloadOnlyImage ? (
-            image && (
-              <>
-                {customization.material === 'frameless' ? (
-                  // Border rectangle illusion for frameless download
-                  <Rect
-                    x={0}
-                    y={0}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                    fill={customization.borderColor ?? '#fff'}
-                    stroke={getFrameBorderColor(customization.frameColor)}
-                    strokeWidth={showCustomBorder ? customization.borderWidth! : 2}
-                    cornerRadius={6}
-                  />
-                ) : (
-                  // Regular border background for other materials
-                  <Rect
-                    x={0}
-                    y={0}
-                    width={canvasWidth}
-                    height={canvasHeight}
-                    fill={customization.borderColor ?? '#fff'}
-                    cornerRadius={6}
-                  />
-                )}
-                {/* Image group with same positioning as regular view */}
-                <Group
-                  x={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
-                  y={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
-                  width={availableWidth}
-                  height={availableHeight}
-                  clipFunc={ctx => {
-                    ctx.beginPath();
-                    if (customization.material === 'frameless') {
-                      ctx.rect(0, 0, availableWidth, availableHeight);
-                    } else {
-                      ctx.rect(0, 0, availableWidth, availableHeight);
-                    }
-                    ctx.closePath();
-                  }}
-                  listening={false}
-                >
-                  <KonvaImage
-                    image={image}
-                    width={displayWidth}
-                    height={displayHeight}
-                    x={offsetX + (transform.x || 0)}
-                    y={offsetY + (transform.y || 0)}
-                    scaleX={transform.scale}
-                    scaleY={transform.scale}
-                    rotation={transform.rotation}
-                    filters={[]}
-                    style={{ filter: getEffectFilter(customization.effect) }}
-                    listening={false}
-                    perfectDrawEnabled={false}
-                    draggable={false}
-                  />
-                </Group>
-              </>
-            )
-          ) : (
-            <>
-              {/* Frame */}
-              {customization.material === 'classic' ? (
+          {/* Frame */}
+          {customization.material === 'classic' ? (
                 // Draw 3D beveled classic frame using polygons
                 <>
                   {/* Main background */}
@@ -692,6 +635,97 @@ const KonvaFrameRenderer = forwardRef<
                   />
                 </Group>
               )}
+        </Layer>
+      </Stage>
+      
+      {/* Separate hidden stage for download purposes - renders clean image with minimal white space */}
+      <Stage 
+        ref={downloadStageRef} 
+        width={canvasWidth} 
+        height={canvasHeight} 
+        style={{ position: 'absolute', top: '-9999px', left: '-9999px', visibility: 'hidden' }}
+      >
+        <Layer>
+          {image && (
+            <>
+              {/* Minimal background - only small border */}
+              <Rect
+                x={0}
+                y={0}
+                width={canvasWidth}
+                height={canvasHeight}
+                fill={customization.borderColor ?? '#fff'}
+                cornerRadius={6}
+              />
+              
+              {/* Image positioned with minimal padding - recalculated for tight crop */}
+              {(() => {
+                // Calculate tighter dimensions for download
+                const downloadPadding = customization.material === 'classic' ? 8 : 4;
+                const downloadAvailableWidth = canvasWidth - (2 * downloadPadding);
+                const downloadAvailableHeight = canvasHeight - (2 * downloadPadding);
+                
+                // Recalculate image size to fill more of the available space
+                let downloadDisplayWidth = downloadAvailableWidth;
+                let downloadDisplayHeight = downloadAvailableHeight;
+                let downloadOffsetX = 0;
+                let downloadOffsetY = 0;
+                
+                if (customization.material === 'frameless' || customization.material === 'canvas') {
+                  // Use "cover" approach - fill the entire available space
+                  const downloadAreaAspect = downloadAvailableWidth / downloadAvailableHeight;
+                  if (imageAspect > downloadAreaAspect) {
+                    downloadDisplayHeight = downloadAvailableHeight;
+                    downloadDisplayWidth = downloadAvailableHeight * imageAspect;
+                    downloadOffsetX = (downloadAvailableWidth - downloadDisplayWidth) / 2;
+                  } else {
+                    downloadDisplayWidth = downloadAvailableWidth;
+                    downloadDisplayHeight = downloadAvailableWidth / imageAspect;
+                    downloadOffsetY = (downloadAvailableHeight - downloadDisplayHeight) / 2;
+                  }
+                } else {
+                  // Use "fit" approach for classic frames but with tighter bounds
+                  const downloadAreaAspect = downloadAvailableWidth / downloadAvailableHeight;
+                  if (imageAspect > downloadAreaAspect) {
+                    downloadDisplayWidth = downloadAvailableWidth;
+                    downloadDisplayHeight = downloadAvailableWidth / imageAspect;
+                    downloadOffsetY = (downloadAvailableHeight - downloadDisplayHeight) / 2;
+                  } else {
+                    downloadDisplayHeight = downloadAvailableHeight;
+                    downloadDisplayWidth = downloadAvailableHeight * imageAspect;
+                    downloadOffsetX = (downloadAvailableWidth - downloadDisplayWidth) / 2;
+                  }
+                }
+                
+                return (
+                  <Group
+                    x={downloadPadding}
+                    y={downloadPadding}
+                    width={downloadAvailableWidth}
+                    height={downloadAvailableHeight}
+                    clipFunc={ctx => {
+                      ctx.beginPath();
+                      ctx.rect(0, 0, downloadAvailableWidth, downloadAvailableHeight);
+                      ctx.closePath();
+                    }}
+                  >
+                    <KonvaImage
+                      image={image}
+                      width={downloadDisplayWidth}
+                      height={downloadDisplayHeight}
+                      x={downloadOffsetX + (transform.x || 0)}
+                      y={downloadOffsetY + (transform.y || 0)}
+                      scaleX={transform.scale}
+                      scaleY={transform.scale}
+                      rotation={transform.rotation}
+                      filters={[]}
+                      style={{ filter: getEffectFilter(customization.effect) }}
+                      listening={false}
+                      perfectDrawEnabled={false}
+                    />
+                  </Group>
+                );
+              })()}
             </>
           )}
         </Layer>
