@@ -38,9 +38,9 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
       preview: "bg-gradient-to-br from-blue-100 to-indigo-200",
     },
     {
-      id: "framedecor",
-      name: "Classic Gallery",
-      image: "/framedecor.png",
+      id: "framedecor3",
+      name: "Office Gallery",
+      image: "/framedecor3.png",
       preview: "bg-gradient-to-br from-gray-100 to-slate-200",
     },
     {
