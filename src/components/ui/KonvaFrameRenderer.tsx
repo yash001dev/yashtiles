@@ -381,8 +381,37 @@ const KonvaFrameRenderer = forwardRef<
           <Edit size={18} color="#374151" />
         </button>
       )}
+       <div
+        style={{
+          position: 'absolute',
+          left: canvasWidth,
+          top: '0px',
+          width: '8.20px',
+          height: canvasHeight,
+          background: 'rgb(77, 77, 77)',
+          clipPath: `polygon(-20px -20px, 100% 2.16272%, 40px ${canvasHeight}px, -30px 100%)`,
+          transition: 'none',
+
+        }}
+      />
+
+      {/* Bottom side depth */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '0px',
+          top: canvasHeight,
+          width: canvasWidth+8,
+          height: '8.30px',
+          background: 'rgb(77, 77, 77)',
+          clipPath: `polygon(0px 0px, ${canvasWidth+8}px -20px, 100% 100%, 10px 30px)`,
+          transition: 'none',
+        }}
+      />
       <Stage ref={stageRef} width={canvasWidth} height={canvasHeight} style={{ borderRadius: 6, background: 'transparent' }}>
         <Layer>
+       
+
           {/* Frame */}
           {customization.material === 'classic' ? (
                 // Draw 3D beveled classic frame using polygons
@@ -406,7 +435,7 @@ const KonvaFrameRenderer = forwardRef<
                       frameBorder, frameBorder
                     ]}
                     closed
-                    fill={bevelTop}
+                    fill={bevelLeft}
                     listening={false}
                   />
                   {/* Left bevel (trapezoid) */}
@@ -442,7 +471,7 @@ const KonvaFrameRenderer = forwardRef<
                       0, canvasHeight
                     ]}
                     closed
-                    fill={bevelBottom}
+                    fill={bevelLeft}
                     listening={false}
                   />
                   {/* Bottom left triangle */}
