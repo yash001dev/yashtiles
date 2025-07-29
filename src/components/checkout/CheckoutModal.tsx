@@ -42,12 +42,13 @@ interface CheckoutModalProps {
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items }) => {
   const { isAuthenticated, user } = useAuth();
-  const { processCheckout, isLoading, error, clearError } = useCheckout();
+  const { processCheckout, error, clearError } = useCheckout();
   
   // Access print-ready images from Redux
   const printReadyImages = useAppSelector((state) => state.frameCustomizer.printReadyImages);
   
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'razorpay'>('stripe');
 
   // Initialize form with react-hook-form and zod validation
@@ -95,6 +96,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
 
   // PayU integration handler
   const handleCartClick = async (shippingData: ShippingFormData) => {
+    setIsLoading(true);
       // Collect order items from frameCollection
       const allItems = items.map(frame => ({
         productId: frame.id, // Replace with real productId if available
@@ -252,6 +254,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
           paymentForm.submit();
         }
       }
+      setIsLoading(false);
     };
   
   const onSubmit = async (formData: ShippingFormData) => {

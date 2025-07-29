@@ -50,8 +50,8 @@ export const downloadFramedImage = async (
           case 'white':
             ctx.fillStyle = '#ffffff';
             break;
-          case 'oak':
-            ctx.fillStyle = '#fef3c7';
+          case 'brown':
+            ctx.fillStyle = '#a97442'; // distinct brown
             break;
           default:
             ctx.fillStyle = '#1f2937';

@@ -30,11 +30,17 @@ const FrameModal: React.FC<FrameModalProps> = ({
       color: 'bg-white border border-gray-200',
       description: 'Clean white finish',
     },
+    // {
+    //   id: 'oak',
+    //   name: 'Oak',
+    //   color: 'bg-gradient-to-br from-amber-100 to-amber-200',
+    //   description: 'Natural wood grain',
+    // },
     {
-      id: 'oak',
-      name: 'Oak',
-      color: 'bg-gradient-to-br from-amber-100 to-amber-200',
-      description: 'Natural wood grain',
+      id: 'brown',
+      name: 'Brown',
+      color: 'bg-yellow-900', // You can adjust this Tailwind class for a better brown shade
+      description: 'Warm brown finish',
     },
   ];
 

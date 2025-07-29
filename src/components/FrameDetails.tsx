@@ -55,7 +55,8 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
     const names: Record<string, string> = {
       black: "Black",
       white: "White",
-      oak: "Oak",
+      // oak: "Oak",
+      brown: "Brown",
     };
     return names[color] || "Black";
   };

@@ -144,8 +144,10 @@ const FrameRenderer: React.FC<FrameRendererProps> = ({
     switch (customization.frameColor) {
       case 'white':
         return 'bg-white border-gray-200';
-      case 'oak':
-        return 'bg-amber-100 border-amber-200';
+      case 'brown':
+        return '#a97442'; // distinct brown
+      // case 'oak':
+      //   return '#fef3c7';
       default:
         return 'bg-gray-900 border-gray-800';
     }

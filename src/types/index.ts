@@ -9,7 +9,7 @@ export interface HangOption {
 
 export interface FrameCustomization {
   material: "classic" | "frameless" | "canvas" | "3d";
-  frameColor: "black" | "white" | "oak";
+  frameColor: "black" | "white" | "brown";
   size:
     | "8x8"
     | "8x10"
@@ -55,7 +55,7 @@ export interface MaterialOption {
 }
 
 export interface FrameColorOption {
-  id: "black" | "white" | "oak";
+  id: "black" | "white" | "brown";
   name: string;
   color: string;
   description: string;

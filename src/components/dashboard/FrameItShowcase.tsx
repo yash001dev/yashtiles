@@ -12,7 +12,7 @@ const showcaseItems = [
     description: "Modern family portrait in elegant wooden frame",
     image:
       "living-room-frame.png",
-    frameColor: "Natural Oak",
+    frameColor: "Brown",
   },
   {
     id: 2,
@@ -36,7 +36,7 @@ const showcaseItems = [
     description: "Mixed sizes creating stunning focal point",
     image:
       "gallery-wall-frame.png",
-    frameColor: "Black Oak",
+    frameColor: "Brown",
   },
   {
     id: 5,
