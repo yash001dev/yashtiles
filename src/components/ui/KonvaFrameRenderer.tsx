@@ -381,6 +381,7 @@ const KonvaFrameRenderer = forwardRef<
           <Edit size={18} color="#374151" />
         </button>
       )}
+      {/** Add right side 3d effect */}
        <div
         style={{
           position: 'absolute',
@@ -395,7 +396,7 @@ const KonvaFrameRenderer = forwardRef<
         }}
       />
 
-      {/* Bottom side depth */}
+      {/* Add bottom side 3d effect */}
       <div
         style={{
           position: 'absolute',
