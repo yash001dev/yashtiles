@@ -660,8 +660,8 @@ const KonvaFrameRenderer = forwardRef<
               
               {/* Image positioned with minimal padding - recalculated for tight crop */}
               {(() => {
-                // Calculate tighter dimensions for download
-                const downloadPadding = customization.material === 'classic' ? 8 : 4;
+                // Calculate even tighter dimensions for download - minimal padding
+                const downloadPadding = customization.material === 'classic' ? 4 : 2; // Reduced from 8:4 to 4:2
                 const downloadAvailableWidth = canvasWidth - (2 * downloadPadding);
                 const downloadAvailableHeight = canvasHeight - (2 * downloadPadding);
                 
