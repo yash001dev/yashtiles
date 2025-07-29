@@ -325,7 +325,6 @@ const KonvaFrameRenderer = forwardRef<
 
   // Auto-generate print-ready image when component updates
   useEffect(() => {
-     console.log('Frme id:',frameId)
     if (frameId && uploadedImage && image) {
       // Small delay to ensure canvas is fully rendered
       const timer = setTimeout(() => {

@@ -311,7 +311,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   // Get current transform including temporary state during dragging
   const currentTransform = tempTransform ? { ...localTransform, ...tempTransform } : localTransform;
 
-  console.log(  "active:",activeFrameId)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-2 sm:p-4">
       {/* Hidden print-ready renderer for download */}
