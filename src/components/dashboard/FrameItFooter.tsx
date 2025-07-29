@@ -33,7 +33,7 @@ const FrameItFooter = () => {
   return (
     <footer className="bg-dark-green">
       {/* Main footer content */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 pt-6 pb-0">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-12 gap-8">
             {/* Brand section */}
@@ -56,7 +56,7 @@ const FrameItFooter = () => {
 
             {/* Links sections */}
             <div className="lg:col-span-8">
-              <div className="grid md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
                 {/* Quick Links */}
                 <div>
                   <h4 className="font-semibold mb-4">Quick Links</h4>

@@ -9,7 +9,7 @@ const showcaseItems = [
   {
     id: 1,
     title: "Living Room Layout",
-    description: "Modern family portrait in elegant wooden frame",
+    description: "Modern family portrait in wooden frame",
     image:
       "living-room-frame.png",
     frameColor: "Brown",
@@ -41,7 +41,7 @@ const showcaseItems = [
   {
     id: 5,
     title: "Bedroom Accent",
-    description: "Soft tones complementing bedroom decor",
+    description: "Soft tones for bedroom decor",
     image:
       "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=600&h=400&fit=crop",
     frameColor: "Birch",
@@ -89,20 +89,16 @@ const FrameItShowcase = () => {
           {/* Showcase Slider */}
           <div className="relative">
             {/* Main slider container */}
-            <div className="overflow-hidden rounded-2xl">
-              <div className="flex gap-6 transition-transform duration-500 ease-in-out">
+            <div className="overflow-hidden md:overflow-visible rounded-2xl">
+              <div className="flex gap-4 transition-transform duration-500 ease-in-out">
                 {getVisibleItems().map((item, index) => (
                   <div
                     key={item.id}
-                    className={`relative flex-shrink-0 w-full md:w-1/3 group  ${
-                      index === 1
-                        ? "md:scale-105 z-10"
-                        : "md:scale-95 opacity-75"
-                    } transition-all duration-500`}
+                    className={`relative flex-shrink-0 w-full md:w-1/3 group   transition-all duration-500`}
                     onMouseEnter={() => setHoveredItem(item.id)}
                     onMouseLeave={() => setHoveredItem(null)}
                   >
-                    <div className="relative bg-white text-black p-4 rounded-xl shadow-lg group-hover:shadow-2xl transition-shadow duration-300">
+                    <div className="relative bg-white text-black p-4 rounded-xl shadow-lg group-hover:shadow-2xl transition-shadow duration-300 max-w-[350px]">
                       <div className="shadow-lg p-3 rounded-lg">
                         <div className="relative aspect-[4/3] overflow-hidden rounded">
                           <Image

@@ -46,7 +46,7 @@ const NewsletterForm = () => {
   }
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <form className="gap-4 flex flex-col" onSubmit={handleSubmit(onSubmit)} noValidate>
       {success && <div className="bg-green-100 text-green-800 rounded-md p-3 text-center">{success}</div>}
       {error && <div className="bg-red-100 text-red-800 rounded-md p-3 text-center">{error}</div>}
       <div>
@@ -55,7 +55,7 @@ const NewsletterForm = () => {
           id="newsletter-email"
           type="email"
           placeholder="you@example.com"
-          className="w-full"
+          className="w-full p-3 h-10"
           {...register('email')}
           aria-invalid={!!errors.email}
           required
