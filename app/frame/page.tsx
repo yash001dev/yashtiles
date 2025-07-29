@@ -62,6 +62,7 @@ function AppContent() {
   
   // State for background image
   const [backgroundImage, setBackgroundImage] = React.useState("/framedecor1.png");
+  const [wallColor, setWallColor] = React.useState("#f3f4f6");
   // Update active frame when customization or image changes
   React.useEffect(() => {
     if (frameCollection.activeFrameId && uploadedImage) {
@@ -100,6 +101,10 @@ function AppContent() {
 
   const handleBackgroundUpdate = (newBackgroundImage: string) => {
     setBackgroundImage(newBackgroundImage);
+  };
+
+  const handleWallColorUpdate = (newWallColor: string) => {
+    setWallColor(newWallColor);
   };
   const handleAddFrame = React.useCallback(() => {
     if (uploadedImage) {
@@ -358,6 +363,7 @@ function AppContent() {
                 (f: any) => f.id === frameCollection.activeFrameId
               )}
               backgroundImage={backgroundImage}
+              wallColor={wallColor}
             />
           )}
         </main>
@@ -418,6 +424,14 @@ function AppContent() {
           onClose={closeModal}
           currentHangType={customization.hangType}
           onSelect={(hangType) => updateCustomization({ hangType })}
+        />
+        <BackgroundBottomSheet
+          isOpen={activeModal === "background"}
+          onClose={closeModal}
+          currentBackground={backgroundImage}
+          onBackgroundUpdate={handleBackgroundUpdate}
+          currentWallColor={wallColor}
+          onWallColorUpdate={handleWallColorUpdate}
         />
         {uploadedImage && (
           <ImageEditor

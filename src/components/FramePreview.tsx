@@ -11,6 +11,7 @@ interface FramePreviewProps {
   frameCount?: number;
   currentFrameIndex?: number;
   backgroundImage?: string;
+  wallColor?: string;
 }
 
 const FramePreview: React.FC<FramePreviewProps> = ({
@@ -19,13 +20,15 @@ const FramePreview: React.FC<FramePreviewProps> = ({
   onImageClick,
   frameCount = 0,
   currentFrameIndex = 0,
-  backgroundImage = "/framedecor1.png"
+  backgroundImage = "/framedecor1.png",
+  wallColor = "#f3f4f6"
 }) => {
   return (
     <div 
       className="flex items-center justify-center min-h-[60vh] px-4 py-8 relative"
       style={{
-        backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'url(/framedecor.png)',
+        backgroundColor: !backgroundImage ? wallColor : 'transparent',
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'

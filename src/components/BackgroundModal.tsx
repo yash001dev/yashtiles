@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, Image as ImageIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Image as ImageIcon, Palette } from 'lucide-react';
 
 interface BackgroundOption {
   id: string;
@@ -13,6 +13,8 @@ interface BackgroundModalProps {
   onClose: () => void;
   currentBackground: string;
   onBackgroundUpdate: (backgroundImage: string) => void;
+  currentWallColor?: string;
+  onWallColorUpdate?: (color: string) => void;
 }
 
 const BackgroundModal: React.FC<BackgroundModalProps> = ({
@@ -20,7 +22,11 @@ const BackgroundModal: React.FC<BackgroundModalProps> = ({
   onClose,
   currentBackground,
   onBackgroundUpdate,
+  currentWallColor = "#f3f4f6",
+  onWallColorUpdate,
 }) => {
+  const [selectedType, setSelectedType] = useState<"image" | "color">("image");
+  
   if (!isOpen) return null;
 
   const backgroundOptions: BackgroundOption[] = [
@@ -37,9 +43,9 @@ const BackgroundModal: React.FC<BackgroundModalProps> = ({
       preview: "bg-gradient-to-br from-blue-100 to-indigo-200",
     },
     {
-      id: "framedecor",
-      name: "Classic Gallery",
-      image: "/framedecor.png",
+      id: "framedecor3",
+      name: "Office Gallery",
+      image: "/framedecor3.png",
       preview: "bg-gradient-to-br from-gray-100 to-slate-200",
     },
     {
@@ -50,9 +56,34 @@ const BackgroundModal: React.FC<BackgroundModalProps> = ({
     },
   ];
 
+  const wallColors = [
+    { id: "white", name: "White", color: "#ffffff" },
+    { id: "lightGray", name: "Light Gray", color: "#f3f4f6" },
+    { id: "gray", name: "Gray", color: "#9ca3af" },
+    { id: "beige", name: "Beige", color: "#f5f5dc" },
+    { id: "cream", name: "Cream", color: "#fefcf3" },
+    { id: "lightBlue", name: "Light Blue", color: "#dbeafe" },
+    { id: "lightGreen", name: "Light Green", color: "#dcfce7" },
+    { id: "lightPink", name: "Light Pink", color: "#fce7f3" },
+    { id: "lavender", name: "Lavender", color: "#e9d5ff" },
+    { id: "peach", name: "Peach", color: "#fed7aa" },
+    { id: "mint", name: "Mint", color: "#a7f3d0" },
+    { id: "sage", name: "Sage", color: "#d1fae5" },
+  ];
+
   const handleBackgroundSelect = (backgroundImage: string) => {
     onBackgroundUpdate(backgroundImage);
+    setSelectedType("image");
     onClose();
+  };
+
+  const handleWallColorSelect = (color: string) => {
+    if (onWallColorUpdate) {
+      onWallColorUpdate(color);
+      // Clear image background when color is selected
+      onBackgroundUpdate("");
+      setSelectedType("color");
+    }
   };
 
   return (
