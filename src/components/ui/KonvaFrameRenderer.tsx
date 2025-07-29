@@ -203,7 +203,7 @@ const KonvaFrameRenderer = forwardRef<
 
   // Matting/inner border
   // const matting = 10; // REMOVE for classic
-  const matting = customization.material === 'classic' || customization.material === 'frameless' ? 0 : 10;
+  const matting = customization.material === 'classic' || customization.material === 'frameless' || customization.material === 'canvas' ? 0 : 10;
 
   // Image transform
   const transform = uploadedImage?.transform || { scale: 1, rotation: 0, x: 0, y: 0 };
@@ -213,11 +213,11 @@ const KonvaFrameRenderer = forwardRef<
 
   // --- Aspect ratio fit logic ---
   // Calculate available area for image
-  const availableWidth = customization.material === 'frameless'
-    ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0)
+  const availableWidth = customization.material === 'frameless' || customization.material === 'canvas'
+    ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
     : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
-  const availableHeight = customization.material === 'frameless'
-    ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0)
+  const availableHeight = customization.material === 'frameless' || customization.material === 'canvas'
+    ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
     : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
 
   // Get natural image size
@@ -507,8 +507,18 @@ const KonvaFrameRenderer = forwardRef<
               )}
               {/* Image group (for transform) */}
               <Group
-                x={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
-                y={customization.material === 'frameless' ? (showCustomBorder ? customization.borderWidth! : 0) : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)}
+                x={customization.material === 'frameless' 
+                  ? (showCustomBorder ? customization.borderWidth! : 0) 
+                  : customization.material === 'canvas'
+                    ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
+                    : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
+                }
+                y={customization.material === 'frameless' 
+                  ? (showCustomBorder ? customization.borderWidth! : 0) 
+                  : customization.material === 'canvas'
+                    ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
+                    : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
+                }
                 width={availableWidth}
                 height={availableHeight}
                 clipFunc={ctx => {
@@ -661,7 +671,7 @@ const KonvaFrameRenderer = forwardRef<
               {/* Image positioned with minimal padding - recalculated for tight crop */}
               {(() => {
                 // Calculate even tighter dimensions for download - minimal padding
-                const downloadPadding = customization.material === 'classic' ? 4 : 2; // Reduced from 8:4 to 4:2
+                const downloadPadding = customization.material === 'classic' ? 4 : customization.material === 'canvas' ? 3 : 2; // canvas gets 3px, others 2px or 4px
                 const downloadAvailableWidth = canvasWidth - (2 * downloadPadding);
                 const downloadAvailableHeight = canvasHeight - (2 * downloadPadding);
                 
