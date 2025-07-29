@@ -81,7 +81,7 @@ const MultiFrameSlider: React.FC<MultiFrameSliderProps> = ({
             bulletClass: 'swiper-pagination-bullet-custom',
             bulletActiveClass: 'swiper-pagination-bullet-active-custom',
           }}
-          className="multi-frame-swiper"
+          className="multi-frame-swiper !pt-2"
         >
           {/* Temporary Frame Slide - shown when no frames but has uploaded image */}
           {hasTemporaryFrame && uploadedImage && (

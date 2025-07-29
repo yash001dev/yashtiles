@@ -29,6 +29,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [tempTransform, setTempTransform] = useState<Partial<ImageTransform> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
   const activeFrameId = useAppSelector(state => state.frameCustomizer.frameCollection.activeFrameId);
@@ -154,7 +155,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     }
   };
 
-  // Konva-based drag logic
+  // Konva-based drag logic with smooth dragging
   const handleKonvaMouseDown = (e: any) => {
     setIsDragging(true);
     const pos = e.target.getStage().getPointerPosition();
@@ -162,6 +163,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       x: pos.x - image.transform.x,
       y: pos.y - image.transform.y,
     });
+    // Clear any temporary transform
+    setTempTransform(null);
   };
 
   const handleKonvaMouseMove = (e: any) => {
@@ -173,7 +176,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       // Apply boundary constraints
       const constrainedPos = constrainPosition(newX, newY);
       
-      onTransformUpdate({
+      // Use temporary state during dragging to avoid flickering
+      setTempTransform({
         x: constrainedPos.x,
         y: constrainedPos.y,
       });
@@ -182,18 +186,27 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   const handleKonvaMouseUp = () => {
     setIsDragging(false);
-    if (activeFrameId) {
-      dispatch(updateActiveFrame());
+    
+    // Apply the final transform when dragging ends
+    if (tempTransform) {
+      onTransformUpdate(tempTransform);
+      setTempTransform(null);
+      
+      // Update Redux state only once at the end
+      if (activeFrameId) {
+        setTimeout(() => {
+          dispatch(updateActiveFrame());
+        }, 16); // Small delay to ensure smooth transition
+      }
     }
   };
 
   const handleScaleChange = (delta: number) => {
-    const newScale = Math.max(0.5, Math.min(3, image.transform.scale + delta));
+    const newScale = Math.max(0.5, Math.min(3, currentTransform.scale + delta));
     
     // Get accurate canvas center
     const canvasCenter = getCanvasCenter();
-    const scaleRatio = newScale / image.transform.scale;
-    const currentTransform = image.transform;
+    const scaleRatio = newScale / currentTransform.scale;
     
     // Calculate new position to maintain visual center during scaling
     const newX = canvasCenter.x - (canvasCenter.x - currentTransform.x) * scaleRatio;
@@ -213,7 +226,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   };
 
   const handleRotate = () => {
-    onTransformUpdate({ rotation: (image.transform.rotation + 90) % 360 });
+    onTransformUpdate({ rotation: (currentTransform.rotation + 90) % 360 });
     if (activeFrameId) {
       dispatch(updateActiveFrame());
     }
@@ -230,6 +243,9 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       dispatch(updateActiveFrame());
     }
   };
+  // Get current transform including temporary state during dragging
+  const currentTransform = tempTransform ? { ...image.transform, ...tempTransform } : image.transform;
+
   console.log(  "active:",activeFrameId)
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-2 sm:p-4">
@@ -249,6 +265,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Edit Photo</h2>
           <div className="flex items-center space-x-1 sm:space-x-2">
+            {/* Uncomment when download functionality is implemented}
             {/* <button
               onClick={handleDownload}
               className="bg-pink-500 hover:bg-pink-600 text-white px-2 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-1 sm:space-x-2 text-sm mr-10"
@@ -282,7 +299,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                   <KonvaFrameRenderer
                     ref={konvaRef}
                     customization={customization}
-                    uploadedImage={image}
+                    uploadedImage={{...image, transform: currentTransform}}
                     isEditable={true}
                     onMouseDown={handleKonvaMouseDown}
                     onMouseMove={handleKonvaMouseMove}
@@ -292,14 +309,26 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     showEditOverlay={true}
                     addClassicPadding={true}
                     onImageDrag={({ x, y }) => {
-                      // Apply boundary constraints to image drag
+                      // Apply boundary constraints to image drag with throttling
                       const constrainedPos = constrainPosition(x, y);
-                      onTransformUpdate({ 
-                        x: constrainedPos.x, 
-                        y: constrainedPos.y 
-                      });
-                      if (activeFrameId) {
-                        dispatch(updateActiveFrame());
+                      
+                      if (isDragging) {
+                        // Use temporary state during dragging
+                        setTempTransform({
+                          x: constrainedPos.x, 
+                          y: constrainedPos.y 
+                        });
+                      } else {
+                        // Apply immediately if not in mouse drag mode
+                        onTransformUpdate({ 
+                          x: constrainedPos.x, 
+                          y: constrainedPos.y 
+                        });
+                        if (activeFrameId) {
+                          setTimeout(() => {
+                            dispatch(updateActiveFrame());
+                          }, 16);
+                        }
                       }
                     }}
                     frameId={activeFrameId?activeFrameId.toString():'0'}
@@ -317,7 +346,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Scale: {Math.round(image.transform.scale * 100)}%
+                        Scale: {Math.round(currentTransform.scale * 100)}%
                       </label>
                       <div className="flex items-center space-x-2">
                         <button
@@ -331,12 +360,11 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                           min="0.5"
                           max="3"
                           step="0.1"
-                          value={image.transform.scale}
+                          value={currentTransform.scale}
                           onChange={(e) => {
                             const newScale = parseFloat(e.target.value);
                             const canvasCenter = getCanvasCenter();
-                            const scaleRatio = newScale / image.transform.scale;
-                            const currentTransform = image.transform;
+                            const scaleRatio = newScale / currentTransform.scale;
                             
                             // Maintain visual center during scaling
                             const newX = canvasCenter.x - (canvasCenter.x - currentTransform.x) * scaleRatio;
