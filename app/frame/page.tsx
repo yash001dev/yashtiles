@@ -10,6 +10,7 @@ import FrameBottomSheet from "../../src/components/FrameBottomSheet";
 import SizeBottomSheet from "../../src/components/SizeBottomSheet";
 import EffectBottomSheet from "../../src/components/EffectBottomSheet";
 import BorderBottomSheet from "../../src/components/BorderBottomSheet";
+import BackgroundBottomSheet from "../../src/components/BackgroundBottomSheet";
 import ResponsiveLayout from "../../src/components/ResponsiveLayout";
 import FloatingAddButton from "../../src/components/FloatingAddButton";
 import TutorialTooltip from "../../src/components/TutorialTooltip";
@@ -58,6 +59,9 @@ function AppContent() {
   // State for loading overlay
   const [isLoading, setIsLoading] = React.useState(false);
   const [loadingMessage, setLoadingMessage] = React.useState("Processing your image...");
+  
+  // State for background image
+  const [backgroundImage, setBackgroundImage] = React.useState("/framedecor1.png");
   // Update active frame when customization or image changes
   React.useEffect(() => {
     if (frameCollection.activeFrameId && uploadedImage) {
@@ -92,6 +96,10 @@ function AppContent() {
     borderWidth?: number;
   }) => {
     updateCustomization(updates);
+  };
+
+  const handleBackgroundUpdate = (newBackgroundImage: string) => {
+    setBackgroundImage(newBackgroundImage);
   };
   const handleAddFrame = React.useCallback(() => {
     if (uploadedImage) {
@@ -349,6 +357,7 @@ function AppContent() {
               currentFrameIndex={frameCollection.frames.findIndex(
                 (f: any) => f.id === frameCollection.activeFrameId
               )}
+              backgroundImage={backgroundImage}
             />
           )}
         </main>
@@ -397,6 +406,12 @@ function AppContent() {
           onToggle={(border) => updateCustomization({ border })}
           onBorderUpdate={handleBorderUpdate}
           uploadedImage={uploadedImage}
+        />
+        <BackgroundBottomSheet
+          isOpen={activeModal === "background"}
+          onClose={closeModal}
+          currentBackground={backgroundImage}
+          onBackgroundUpdate={handleBackgroundUpdate}
         />
         <HangBottomSheet
           isOpen={activeModal === "hang"}

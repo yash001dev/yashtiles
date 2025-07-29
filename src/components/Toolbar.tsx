@@ -47,6 +47,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
     { id: "size", icon: Maximize, label: "Size", color: "text-pink-600" },
     // { id: "effect", icon: Palette, label: "Effect", color: "text-orange-600" },
     { id: "border", icon: Square, label: "Border", color: "text-red-600" },
+    { id: "background", icon: ImageIcon, label: "Background", color: "text-purple-600" },
     { id: "hang", icon: Images, label: "Hang", color: "text-pink-600" },
   ];
   if (isLargeScreen) {
@@ -83,7 +84,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
                       ? "group-hover:bg-pink-50"
                       : tool.id === "effect"
                       ? "group-hover:bg-orange-50"
-                      : "group-hover:bg-red-50"
+                      : tool.id === "border"
+                      ? "group-hover:bg-red-50"
+                      : tool.id === "background"
+                      ? "group-hover:bg-purple-50"
+                      : "group-hover:bg-pink-50"
                   }`}
                 >
                   <tool.icon
@@ -154,7 +159,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
                       ? "group-hover:bg-pink-50"
                       : tool.id === "effect"
                       ? "group-hover:bg-orange-50"
-                      : "group-hover:bg-red-50"
+                      : tool.id === "border"
+                      ? "group-hover:bg-red-50"
+                      : tool.id === "background"
+                      ? "group-hover:bg-purple-50"
+                      : "group-hover:bg-pink-50"
                   }`}
                 >
                   <tool.icon
