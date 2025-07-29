@@ -36,6 +36,16 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const konvaRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
   const downloadImageRef = useRef<{ getCanvasDataURL: () => string | undefined }>(null);
 
+  // Helper function to get canvas center coordinates
+  const getCanvasCenter = () => {
+    // Default responsive width calculation (same as in KonvaFrameRenderer)
+    const responsiveWidth = typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400;
+    return {
+      x: responsiveWidth / 2,
+      y: responsiveWidth / 2 // assuming square for simplicity, actual height varies by aspect ratio
+    };
+  };
+
   // Ensure frame updates are saved when the editor closes
   useEffect(() => {
     if (isOpen && activeFrameId) {
@@ -138,7 +148,21 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   const handleScaleChange = (delta: number) => {
     const newScale = Math.max(0.5, Math.min(3, image.transform.scale + delta));
-    onTransformUpdate({ scale: newScale });
+    
+    // Get accurate canvas center
+    const canvasCenter = getCanvasCenter();
+    const scaleRatio = newScale / image.transform.scale;
+    const currentTransform = image.transform;
+    
+    // Calculate new position to maintain visual center during scaling
+    const newX = canvasCenter.x - (canvasCenter.x - currentTransform.x) * scaleRatio;
+    const newY = canvasCenter.y - (canvasCenter.y - currentTransform.y) * scaleRatio;
+    
+    onTransformUpdate({ 
+      scale: newScale,
+      x: newX,
+      y: newY
+    });
     if (activeFrameId) {
       dispatch(updateActiveFrame());
     }
@@ -260,7 +284,20 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                           step="0.1"
                           value={image.transform.scale}
                           onChange={(e) => {
-                            onTransformUpdate({ scale: parseFloat(e.target.value) });
+                            const newScale = parseFloat(e.target.value);
+                            const canvasCenter = getCanvasCenter();
+                            const scaleRatio = newScale / image.transform.scale;
+                            const currentTransform = image.transform;
+                            
+                            // Maintain visual center during scaling
+                            const newX = canvasCenter.x - (canvasCenter.x - currentTransform.x) * scaleRatio;
+                            const newY = canvasCenter.y - (canvasCenter.y - currentTransform.y) * scaleRatio;
+                            
+                            onTransformUpdate({ 
+                              scale: newScale,
+                              x: newX,
+                              y: newY
+                            });
                             if (activeFrameId) {
                               dispatch(updateActiveFrame());
                             }
