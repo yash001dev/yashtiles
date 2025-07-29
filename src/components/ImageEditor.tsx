@@ -46,6 +46,41 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     };
   };
 
+  // Helper function to get drag boundaries based on border settings
+  const getDragBoundaries = () => {
+    const responsiveWidth = typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400;
+    const aspect = customization.size === '8x8' || customization.size === '12x12' || customization.size === '18x18' ? 1 : 0.8; // simplified aspect ratio
+    const canvasHeight = responsiveWidth / aspect;
+    
+    // If there's a custom border, constrain to border area
+    if (customization.border && customization.borderWidth && customization.borderColor) {
+      const borderWidth = customization.borderWidth;
+      return {
+        minX: borderWidth,
+        maxX: responsiveWidth - borderWidth,
+        minY: borderWidth,
+        maxY: canvasHeight - borderWidth
+      };
+    }
+    
+    // No border constraints - can drag anywhere in canvas
+    return {
+      minX: -responsiveWidth * 0.5, // Allow dragging beyond canvas for flexibility
+      maxX: responsiveWidth * 1.5,
+      minY: -canvasHeight * 0.5,
+      maxY: canvasHeight * 1.5
+    };
+  };
+
+  // Helper function to constrain position within boundaries
+  const constrainPosition = (x: number, y: number) => {
+    const boundaries = getDragBoundaries();
+    return {
+      x: Math.max(boundaries.minX, Math.min(boundaries.maxX, x)),
+      y: Math.max(boundaries.minY, Math.min(boundaries.maxY, y))
+    };
+  };
+
   // Ensure frame updates are saved when the editor closes
   useEffect(() => {
     if (isOpen && activeFrameId) {
@@ -132,9 +167,15 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const handleKonvaMouseMove = (e: any) => {
     if (isDragging) {
       const pos = e.target.getStage().getPointerPosition();
+      const newX = pos.x - dragStart.x;
+      const newY = pos.y - dragStart.y;
+      
+      // Apply boundary constraints
+      const constrainedPos = constrainPosition(newX, newY);
+      
       onTransformUpdate({
-        x: pos.x - dragStart.x,
-        y: pos.y - dragStart.y,
+        x: constrainedPos.x,
+        y: constrainedPos.y,
       });
     }
   };
@@ -158,10 +199,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
     const newX = canvasCenter.x - (canvasCenter.x - currentTransform.x) * scaleRatio;
     const newY = canvasCenter.y - (canvasCenter.y - currentTransform.y) * scaleRatio;
     
+    // Apply boundary constraints to the new position
+    const constrainedPos = constrainPosition(newX, newY);
+    
     onTransformUpdate({ 
       scale: newScale,
-      x: newX,
-      y: newY
+      x: constrainedPos.x,
+      y: constrainedPos.y
     });
     if (activeFrameId) {
       dispatch(updateActiveFrame());
@@ -248,7 +292,12 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     showEditOverlay={true}
                     addClassicPadding={true}
                     onImageDrag={({ x, y }) => {
-                      onTransformUpdate({ x, y });
+                      // Apply boundary constraints to image drag
+                      const constrainedPos = constrainPosition(x, y);
+                      onTransformUpdate({ 
+                        x: constrainedPos.x, 
+                        y: constrainedPos.y 
+                      });
                       if (activeFrameId) {
                         dispatch(updateActiveFrame());
                       }
@@ -293,10 +342,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                             const newX = canvasCenter.x - (canvasCenter.x - currentTransform.x) * scaleRatio;
                             const newY = canvasCenter.y - (canvasCenter.y - currentTransform.y) * scaleRatio;
                             
+                            // Apply boundary constraints
+                            const constrainedPos = constrainPosition(newX, newY);
+                            
                             onTransformUpdate({ 
                               scale: newScale,
-                              x: newX,
-                              y: newY
+                              x: constrainedPos.x,
+                              y: constrainedPos.y
                             });
                             if (activeFrameId) {
                               dispatch(updateActiveFrame());
