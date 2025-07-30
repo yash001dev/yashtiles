@@ -201,12 +201,13 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                       </p>
                     </div>
                   </div>
-
-                  {currentBackground === option.image && selectedType === "image" && (
+                    
+                  {/* Checkmark for selected background we do for second version */}
+                  {/* {currentBackground === option.image && selectedType === "image" && (
                     <div className="absolute top-1 right-1 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
                       <div className="w-1.5 h-1.5 bg-white rounded-full" />
                     </div>
-                  )}
+                  )} */}
                 </button>
               ))}
             </div>
@@ -254,12 +255,12 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                       </p>
                     </div>
                   </div>
-
-                  {currentWallColor === color.color && selectedType === "color" && (
+                    {/* Checkmark for selected background we do for second version */}
+                  {/* {currentWallColor === color.color && selectedType === "color" && (
                     <div className="absolute top-1 right-1 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
                       <div className="w-1.5 h-1.5 bg-white rounded-full" />
                     </div>
-                  )}
+                  )} */}
                 </button>
               ))}
             </div>
@@ -274,7 +275,12 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                   type="color"
                   value={currentWallColor}
                   onChange={(e) => handleWallColorSelect(e.target.value)}
-                  className="w-12 h-10 rounded-lg border-2 border-gray-300 cursor-pointer"
+                  className="w-12 h-10 rounded-lg border-2 border-gray-300 cursor-pointer appearance-none focus:outline-none focus:ring-0 focus:border-gray-300"
+                  style={{
+                    background: 'none',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                  }}
                 />
                 <div className="flex-1">
                   <input
@@ -282,7 +288,7 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                     value={currentWallColor}
                     onChange={(e) => handleWallColorSelect(e.target.value)}
                     placeholder="#ffffff"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
                   />
                 </div>
               </div>

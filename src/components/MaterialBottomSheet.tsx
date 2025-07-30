@@ -22,7 +22,7 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
     {
       id: 'classic',
       name: 'Classic Frame',
-      image: 'https://images.pexels.com/photos/1090638/pexels-photo-1090638.jpeg?auto=compress&cs=tinysrgb&w=300',
+      image: '/frames/classic_frame.jpg',
       description: 'Traditional frame with mounting',
       content: 'Timeless, premium look, printed on superios paper. Available in regular and wide frame options. ',
       link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Classic+Frames&query=Classic+Frames',
@@ -30,7 +30,7 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
     {
       id: 'frameless',
       name: 'Frameless',
-      image: 'https://images.pexels.com/photos/1090641/pexels-photo-1090641.jpeg?auto=compress&cs=tinysrgb&w=300',
+      image: '/frames/frameless_frame.jpg',
       description: 'Clean, modern look',
       content: 'Clean, modern look, printed on superios paper. with easy magenetic mounting. ',
       link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Frameless+Frames&query=Frameless+Frames',
@@ -38,7 +38,7 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
     {
       id: 'canvas',
       name: 'Canvas',
-      image: 'https://images.pexels.com/photos/1090644/pexels-photo-1090644.jpeg?auto=compress&cs=tinysrgb&w=300',
+      image: '/frames/canvas_frame.jpg',
       description: 'Textured canvas finish',
       content:"wooden structure used to stretch and hold a canvas taut, providing a sturdy surface for painting and a way to display your artwork.",
       link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Canvas+Frames&query=Canvas+Frames',
