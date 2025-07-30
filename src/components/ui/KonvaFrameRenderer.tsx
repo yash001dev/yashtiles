@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Stage, Layer, Rect, Image as KonvaImage, Group, Text, Line } from 'react-konva';
 import useImage from 'use-image';
-import { Edit } from 'lucide-react';
+import { Scaling } from 'lucide-react';
 import { FrameCustomization, UploadedImage } from '../../types';
 import { useAppDispatch } from '../../redux/hooks';
 import { setPrintReadyImage } from '../../redux/slices/frameCustomizerSlice';
@@ -357,27 +357,28 @@ const KonvaFrameRenderer = forwardRef<
         <button
           type="button"
           aria-label="Edit Image"
+          className='absolute top-2 right-2 z-10 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors'
           onClick={onImageClick}
-          style={{
-            position: 'absolute',
-            top: 8,
-            right: 20,
-            zIndex: 10,
-            background: 'rgba(255,255,255,0.85)',
-            border: 'none',
-            borderRadius: '50%',
-            width: 32,
-            height: 32,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-            cursor: 'pointer',
-            padding: 0,
-          }}
+          // style={{
+          //   position: 'absolute',
+          //   top: 8,
+          //   right: 20,
+          //   zIndex: 10,
+          //   background: 'rgba(255,255,255,0.85)',
+          //   border: 'none',
+          //   borderRadius: '50%',
+          //   width: 32,
+          //   height: 32,
+          //   display: 'flex',
+          //   alignItems: 'center',
+          //   justifyContent: 'center',
+          //   boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+          //   cursor: 'pointer',
+          //   padding: 0,
+          // }}
         >
           {/* Simple pencil SVG icon */}
-          <Edit size={18} color="#374151" />
+          <Scaling size={18} color="#ec4899" />
         </button>
       )}
       <Stage ref={stageRef} width={canvasWidth} height={canvasHeight} style={{ borderRadius: 6, background: 'transparent' }}>
