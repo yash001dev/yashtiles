@@ -133,33 +133,73 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
     return () => window.removeEventListener('resize', updateStageSize);
   }, []);
 
-  // Frame size calculation - show actual size on wall
+  // Frame size calculation - responsive scaling with better size differentiation
   const getFrameSize = () => {
     const [width, height] = customization.size.split('x').map(Number);
-    // Convert inches to pixels (assuming 72 DPI for more realistic wall display)
-    const pixelsPerInch = 72;
-    const frameWidth = width * pixelsPerInch;
-    const frameHeight = height * pixelsPerInch;
     
-    // Scale down to make it look more realistic on wall
-    const scale = 0.3; // Make frames appear smaller and more realistic
+    // Base size calculation (inches to pixels)
+    const pixelsPerInch = 72;
+    const baseFrameWidth = width * pixelsPerInch;
+    const baseFrameHeight = height * pixelsPerInch;
+    
+    // Calculate responsive scale based on viewport size
+    const viewportWidth = stageSize.width;
+    const viewportHeight = stageSize.height;
+    
+    // Determine the maximum frame size that fits in the viewport
+    // Use different percentages based on frame size to maintain differentiation
+    let maxFrameWidth, maxFrameHeight;
+    
+    if (width <= 12 && height <= 12) {
+      // Small frames (8x8, 8x10, 9x12, 12x12, etc.)
+      maxFrameWidth = viewportWidth * 0.35; // 35% of viewport width
+      maxFrameHeight = viewportHeight * 0.35; // 35% of viewport height
+    } else if (width <= 18 && height <= 18) {
+      // Medium frames (12x18, 18x12, 18x18, etc.)
+      maxFrameWidth = viewportWidth * 0.45; // 45% of viewport width
+      maxFrameHeight = viewportHeight * 0.45; // 45% of viewport height
+    } else {
+      // Large frames (18x24, 24x18, 24x32, 32x24, etc.)
+      maxFrameWidth = viewportWidth * 0.55; // 55% of viewport width
+      maxFrameHeight = viewportHeight * 0.55; // 55% of viewport height
+    }
+    
+    // Calculate scale factors for both dimensions
+    const scaleX = maxFrameWidth / baseFrameWidth;
+    const scaleY = maxFrameHeight / baseFrameHeight;
+    
+    // Use the smaller scale to ensure frame fits in both dimensions
+    const responsiveScale = Math.min(scaleX, scaleY, 0.6); // Cap at 60% to allow larger frames
+    
+    // Ensure minimum size for very small screens
+    const minWidth = 120;
+    const minHeight = 120;
+    
+    const finalWidth = Math.max(baseFrameWidth * responsiveScale, minWidth);
+    const finalHeight = Math.max(baseFrameHeight * responsiveScale, minHeight);
     
     return {
-      width: frameWidth * scale,
-      height: frameHeight * scale
+      width: finalWidth,
+      height: finalHeight
     };
   };
 
   const frameSize = getFrameSize();
 
-  // Calculate initial centered position (only if not dragged yet)
+  // Recalculate frame size and position when stage size changes
   React.useEffect(() => {
-    if (stageSize.width > 0 && stageSize.height > 0 && !hasBeenDragged) {
-      const centerX = (stageSize.width - frameSize.width) / 2;
-      const centerY = (stageSize.height - frameSize.height) / 2;
-      setFramePosition({ x: centerX, y: centerY });
+    if (stageSize.width > 0 && stageSize.height > 0) {
+      // Recalculate frame size based on new viewport
+      const newFrameSize = getFrameSize();
+      
+      // Only update position if not dragged yet
+      if (!hasBeenDragged) {
+        const centerX = (stageSize.width - newFrameSize.width) / 2;
+        const centerY = (stageSize.height - newFrameSize.height) / 2;
+        setFramePosition({ x: centerX, y: centerY });
+      }
     }
-  }, [stageSize, frameSize, hasBeenDragged]);
+  }, [stageSize, hasBeenDragged]);
 
   // Frame style calculations (same as KonvaFrameRenderer)
   let frameBorder = 0;
