@@ -44,15 +44,10 @@ const FramePreview: React.FC<FramePreviewProps> = ({
     <div 
       className="flex items-center justify-center min-h-[60vh] px-4 py-8 relative"
       style={{
-        backgroundColor: !backgroundImage ? wallColor : 'transparent',
-        backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundColor: 'transparent',
+        backgroundImage: 'none'
       }}
     >
-      {/* Overlay for better contrast */}
-      <div className="absolute inset-0 bg-black/10"></div>
       
       <div className="relative animate-fadeIn z-10">
         {/* Outer frame with 3D shadow effect */}
