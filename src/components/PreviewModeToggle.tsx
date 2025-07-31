@@ -13,7 +13,7 @@ const PreviewModeToggle: React.FC<PreviewModeToggleProps> = ({
   onModeChange
 }) => {
   return (
-    <div className="flex items-center justify-center mb-6">
+    <div className="flex items-center justify-center my-4">
       <div className="bg-white rounded-full p-1 shadow-xl border border-gray-200 backdrop-blur-sm">
         <div className="flex items-center space-x-1">
           <button
