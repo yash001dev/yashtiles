@@ -10,6 +10,8 @@ interface FloatingAddButtonProps {
   hasFrames: boolean;
   hasImage: boolean;
   onAuthRequired?: () => void;
+  isMoreOpen?: boolean; // New prop to track if more toolbar is open
+  isImageEditorOpen?: boolean; // New prop to track if image editor is open
 }
 
 const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({
@@ -17,6 +19,8 @@ const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({
   hasFrames,
   hasImage,
   onAuthRequired,
+  isMoreOpen = false,
+  isImageEditorOpen = false,
 }) => {
   const isMobile = useMediaQuery("(max-width: 1023px)");
   const { isAuthenticated } = useAuth();
@@ -28,15 +32,15 @@ const FloatingAddButton: React.FC<FloatingAddButtonProps> = ({
     }
     onAddFrame();
   };
-  // Show on mobile when user has an image
-  if (!isMobile || !hasImage) {
+  // Show on mobile when user has an image, but hide when more toolbar is open or image editor is open
+  if (!isMobile || !hasImage || isMoreOpen || isImageEditorOpen) {
     return null;
   }
 
   return (
     <button
       onClick={handleClick}
-      className={`fixed bottom-20 right-4 w-14 h-14 bg-gradient-to-r from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 z-50 flex items-center justify-center group ${
+      className={`fixed bottom-20 right-4 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 z-50 flex items-center justify-center group ${
         hasFrames ? "opacity-80 hover:opacity-100" : "opacity-100"
       }`}
       aria-label="Add Frame"

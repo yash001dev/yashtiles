@@ -63,6 +63,9 @@ function AppContent() {
   // State for background image
   const [backgroundImage, setBackgroundImage] = React.useState("/framedecor1.png");
   const [wallColor, setWallColor] = React.useState("#f3f4f6");
+  
+  // State for toolbar more button (mobile only)
+  const [isMoreOpen, setIsMoreOpen] = React.useState(false);
   // Update active frame when customization or image changes
   React.useEffect(() => {
     if (frameCollection.activeFrameId && uploadedImage) {
@@ -376,6 +379,7 @@ function AppContent() {
               setIsAuthModalOpen(true);
             }}
             hasImage={!!uploadedImage}
+            onMoreToggle={setIsMoreOpen}
           />
         )}{" "}
         {/* Bottom Sheets */}
@@ -454,6 +458,8 @@ function AppContent() {
             setPendingAction("cart");
             setIsAuthModalOpen(true);
           }}
+          isMoreOpen={isMoreOpen}
+          isImageEditorOpen={activeModal === "imageEditor"}
         />}
         {/* Loading Overlay */}
         <LoadingOverlay 
