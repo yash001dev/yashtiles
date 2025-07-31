@@ -26,7 +26,7 @@ const FrameItPhotoGallery = () => {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-charcoal-900 mb-4">
-                Photo Gallery
+              See Photoframix in Real Action
               </h2>
               <p className="text-lg text-charcoal-800/70 max-w-2xl mx-auto">
                 Discover the beauty of your memories transformed into stunning
@@ -48,7 +48,7 @@ const FrameItPhotoGallery = () => {
           {/* Header */}
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-charcoal-900 mb-4">
-              Photo Gallery
+              See Photoframix in Real Action
             </h2>
             <p className="text-lg text-charcoal-800/70 max-w-2xl mx-auto">
               Discover the beauty of your memories transformed into stunning
@@ -166,14 +166,14 @@ const FrameItPhotoGallery = () => {
                 care.
               </p>
               <Button
-                className=" text-white font-semibold px-8 py-3 rounded-xl"
+                className=" text-white font-semibold px-10 py-6 rounded-xl"
                 onClick={() => {
                   if (isMounted && typeof window !== "undefined") {
                     window.location.href = "/frame";
                   }
                 }}
               >
-                Start Your Order
+                Start Framing
               </Button>
             </div>
           </div>
