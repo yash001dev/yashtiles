@@ -3,6 +3,7 @@
 import React from 'react';
 import { FrameCustomization, UploadedImage } from '../types';
 import FrameRenderer from './ui/FrameRenderer';
+import FramePreviewCanvas from './FramePreviewCanvas';
 
 interface FramePreviewProps {
   customization: FrameCustomization;
@@ -12,6 +13,8 @@ interface FramePreviewProps {
   currentFrameIndex?: number;
   backgroundImage?: string;
   wallColor?: string;
+  mode?: 'edit' | 'preview';
+  onFrameDrag?: (pos: { x: number; y: number }) => void;
 }
 
 const FramePreview: React.FC<FramePreviewProps> = ({
@@ -21,8 +24,22 @@ const FramePreview: React.FC<FramePreviewProps> = ({
   frameCount = 0,
   currentFrameIndex = 0,
   backgroundImage = "/framedecor1.png",
-  wallColor = "#f3f4f6"
+  wallColor = "#f3f4f6",
+  mode = 'edit',
+  onFrameDrag
 }) => {
+  if (mode === 'preview') {
+    return (
+      <FramePreviewCanvas
+        customization={customization}
+        uploadedImage={uploadedImage}
+        backgroundImage={backgroundImage}
+        wallColor={wallColor}
+        onFrameDrag={onFrameDrag}
+      />
+    );
+  }
+
   return (
     <div 
       className="flex items-center justify-center min-h-[60vh] px-4 py-8 relative"
