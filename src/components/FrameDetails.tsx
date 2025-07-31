@@ -305,7 +305,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                       <div className="flex-1">
                         <p className="text-xs text-gray-500">Hang Type</p>
                         <p className="text-sm font-medium text-gray-900">
-                          {getHangType(frame.customization.material)}
+                          {getHangType(frame.customization.hangType)}
                         </p>
                       </div>
                     </div>
