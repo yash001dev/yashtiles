@@ -104,7 +104,7 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
 }) => {
   const stageRef = useRef<any>(null);
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 });
-  const [framePosition, setFramePosition] = useState({ x: 100, y: 100 });
+  const [framePosition, setFramePosition] = useState({ x: 200, y: 150 });
   const [isDragging, setIsDragging] = useState(false);
   
   // Load images
@@ -135,14 +135,13 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   // Frame size calculation - show actual size on wall
   const getFrameSize = () => {
     const [width, height] = customization.size.split('x').map(Number);
-    // Convert inches to pixels (assuming 96 DPI for realistic wall display)
-    const pixelsPerInch = 96;
+    // Convert inches to pixels (assuming 72 DPI for more realistic wall display)
+    const pixelsPerInch = 72;
     const frameWidth = width * pixelsPerInch;
     const frameHeight = height * pixelsPerInch;
     
-    // Scale down if frame is too large for the stage
-    const maxScale = Math.min(stageSize.width * 0.8 / frameWidth, stageSize.height * 0.8 / frameHeight);
-    const scale = Math.min(maxScale, 1); // Don't scale up, only down
+    // Scale down to make it look more realistic on wall
+    const scale = 0.3; // Make frames appear smaller and more realistic
     
     return {
       width: frameWidth * scale,
@@ -151,6 +150,15 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   };
 
   const frameSize = getFrameSize();
+
+  // Calculate initial centered position
+  React.useEffect(() => {
+    if (stageSize.width > 0 && stageSize.height > 0) {
+      const centerX = (stageSize.width - frameSize.width) / 2;
+      const centerY = (stageSize.height - frameSize.height) / 2;
+      setFramePosition({ x: centerX, y: centerY });
+    }
+  }, [stageSize, frameSize]);
 
   // Frame style calculations (same as KonvaFrameRenderer)
   let frameBorder = 0;
