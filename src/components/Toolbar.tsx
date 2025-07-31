@@ -52,17 +52,26 @@ const Toolbar: React.FC<ToolbarProps> = ({
     onMoreToggle?.(showMore);
   }, [showMore, onMoreToggle]);
 
-  const mainTools = [
+  // For desktop view, we include all tools in mainTools
+  // For mobile/tablet view, we separate them into mainTools and moreTools
+  const allTools = [
     { id: "material", icon: Grid, label: "Material", color: "text-blue-600" },
     { id: "frame", icon: Frame, label: "Frame", color: "text-green-600" },
     { id: "size", icon: Maximize, label: "Size", color: "text-pink-600" },
     { id: "border", icon: Square, label: "Border", color: "text-red-600" },
-  ];
-
-  const moreTools = [
-    { id: "background", icon: ImageIcon, label: "Background", color: "text-purple-600" },
+    {
+      id: "background",
+      icon: ImageIcon,
+      label: "Background",
+      color: "text-purple-600",
+    },
     { id: "hang", icon: Images, label: "Hang", color: "text-pink-600" },
   ];
+
+  const mainTools = isLargeScreen ? allTools : allTools.slice(0, 4);
+
+  const moreTools = isLargeScreen ? [] : allTools.slice(4);
+
   if (isLargeScreen) {
     // Desktop layout - clean left sidebar starting after header
     return (
@@ -111,64 +120,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
               </button>
             ))}
 
-            {/* More Tools Section */}
-            <div className="mt-2">
-              {/* More Button */}
-              <button
-                onClick={() => setShowMore(!showMore)}
-                className="group w-full flex flex-col items-center space-y-2 p-2 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 active:scale-95 relative"
-              >
-                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                  {showMore ? "Less" : "More"}
-                </div>
-                <div className="p-2 rounded-lg transition-all duration-300 group-hover:shadow-md group-hover:bg-gray-50">
-                  {showMore ? (
-                    <ChevronUp size={20} className="text-gray-600 transition-all duration-300 group-hover:scale-110" />
-                  ) : (
-                    <MoreHorizontal size={20} className="text-gray-600 transition-all duration-300 group-hover:scale-110" />
-                  )}
-                </div>
-                <span className="text-xs text-gray-500 group-hover:text-gray-700 font-medium transition-colors duration-300">
-                  {showMore ? "Less" : "More"}
-                </span>
-              </button>
-
-              {/* Expandable More Tools */}
-              {showMore && (
-                <div className="mt-2 space-y-1">
-                  {moreTools.map((tool, index) => (
-                    <button
-                      key={tool.id}
-                      onClick={() => onToolClick(tool.id)}
-                      className="group w-full flex flex-col items-center space-y-2 p-2 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 active:scale-95 relative"
-                      style={{
-                        animationDelay: `${(index + 4) * 100}ms`,
-                        animation: "slideInLeft 0.3s ease-out forwards",
-                      }}
-                    >
-                      <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
-                        {tool.label}
-                      </div>
-                      <div
-                        className={`p-2 rounded-lg transition-all duration-300 group-hover:shadow-md ${
-                          tool.id === "background"
-                            ? "group-hover:bg-purple-50"
-                            : "group-hover:bg-pink-50"
-                        }`}
-                      >
-                        <tool.icon
-                          size={20}
-                          className={`transition-all duration-300 group-hover:scale-110 ${tool.color} group-hover:drop-shadow-sm`}
-                        />
-                      </div>
-                      <span className="text-xs text-gray-500 group-hover:text-gray-700 font-medium transition-colors duration-300">
-                        {tool.label}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* No More Tools Section for Desktop */}
           </div>
         </div>{" "}
         {/* Bottom section with add frame button */}
@@ -249,9 +201,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
             >
               <div className="p-1.5 sm:p-2 rounded-lg transition-all duration-300 group-hover:shadow-lg group-hover:bg-gray-50">
                 {showMore ? (
-                  <ChevronUp size={18} className="text-gray-600 transition-all duration-300 group-hover:scale-110" />
+                  <ChevronUp
+                    size={18}
+                    className="text-gray-600 transition-all duration-300 group-hover:scale-110"
+                  />
                 ) : (
-                  <MoreHorizontal size={18} className="text-gray-600 transition-all duration-300 group-hover:scale-110" />
+                  <MoreHorizontal
+                    size={18}
+                    className="text-gray-600 transition-all duration-300 group-hover:scale-110"
+                  />
                 )}
               </div>
               <span className="text-xs text-gray-600 group-hover:text-gray-800 font-medium transition-colors duration-300 truncate text-center">

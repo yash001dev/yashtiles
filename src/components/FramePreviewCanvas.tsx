@@ -1,86 +1,95 @@
-'use client';
+"use client";
 
-import React, { useRef, useEffect, useState } from 'react';
-import { Stage, Layer, Rect, Image as KonvaImage, Group, Line } from 'react-konva';
-import useImage from 'use-image';
-import { FrameCustomization, UploadedImage } from '../types';
+import React, { useRef, useEffect, useState } from "react";
+import {
+  Stage,
+  Layer,
+  Rect,
+  Image as KonvaImage,
+  Group,
+  Line,
+} from "react-konva";
+import useImage from "use-image";
+import { FrameCustomization, UploadedImage } from "../types";
 
 // Helper functions from KonvaFrameRenderer
 const getFrameColor = (color: string) => {
   switch (color) {
-    case 'white':
-      return '#fff';
-    case 'brown':
-      return '#a0522d';
+    case "white":
+      return "#fff";
+    case "brown":
+      return "#a0522d";
     default:
-      return '#111';
+      return "#111";
   }
 };
 
 const getFrameBorderColor = (color: string) => {
   switch (color) {
-    case 'white':
-      return '#e5e7eb';
-    case 'brown':
-      return '#8b5c2d';
+    case "white":
+      return "#e5e7eb";
+    case "brown":
+      return "#8b5c2d";
     default:
-      return '#1f2937';
+      return "#1f2937";
   }
 };
 
 const getEffectFilter = (effect: string) => {
   switch (effect) {
-    case 'silver':
-      return 'grayscale(1) contrast(1.1)';
-    case 'noir':
-      return 'grayscale(1) contrast(1.5) brightness(0.9)';
-    case 'vivid':
-      return 'saturate(1.5) contrast(1.2)';
-    case 'dramatic':
-      return 'contrast(1.4) brightness(0.95) saturate(1.3)';
+    case "silver":
+      return "grayscale(1) contrast(1.1)";
+    case "noir":
+      return "grayscale(1) contrast(1.5) brightness(0.9)";
+    case "vivid":
+      return "saturate(1.5) contrast(1.2)";
+    case "dramatic":
+      return "contrast(1.4) brightness(0.95) saturate(1.3)";
     default:
-      return 'none';
+      return "none";
   }
 };
 
 // Utility to lighten or darken a hex color
 function shadeColor(hex: string, percent: number): string {
-  hex = hex.replace(/^#/, '');
+  hex = hex.replace(/^#/, "");
   let r = parseInt(hex.substring(0, 2), 16);
   let g = parseInt(hex.substring(2, 4), 16);
   let b = parseInt(hex.substring(4, 6), 16);
   r = Math.min(255, Math.max(0, Math.round(r + (percent / 100) * 255)));
   g = Math.min(255, Math.max(0, Math.round(g + (percent / 100) * 255)));
   b = Math.min(255, Math.max(0, Math.round(b + (percent / 100) * 255)));
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  return `#${r.toString(16).padStart(2, "0")}${g
+    .toString(16)
+    .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
 // Helper for aspect ratio
 const getAspectRatio = (size: string): number => {
   switch (size) {
-    case '8x8':
-    case '12x12':
-    case '18x18':
+    case "8x8":
+    case "12x12":
+    case "18x18":
       return 1;
-    case '8x10':
+    case "8x10":
       return 8 / 10;
-    case '10x8':
+    case "10x8":
       return 10 / 8;
-    case '9x12':
+    case "9x12":
       return 9 / 12;
-    case '12x9':
+    case "12x9":
       return 12 / 9;
-    case '12x18':
+    case "12x18":
       return 12 / 18;
-    case '18x12':
+    case "18x12":
       return 18 / 12;
-    case '18x24':
+    case "18x24":
       return 18 / 24;
-    case '24x18':
+    case "24x18":
       return 24 / 18;
-    case '24x32':
+    case "24x32":
       return 24 / 32;
-    case '32x24':
+    case "32x24":
       return 32 / 24;
     default:
       return 1;
@@ -100,17 +109,17 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   uploadedImage,
   backgroundImage = "/framedecor1.png",
   wallColor = "#f3f4f6",
-  onFrameDrag
+  onFrameDrag,
 }) => {
   const stageRef = useRef<any>(null);
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 });
   const [framePosition, setFramePosition] = useState({ x: 200, y: 150 });
   const [isDragging, setIsDragging] = useState(false);
   const [hasBeenDragged, setHasBeenDragged] = useState(false);
-  
+
   // Load images
-  const [backgroundImg] = useImage(backgroundImage, 'anonymous');
-  const [frameImg] = useImage(uploadedImage?.url || '', 'anonymous');
+  const [backgroundImg] = useImage(backgroundImage, "anonymous");
+  const [frameImg] = useImage(uploadedImage?.url || "", "anonymous");
 
   // Responsive stage size
   useEffect(() => {
@@ -121,35 +130,36 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
         // Ensure minimum size and handle mobile better
         const minWidth = 300;
         const minHeight = 400;
-        setStageSize({ 
-          width: Math.max(width || 800, minWidth), 
-          height: Math.max(height || 600, minHeight) 
+        setStageSize({
+          width: Math.max(width || 800, minWidth),
+          height: Math.max(height || 600, minHeight),
         });
       }
     };
 
     updateStageSize();
-    window.addEventListener('resize', updateStageSize);
-    return () => window.removeEventListener('resize', updateStageSize);
+    window.addEventListener("resize", updateStageSize);
+    return () => window.removeEventListener("resize", updateStageSize);
   }, []);
 
   // Frame size calculation - responsive scaling with better size differentiation
   const getFrameSize = () => {
-    const [width, height] = customization.size.split('x').map(Number);
-    
+    const [width, height] = customization.size.split("x").map(Number);
+
     // Base size calculation (inches to pixels)
     const pixelsPerInch = 72;
-    const baseFrameWidth = width * pixelsPerInch;
-    const baseFrameHeight = height * pixelsPerInch;
-    
+    //in preview frame size is 1/3 of actual frame size
+    const baseFrameWidth = (width * pixelsPerInch) / 3;
+    const baseFrameHeight = (height * pixelsPerInch) / 3;
+
     // Calculate responsive scale based on viewport size
     const viewportWidth = stageSize.width;
     const viewportHeight = stageSize.height;
-    
+
     // Determine the maximum frame size that fits in the viewport
     // Use different percentages based on frame size to maintain differentiation
     let maxFrameWidth, maxFrameHeight;
-    
+
     if (width <= 12 && height <= 12) {
       // Small frames (8x8, 8x10, 9x12, 12x12, etc.)
       maxFrameWidth = viewportWidth * 0.35; // 35% of viewport width
@@ -163,24 +173,24 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
       maxFrameWidth = viewportWidth * 0.55; // 55% of viewport width
       maxFrameHeight = viewportHeight * 0.55; // 55% of viewport height
     }
-    
+
     // Calculate scale factors for both dimensions
     const scaleX = maxFrameWidth / baseFrameWidth;
     const scaleY = maxFrameHeight / baseFrameHeight;
-    
+
     // Use the smaller scale to ensure frame fits in both dimensions
     const responsiveScale = Math.min(scaleX, scaleY, 0.6); // Cap at 60% to allow larger frames
-    
+
     // Ensure minimum size for very small screens
     const minWidth = 120;
     const minHeight = 120;
-    
+
     const finalWidth = Math.max(baseFrameWidth * responsiveScale, minWidth);
     const finalHeight = Math.max(baseFrameHeight * responsiveScale, minHeight);
-    
+
     return {
       width: finalWidth,
-      height: finalHeight
+      height: finalHeight,
     };
   };
 
@@ -191,7 +201,7 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
     if (stageSize.width > 0 && stageSize.height > 0) {
       // Recalculate frame size based on new viewport
       const newFrameSize = getFrameSize();
-      
+
       // Only update position if not dragged yet
       if (!hasBeenDragged) {
         const centerX = (stageSize.width - newFrameSize.width) / 2;
@@ -210,46 +220,75 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   const bevelRight = shadeColor(frameBorderColor, -15);
   const bevelBottom = shadeColor(frameBorderColor, 30);
   let shadow = {};
-  
-  if (customization.material === 'classic') {
+
+  if (customization.material === "classic") {
     frameBorder = 15;
     shadow = {
-      shadowColor: 'black',
+      shadowColor: "black",
       shadowBlur: 12,
       shadowOffset: { x: 2, y: 2 },
       shadowOpacity: 0.6,
     };
-  } else if (customization.material === 'frameless') {
+  } else if (customization.material === "frameless") {
     frameBorder = 0;
     shadow = {
-      shadowColor: 'black',
+      shadowColor: "black",
       shadowBlur: 8,
       shadowOffset: { x: 1, y: 1 },
       shadowOpacity: 0.3,
     };
-  } else if (customization.material === 'canvas') {
+  } else if (customization.material === "canvas") {
     frameBorder = 8;
     shadow = {
-      shadowColor: 'black',
+      shadowColor: "black",
       shadowBlur: 10,
       shadowOffset: { x: 2, y: 2 },
       shadowOpacity: 0.4,
     };
   }
 
-  const matting = customization.material === 'classic' || customization.material === 'frameless' || customization.material === 'canvas' ? 0 : 10;
-  const showCustomBorder = customization.border && customization.borderWidth && customization.borderColor;
+  const matting =
+    customization.material === "classic" ||
+    customization.material === "frameless" ||
+    customization.material === "canvas"
+      ? 0
+      : 10;
+  const showCustomBorder =
+    customization.border &&
+    customization.borderWidth &&
+    customization.borderColor;
 
   // Image transform
-  const transform = uploadedImage?.transform || { scale: 1, rotation: 0, x: 0, y: 0 };
+  const transform = uploadedImage?.transform || {
+    scale: 1,
+    rotation: 0,
+    x: 0,
+    y: 0,
+  };
 
   // Calculate available area for image
-  const availableWidth = customization.material === 'frameless' || customization.material === 'canvas'
-    ? frameSize.width - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
-    : frameSize.width - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
-  const availableHeight = customization.material === 'frameless' || customization.material === 'canvas'
-    ? frameSize.height - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
-    : frameSize.height - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
+  const availableWidth =
+    customization.material === "frameless" ||
+    customization.material === "canvas"
+      ? frameSize.width -
+        2 * (showCustomBorder ? customization.borderWidth! : 0) -
+        2 * (customization.material === "canvas" ? frameBorder : 0)
+      : frameSize.width -
+        2 *
+          (frameBorder +
+            matting +
+            (showCustomBorder ? customization.borderWidth! : 0));
+  const availableHeight =
+    customization.material === "frameless" ||
+    customization.material === "canvas"
+      ? frameSize.height -
+        2 * (showCustomBorder ? customization.borderWidth! : 0) -
+        2 * (customization.material === "canvas" ? frameBorder : 0)
+      : frameSize.height -
+        2 *
+          (frameBorder +
+            matting +
+            (showCustomBorder ? customization.borderWidth! : 0));
 
   // Get natural image size
   const naturalWidth = frameImg?.width || 1;
@@ -263,7 +302,10 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   let offsetY = 0;
 
   if (frameImg) {
-    if (customization.material === 'frameless' || customization.material === 'canvas') {
+    if (
+      customization.material === "frameless" ||
+      customization.material === "canvas"
+    ) {
       if (imageAspect > areaAspect) {
         displayHeight = availableHeight;
         displayWidth = availableHeight * imageAspect;
@@ -307,10 +349,12 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
         ref={stageRef}
         width={stageSize.width}
         height={stageSize.height}
-        style={{ 
+        style={{
           background: wallColor,
-          borderRadius: '8px',
-          overflow: 'hidden'
+          borderRadius: "8px",
+          overflow: "hidden",
+          border: "2px solid black",
+          // padding:'10px'
         }}
       >
         <Layer>
@@ -325,203 +369,244 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
               listening={false}
             />
           )}
-          
-                     {/* Frame Group - Draggable */}
-           <Group
-             x={framePosition.x}
-             y={framePosition.y}
-             draggable={true}
-             onDragStart={handleFrameDragStart}
-             onDragEnd={handleFrameDragEnd}
-             opacity={isDragging ? 0.8 : 1}
-             scaleX={isDragging ? 1.05 : 1}
-             scaleY={isDragging ? 1.05 : 1}
-           >
-             {/* Frame rendering (same as KonvaFrameRenderer) */}
-             {customization.material === 'classic' ? (
-               // Draw 3D beveled classic frame using polygons
-               <>
-                 {/* Main background */}
-                 <Rect
-                   x={0}
-                   y={0}
-                   width={frameSize.width}
-                   height={frameSize.height}
-                   fill={customization.borderColor ?? '#fff'}
-                   cornerRadius={6}
-                   {...shadow}
-                 />
-                 {/* Top bevel (trapezoid) */}
-                 <Line
-                   points={[
-                     0, 0,
-                     frameSize.width, 0,
-                     frameSize.width - frameBorder, frameBorder,
-                     frameBorder, frameBorder
-                   ]}
-                   closed
-                   fill={bevelTop}
-                   listening={false}
-                 />
-                 {/* Left bevel (trapezoid) */}
-                 <Line
-                   points={[
-                     0, 0,
-                     frameBorder, frameBorder,
-                     frameBorder, frameSize.height - frameBorder,
-                     0, frameSize.height
-                   ]}
-                   closed
-                   fill={bevelLeft}
-                   listening={false}
-                 />
-                 {/* Right bevel (trapezoid) */}
-                 <Line
-                   points={[
-                     frameSize.width, 0,
-                     frameSize.width, frameSize.height,
-                     frameSize.width - frameBorder, frameSize.height - frameBorder,
-                     frameSize.width - frameBorder, frameBorder
-                   ]}
-                   closed
-                   fill={bevelRight}
-                   listening={false}
-                 />
-                 {/* Bottom bevel (trapezoid) */}
-                 <Line
-                   points={[
-                     frameBorder, frameSize.height - frameBorder,
-                     frameSize.width - frameBorder, frameSize.height - frameBorder,
-                     frameSize.width, frameSize.height,
-                     0, frameSize.height
-                   ]}
-                   closed
-                   fill={bevelBottom}
-                   listening={false}
-                 />
-                 {/* Bottom left triangle */}
-                 <Line
-                   points={[
-                     0, frameSize.height,
-                     frameBorder, frameSize.height - frameBorder,
-                     0, frameSize.height - frameBorder
-                   ]}
-                   closed
-                   fill={bevelLeft}
-                   listening={false}
-                 />
-                 {/* Bottom right triangle */}
-                 <Line
-                   points={[
-                     frameSize.width, frameSize.height,
-                     frameSize.width, frameSize.height - frameBorder,
-                     frameSize.width - frameBorder, frameSize.height - frameBorder
-                   ]}
-                   closed
-                   fill={bevelRight}
-                   listening={false}
-                 />
-               </>
-             ) : customization.material === 'frameless' ? (
-               // Border rectangle illusion for frameless
-               <Rect
-                 x={0}
-                 y={0}
-                 width={frameSize.width}
-                 height={frameSize.height}
-                 fill={customization.borderColor ?? '#fff'}
-                 stroke={getFrameBorderColor(customization.frameColor)}
-                 strokeWidth={showCustomBorder ? customization.borderWidth! : 2}
-                 cornerRadius={6}
-                 {...shadow}
-               />
-             ) : (
-               // Other frame types
-               <Rect
-                 x={0}
-                 y={0}
-                 width={frameSize.width}
-                 height={frameSize.height}
-                 fill={frameColor}
-                 stroke={frameBorderColor}
-                 strokeWidth={frameBorder}
-                 cornerRadius={6}
-                 {...shadow}
-               />
-             )}
-             
-             {/* Matting/inner border - only for non-classic */}
-             {customization.material !== 'classic' && (
-               <Rect
-                 x={frameBorder}
-                 y={frameBorder}
-                 width={frameSize.width - 2 * frameBorder}
-                 height={frameSize.height - 2 * frameBorder}
-                 fill={customization.borderColor ?? '#fff'}
-                 cornerRadius={4}
-                 shadowColor={'#000'}
-                 shadowBlur={2}
-                 shadowOpacity={0.08}
-               />
-             )}
-             
-             {/* Image group (for transform) */}
-             <Group
-               x={customization.material === 'frameless' 
-                 ? (showCustomBorder ? customization.borderWidth! : 0) 
-                 : customization.material === 'canvas'
-                   ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
-                   : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
-               }
-               y={customization.material === 'frameless' 
-                 ? (showCustomBorder ? customization.borderWidth! : 0) 
-                 : customization.material === 'canvas'
-                   ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
-                   : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
-               }
-               width={availableWidth}
-               height={availableHeight}
-               clipFunc={ctx => {
-                 ctx.beginPath();
-                 if (customization.material === 'frameless') {
-                   ctx.rect(0, 0, availableWidth, availableHeight);
-                 } else {
-                   ctx.rect(0, 0, availableWidth, availableHeight);
-                 }
-                 ctx.closePath();
-               }}
-             >
-               {/* Image */}
-               {frameImg && (
-                 <KonvaImage
-                   image={frameImg}
-                   width={displayWidth}
-                   height={displayHeight}
-                   x={offsetX + (transform.x || 0)}
-                   y={offsetY + (transform.y || 0)}
-                   scaleX={transform.scale}
-                   scaleY={transform.scale}
-                   rotation={transform.rotation}
-                   filters={[]}
-                   style={{ filter: getEffectFilter(customization.effect) }}
-                   listening={false}
-                   perfectDrawEnabled={false}
-                 />
-               )}
-             </Group>
-           </Group>
+
+          {/* Frame Group - Draggable */}
+          <Group
+            x={framePosition.x}
+            y={framePosition.y}
+            draggable={true}
+            onDragStart={handleFrameDragStart}
+            onDragEnd={handleFrameDragEnd}
+            opacity={isDragging ? 0.8 : 1}
+            scaleX={isDragging ? 1.05 : 1}
+            scaleY={isDragging ? 1.05 : 1}
+          >
+            {/* Frame rendering (same as KonvaFrameRenderer) */}
+            {customization.material === "classic" ? (
+              // Draw 3D beveled classic frame using polygons
+              <>
+                {/* Main background */}
+                <Rect
+                  x={0}
+                  y={0}
+                  width={frameSize.width}
+                  height={frameSize.height}
+                  fill={customization.borderColor ?? "#fff"}
+                  cornerRadius={6}
+                  {...shadow}
+                />
+                {/* Top bevel (trapezoid) */}
+                <Line
+                  points={[
+                    0,
+                    0,
+                    frameSize.width,
+                    0,
+                    frameSize.width - frameBorder,
+                    frameBorder,
+                    frameBorder,
+                    frameBorder,
+                  ]}
+                  closed
+                  fill={bevelLeft}
+                  listening={false}
+                />
+                {/* Left bevel (trapezoid) */}
+                <Line
+                  points={[
+                    0,
+                    0,
+                    frameBorder,
+                    frameBorder,
+                    frameBorder,
+                    frameSize.height - frameBorder,
+                    0,
+                    frameSize.height,
+                  ]}
+                  closed
+                  fill={bevelLeft}
+                  listening={false}
+                />
+                {/* Right bevel (trapezoid) */}
+                <Line
+                  points={[
+                    frameSize.width,
+                    0,
+                    frameSize.width,
+                    frameSize.height,
+                    frameSize.width - frameBorder,
+                    frameSize.height - frameBorder,
+                    frameSize.width - frameBorder,
+                    frameBorder,
+                  ]}
+                  closed
+                  fill={bevelRight}
+                  listening={false}
+                />
+                {/* Bottom bevel (trapezoid) */}
+                <Line
+                  points={[
+                    frameBorder,
+                    frameSize.height - frameBorder,
+                    frameSize.width - frameBorder,
+                    frameSize.height - frameBorder,
+                    frameSize.width,
+                    frameSize.height,
+                    0,
+                    frameSize.height,
+                  ]}
+                  closed
+                  fill={bevelLeft}
+                  listening={false}
+                />
+                {/* Bottom left triangle */}
+                <Line
+                  points={[
+                    0,
+                    frameSize.height,
+                    frameBorder,
+                    frameSize.height - frameBorder,
+                    0,
+                    frameSize.height - frameBorder,
+                  ]}
+                  closed
+                  fill={bevelLeft}
+                  listening={false}
+                />
+                {/* Bottom right triangle */}
+                <Line
+                  points={[
+                    frameSize.width,
+                    frameSize.height,
+                    frameSize.width,
+                    frameSize.height - frameBorder,
+                    frameSize.width - frameBorder,
+                    frameSize.height - frameBorder,
+                  ]}
+                  closed
+                  fill={bevelRight}
+                  listening={false}
+                />
+              </>
+            ) : customization.material === "frameless" ? (
+              // Border rectangle illusion for frameless
+              <Rect
+                x={0}
+                y={0}
+                width={frameSize.width}
+                height={frameSize.height}
+                fill={customization.borderColor ?? "#fff"}
+                stroke={getFrameBorderColor(customization.frameColor)}
+                strokeWidth={showCustomBorder ? customization.borderWidth! : 2}
+                cornerRadius={6}
+                {...shadow}
+              />
+            ) : (
+              // Other frame types
+              <Rect
+                x={0}
+                y={0}
+                width={frameSize.width}
+                height={frameSize.height}
+                fill={frameColor}
+                stroke={frameBorderColor}
+                strokeWidth={frameBorder}
+                cornerRadius={6}
+                {...shadow}
+              />
+            )}
+
+            {/* Matting/inner border - only for non-classic */}
+            {customization.material !== "classic" && (
+              <Rect
+                x={frameBorder}
+                y={frameBorder}
+                width={frameSize.width - 2 * frameBorder}
+                height={frameSize.height - 2 * frameBorder}
+                fill={customization.borderColor ?? "#fff"}
+                cornerRadius={4}
+                shadowColor={"#000"}
+                shadowBlur={2}
+                shadowOpacity={0.08}
+              />
+            )}
+
+            {/* Image group (for transform) */}
+            <Group
+              x={
+                customization.material === "frameless"
+                  ? showCustomBorder
+                    ? customization.borderWidth!
+                    : 0
+                  : customization.material === "canvas"
+                  ? frameBorder +
+                    (showCustomBorder ? customization.borderWidth! : 0)
+                  : frameBorder +
+                    matting +
+                    (showCustomBorder ? customization.borderWidth! : 0)
+              }
+              y={
+                customization.material === "frameless"
+                  ? showCustomBorder
+                    ? customization.borderWidth!
+                    : 0
+                  : customization.material === "canvas"
+                  ? frameBorder +
+                    (showCustomBorder ? customization.borderWidth! : 0)
+                  : frameBorder +
+                    matting +
+                    (showCustomBorder ? customization.borderWidth! : 0)
+              }
+              width={availableWidth}
+              height={availableHeight}
+              clipFunc={(ctx) => {
+                ctx.beginPath();
+                if (customization.material === "frameless") {
+                  ctx.rect(0, 0, availableWidth, availableHeight);
+                } else {
+                  ctx.rect(0, 0, availableWidth, availableHeight);
+                }
+                ctx.closePath();
+              }}
+            >
+              {/* Image */}
+              {frameImg && (
+                <KonvaImage
+                  image={frameImg}
+                  width={displayWidth}
+                  height={displayHeight}
+                  x={offsetX + (transform.x || 0)}
+                  y={offsetY + (transform.y || 0)}
+                  scaleX={transform.scale}
+                  scaleY={transform.scale}
+                  rotation={transform.rotation}
+                  filters={[]}
+                  style={{ filter: getEffectFilter(customization.effect) }}
+                  listening={false}
+                  perfectDrawEnabled={false}
+                />
+              )}
+            </Group>
+          </Group>
         </Layer>
       </Stage>
-      
+
       {/* Instructions overlay */}
       <div className="absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm">
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          <span>Drag the frame to position it on the wall</span>
+          <span>Click and drag the frame to place it anywhere on the wall</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          <span>
+            Select your preferred image or color from the <b>Background </b>menu
+            in the left panel.
+          </span>
         </div>
       </div>
     </div>
   );
 };
 
-export default FramePreviewCanvas; 
+export default FramePreviewCanvas;
