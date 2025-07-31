@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import FrameItHeader from "@/components/dashboard/FrameItHeader";
 import FrameItHero from "@/components/dashboard/FrameItHero";
+import FrameItHowItWorks from "@/components/dashboard/FrameItHowItWorks";
 
 // Lazy load non-critical components
 const FrameItPhotoGallery = dynamic(
@@ -126,6 +127,7 @@ export default function HomePage() {
     <div className="min-h-screen">
       <FrameItHeader />
       <FrameItHero />
+   
 
       <Suspense
         fallback={
@@ -139,6 +141,7 @@ export default function HomePage() {
         <FrameItPhotoGallery />
       </Suspense>
 
+   <FrameItHowItWorks />
       <Suspense
         fallback={
           <div className="py-20 bg-white">

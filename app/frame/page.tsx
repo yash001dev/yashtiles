@@ -25,6 +25,7 @@ import {
 import { useFrameCustomizer } from "../../src/hooks/useFrameCustomizer";
 import { downloadFramedImage } from "../../src/utils/downloadImage";
 import HangBottomSheet from "../../src/components/HangBottomSheet";
+import FrameItHowItWorks from "../../src/components/dashboard/FrameItHowItWorks";
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
@@ -336,6 +337,13 @@ function AppContent() {
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         cartTotal={calculateCartTotal}
       />
+
+      {/* How It Works Section */}
+      {!uploadedImage && (
+        <FrameItHowItWorks 
+          onDesignClick={() => document.querySelector('.photo-upload-area')?.scrollIntoView({ behavior: 'smooth' })}
+        />
+      )}
 
       {/* Content area starts after header */}
       <ResponsiveLayout
