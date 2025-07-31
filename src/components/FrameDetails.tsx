@@ -226,7 +226,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
               {/* Accordion Header - Always Visible */}
               <button
                 onClick={() => toggleFrameExpansion(frame.id)}
-                className="w-full px-4 py-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-between"
+                className="w-full px-2 py-2 bg-gray-50 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
@@ -254,9 +254,18 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                 </div>
               </button>
 
-              {/* Accordion Content - Expandable Details */}
-              {isExpanded && (
-                <div className="px-4 py-4 bg-white border-t border-gray-200">
+              {/* Accordion Content - Expandable Details with Transition */}
+              <div 
+                className="overflow-hidden transition-all duration-300 ease-in-out"
+                style={{
+                  maxHeight: isExpanded ? '500px' : '0px',
+                  opacity: isExpanded ? 1 : 0,
+                  padding: isExpanded ? '1rem' : '0 1rem',
+                  borderTopWidth: isExpanded ? '1px' : '0px',
+                  borderColor: 'rgb(229 231 235)'
+                }}
+              >
+                <div className="space-y-4">
                   <div className="space-y-4">
                     {/* Frame Type */}
                     <div className="flex items-center gap-3">
@@ -323,7 +332,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                     </div>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           );
         })}
