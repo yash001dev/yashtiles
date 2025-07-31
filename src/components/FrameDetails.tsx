@@ -218,7 +218,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                     <Hash className="w-3 h-3 text-gray-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs text-gray-500">Frame</p>
+                    <p className="text-xs text-gray-500">Material</p>
                     <p className="text-sm font-medium text-gray-900">
                       {getMaterialName(frame.customization.material)}
                     </p>
@@ -231,7 +231,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                     <Palette className="w-3 h-3 text-gray-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs text-gray-500">Color</p>
+                    <p className="text-xs text-gray-500">Frame</p>
                     <p className="text-sm font-medium text-gray-900">
                       {getColorName(frame.customization.frameColor)}
                     </p>
@@ -251,8 +251,8 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                   </div>
                 </div>
 
-                {/* Finish */}
-                <div className="flex items-center gap-3">
+                {/* Finish utlize for v2 */}
+                {/* <div className="flex items-center gap-3">
                   <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
                     <Sparkles className="w-3 h-3 text-gray-600" />
                   </div>
@@ -262,7 +262,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                       {getFinishName(frame.customization.material)}
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Hang Type */}
                 <div className="flex items-center gap-3">
