@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FrameCustomization, FrameItem } from "../types";
 import { Button } from "./ui/button";
 import {
@@ -8,6 +8,8 @@ import {
   Square,
   Sparkles,
   Image,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 interface FrameDetailsProps {
@@ -23,6 +25,19 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
   onAddToCart,
   className = "",
 }) => {
+  // State to track which frames are expanded
+  const [expandedFrames, setExpandedFrames] = useState<Set<string>>(new Set());
+
+  // Toggle frame expansion
+  const toggleFrameExpansion = (frameId: string) => {
+    const newExpandedFrames = new Set(expandedFrames);
+    if (newExpandedFrames.has(frameId)) {
+      newExpandedFrames.delete(frameId);
+    } else {
+      newExpandedFrames.add(frameId);
+    }
+    setExpandedFrames(newExpandedFrames);
+  };
   const getSizePrice = (size: string) => {
     const prices: Record<string, number> = {
       "8x8": 299,
@@ -194,99 +209,121 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
   }
 
   return (
-    <div className={`bg-white rounded-xl shadow-lg p-6 ${className}`}>
+    <div className={`bg-white rounded-xl shadow-lg p-6 lg:p-3 ${className}`}>
       <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
 
-      <div className="space-y-6">
-        {/* Individual Frame Details */}
+      <div className="space-y-4">
+        {/* Individual Frame Details - Accordion Style */}
         {frames.map((frame, index) => {
           const framePrice = getSizePrice(frame.customization.size);
+          const isExpanded = expandedFrames.has(frame.id);
 
           return (
             <div
               key={frame.id}
-              className="border-b border-gray-100 pb-4 last:border-b-0"
+              className="border border-gray-200 rounded-lg overflow-hidden"
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Frame {index + 1}
-              </h3>
-
-              <div className="space-y-3">
-                {/* Frame Type */}
+              {/* Accordion Header - Always Visible */}
+              <button
+                onClick={() => toggleFrameExpansion(frame.id)}
+                className="w-full px-4 py-4 bg-gray-50 hover:bg-gray-100 transition-colors duration-200 flex items-center justify-between"
+              >
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Hash className="w-3 h-3 text-gray-600" />
+                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                    <Hash className="w-4 h-4 text-gray-600" />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500">Material</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {getMaterialName(frame.customization.material)}
+                  <div className="text-left">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Frame {index + 1}
+                    </h3>
+                    <p className="text-sm lg:text-[10px] text-gray-600">
+                      {getMaterialName(frame.customization.material)} • {frame.customization.size.replace("x", '" × ')}"
                     </p>
                   </div>
                 </div>
-
-                {/* Color */}
+                
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Palette className="w-3 h-3 text-gray-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500">Frame</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {getColorName(frame.customization.frameColor)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Size */}
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Square className="w-3 h-3 text-gray-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500">Size</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {frame.customization.size.replace("x", '" X ')}"
-                    </p>
-                  </div>
-                </div>
-
-                {/* Finish utlize for v2 */}
-                {/* <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 text-gray-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500">Finish</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {getFinishName(frame.customization.material)}
-                    </p>
-                  </div>
-                </div> */}
-
-                {/* Hang Type */}
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Image className="w-3 h-3 text-gray-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500">Hang</p>
-                    <p className="text-sm font-medium text-gray-900">
-                      {getHangType(frame.customization.material)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Frame Price */}
-                <div className="flex justify-between items-center pt-2">
-                  <span className="text-sm font-medium text-gray-700">
-                    Frame {index + 1} Price
-                  </span>
                   <span className="text-lg font-bold text-pink-600">
                     ₹{framePrice}
                   </span>
+                  {isExpanded ? (
+                    <ChevronUp className="w-5 h-5 text-gray-400" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                  )}
                 </div>
-              </div>
+              </button>
+
+              {/* Accordion Content - Expandable Details */}
+              {isExpanded && (
+                <div className="px-4 py-4 bg-white border-t border-gray-200">
+                  <div className="space-y-4">
+                    {/* Frame Type */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <Hash className="w-3 h-3 text-gray-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-gray-500">Material</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {getMaterialName(frame.customization.material)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Color */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <Palette className="w-3 h-3 text-gray-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-gray-500">Frame Color</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {getColorName(frame.customization.frameColor)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Size */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <Square className="w-3 h-3 text-gray-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-gray-500">Size</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {frame.customization.size.replace("x", '" × ')}"
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Hang Type */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <Image className="w-3 h-3 text-gray-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-gray-500">Hang Type</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          {getHangType(frame.customization.material)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Additional Details Section */}
+                    <div className="pt-3 border-t border-gray-100">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-700">
+                          Frame Price
+                        </span>
+                        <span className="text-lg font-bold text-pink-600">
+                          ₹{framePrice}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
