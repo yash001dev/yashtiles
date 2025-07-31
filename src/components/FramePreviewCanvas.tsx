@@ -106,6 +106,7 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 });
   const [framePosition, setFramePosition] = useState({ x: 200, y: 150 });
   const [isDragging, setIsDragging] = useState(false);
+  const [hasBeenDragged, setHasBeenDragged] = useState(false);
   
   // Load images
   const [backgroundImg] = useImage(backgroundImage, 'anonymous');
@@ -151,14 +152,14 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
 
   const frameSize = getFrameSize();
 
-  // Calculate initial centered position
+  // Calculate initial centered position (only if not dragged yet)
   React.useEffect(() => {
-    if (stageSize.width > 0 && stageSize.height > 0) {
+    if (stageSize.width > 0 && stageSize.height > 0 && !hasBeenDragged) {
       const centerX = (stageSize.width - frameSize.width) / 2;
       const centerY = (stageSize.height - frameSize.height) / 2;
       setFramePosition({ x: centerX, y: centerY });
     }
-  }, [stageSize, frameSize]);
+  }, [stageSize, frameSize, hasBeenDragged]);
 
   // Frame style calculations (same as KonvaFrameRenderer)
   let frameBorder = 0;
@@ -254,6 +255,7 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
     const newPos = e.target.position();
     setFramePosition(newPos);
     setIsDragging(false);
+    setHasBeenDragged(true); // Mark that frame has been manually positioned
     if (onFrameDrag) {
       onFrameDrag(newPos);
     }
