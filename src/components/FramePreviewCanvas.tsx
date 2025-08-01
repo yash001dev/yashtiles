@@ -107,10 +107,29 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   const [framePosition, setFramePosition] = useState({ x: 200, y: 150 });
   const [isDragging, setIsDragging] = useState(false);
   const [hasBeenDragged, setHasBeenDragged] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [frameOpacity, setFrameOpacity] = useState(0);
+  const [frameScale, setFrameScale] = useState(0.8);
   
   // Load images
   const [backgroundImg] = useImage(backgroundImage, 'anonymous');
   const [frameImg] = useImage(uploadedImage?.url || '', 'anonymous');
+
+  // Animation effect for smooth loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+      // Animate frame appearance with smooth transition
+      const animateFrame = () => {
+        setFrameOpacity(1);
+        setFrameScale(1);
+      };
+      // Use transition for smooth animation
+      setTimeout(animateFrame, 100);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Responsive stage size
   useEffect(() => {
@@ -302,7 +321,7 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   };
 
   return (
-    <div className="w-full h-full min-h-[60vh] relative">
+    <div className="w-full h-full min-h-[60vh] relative animate-slideInFromBottom">
       <Stage
         ref={stageRef}
         width={stageSize.width}
@@ -310,8 +329,10 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
         style={{ 
           background: wallColor,
           borderRadius: '8px',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          transition: 'all 0.6s ease-out'
         }}
+        className={isLoaded ? 'animate-stageLoaded' : 'animate-stageLoading'}
       >
         <Layer>
           {/* Background Image */}
@@ -333,9 +354,9 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
              draggable={true}
              onDragStart={handleFrameDragStart}
              onDragEnd={handleFrameDragEnd}
-             opacity={isDragging ? 0.8 : 1}
-             scaleX={isDragging ? 1.05 : 1}
-             scaleY={isDragging ? 1.05 : 1}
+             opacity={isDragging ? 0.8 : frameOpacity}
+             scaleX={isDragging ? 1.05 : frameScale}
+             scaleY={isDragging ? 1.05 : frameScale}
            >
              {/* Frame rendering (same as KonvaFrameRenderer) */}
              {customization.material === 'classic' ? (
@@ -514,12 +535,82 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
       </Stage>
       
       {/* Instructions overlay */}
-      <div className="absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm">
+      <div className="absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm animate-fadeInUp">
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
           <span>Drag the frame to position it on the wall</span>
         </div>
       </div>
+      
+      <style>{`
+        @keyframes slideInFromBottom {
+          from { 
+            opacity: 0; 
+            transform: translateY(30px) scale(0.95); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0) scale(1); 
+          }
+        }
+        
+        @keyframes fadeInUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(20px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+        
+        @keyframes frameSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        
+        @keyframes stageGlow {
+          0% {
+            box-shadow: 0 0 0 rgba(236, 72, 153, 0);
+          }
+          50% {
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+          }
+          100% {
+            box-shadow: 0 0 0 rgba(236, 72, 153, 0);
+          }
+        }
+        
+        .animate-slideInFromBottom {
+          animation: slideInFromBottom 0.6s ease-out;
+        }
+        
+        .animate-fadeInUp {
+          animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+        
+        .animate-frameSlideIn {
+          animation: frameSlideIn 0.8s ease-out 0.2s both;
+        }
+        
+        .animate-stageLoading {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        
+        .animate-stageLoaded {
+          opacity: 1;
+          transform: scale(1);
+          animation: stageGlow 2s ease-out 0.3s;
+        }
+      `}</style>
     </div>
   );
 };

@@ -115,11 +115,10 @@ function AppContent() {
     setWallColor(newWallColor);
   };
   
-  const handleFrameDrag = (pos: { x: number; y: number }) => {
-    console.log('Frame dragged to:', pos);
+    const handleFrameDrag = (pos: { x: number; y: number }) => {
+   
     // You can store this position in state if needed
   };
-  
   const handleAddFrame = React.useCallback(() => {
     if (uploadedImage) {
       addFrameToCollection();

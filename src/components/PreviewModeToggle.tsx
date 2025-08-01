@@ -25,7 +25,7 @@ const PreviewModeToggle: React.FC<PreviewModeToggleProps> = ({
             }`}
           >
             <Edit3 size={18} />
-            <span className="text-sm font-semibold">Edit Frame</span>
+            <span className="text-sm font-semibold">Frame</span>
           </button>
           
           <button
