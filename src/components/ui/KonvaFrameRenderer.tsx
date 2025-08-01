@@ -1,10 +1,14 @@
 import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Stage, Layer, Rect, Image as KonvaImage, Group, Text, Line } from 'react-konva';
 import useImage from 'use-image';
-import { Scaling } from 'lucide-react';
+import { Scaling, ZoomIn, ZoomOut } from 'lucide-react'; // Import ZoomIn/ZoomOut icons
 import { FrameCustomization, UploadedImage } from '../../types';
 import { useAppDispatch } from '../../redux/hooks';
 import { setPrintReadyImage } from '../../redux/slices/frameCustomizerSlice';
+
+// Define initial and zoomed scale values
+const INITIAL_STAGE_SCALE = 0.7;
+const ZOOMED_OUT_STAGE_SCALE = 0.4; // You can adjust this value
 
 interface KonvaFrameRendererProps {
   customization: FrameCustomization;
@@ -144,7 +148,7 @@ const KonvaFrameRenderer = forwardRef<
   const dispatch = useAppDispatch();
 
   // Responsive width logic
-  const [responsiveWidth, setResponsiveWidth] = useState<number>(typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400);
+  const [responsiveWidth, setResponsiveWidth] = useState<number>(typeof window !== 'undefined' ? Math.min(300, window.innerWidth - 232) : 300);
 
   useEffect(() => {
     const handleResize = () => {
@@ -160,6 +164,11 @@ const KonvaFrameRenderer = forwardRef<
   const aspect = getAspectRatio(customization.size);
   const canvasWidth = responsiveWidth;
   const canvasHeight = height || responsiveWidth / aspect;
+
+  // State for visible canvas dimensions to adjust zoom in and out
+  const [visibleCanvasWidth, setVisibleCanvasWidth] = useState(canvasWidth);
+const [visibleCanvasHeight, setVisibleCanvasHeight] = useState(canvasHeight);
+console.log(canvasWidth, canvasHeight, visibleCanvasWidth, visibleCanvasHeight);
 
 
   const sampleImage = 'https://picsum.photos/id/237/200/300';
@@ -334,6 +343,51 @@ const KonvaFrameRenderer = forwardRef<
     }
   }, [frameId, uploadedImage, customization, image]);
 
+  // --- Zoom Logic ---
+  const [isZoomedOut, setisZoomedOut] = useState(false);
+  const [stageScale, setStageScale] = useState(INITIAL_STAGE_SCALE);
+  const [stageX, setStageX] = useState(0);
+  const [stageY, setStageY] = useState(0);
+
+  const toggleZoom = () => {
+    setisZoomedOut(prev => !prev);
+  };
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || !(window as any).Konva) return;
+
+    const oldScale = stage.scaleX();
+    const newScale = isZoomedOut ? ZOOMED_OUT_STAGE_SCALE : INITIAL_STAGE_SCALE;
+
+    // Calculate the target position to keep the center of the canvas in view
+    const centerX = canvasWidth / 2;
+    const centerY = canvasHeight / 2;
+
+    const newX = centerX - (centerX - stage.x()) / oldScale * newScale;
+    const newY = centerY - (centerY - stage.y()) / oldScale * newScale;
+
+    // Ensure Konva is available on the window object for Easings
+    const KonvaEasings = (window as any).Konva?.Easings;
+
+    stage.to({
+      x: newX,
+      y: newY,
+      scaleX: newScale,
+      scaleY: newScale,
+      duration: 0.6, // 0.5 seconds for smooth transition
+      easing: KonvaEasings ? KonvaEasings.EaseInOut : (t: number) => t, // Fallback if Konva Easings are not directly available
+      onUpdate: () => {
+        setStageScale(stage.scaleX());
+        setStageX(stage.x());
+        setStageY(stage.y());
+        setVisibleCanvasWidth(canvasWidth * stage.scaleX());
+        // setVisibleCanvasHeight(canvasHeight * stage.scaleY());
+      },
+    });
+  }, [isZoomedOut, canvasWidth, canvasHeight]);
+  console.log(visibleCanvasHeight, visibleCanvasWidth);
+
   useImperativeHandle(ref, () => ({
     getCanvasDataURL: () => {
       // Use download stage for better quality output
@@ -351,38 +405,47 @@ const KonvaFrameRenderer = forwardRef<
   }));
 
   return (
-    <div className={className} style={{ width: canvasWidth, height: canvasHeight, display: downloadOnlyImage ? 'none' : undefined, position: 'relative' }}>
-      {/* Edit icon in top-right corner */}
-      {uploadedImage && showEditOverlay && onImageClick && !downloadOnlyImage && (
+    <div className={className} style={{ width: visibleCanvasWidth, height: visibleCanvasHeight, display: downloadOnlyImage ? 'none' : undefined, position: 'relative',  }}>
+      {/* Edit icon (for image click) in top-right corner */}
+      {uploadedImage && showEditOverlay && onImageClick && !downloadOnlyImage && !isZoomedOut && (
         <button
           type="button"
           aria-label="Edit Image"
           className='absolute top-2 right-2 z-10 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors'
           onClick={onImageClick}
-          // style={{
-          //   position: 'absolute',
-          //   top: 8,
-          //   right: 20,
-          //   zIndex: 10,
-          //   background: 'rgba(255,255,255,0.85)',
-          //   border: 'none',
-          //   borderRadius: '50%',
-          //   width: 32,
-          //   height: 32,
-          //   display: 'flex',
-          //   alignItems: 'center',
-          //   justifyContent: 'center',
-          //   boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-          //   cursor: 'pointer',
-          //   padding: 0,
-          // }}
         >
-          {/* Simple pencil SVG icon */}
           <Scaling size={18} color="#ec4899" />
         </button>
       )}
-      <Stage ref={stageRef} width={canvasWidth} height={canvasHeight} style={{ borderRadius: 6, background: 'transparent' }}>
-        <Layer>
+
+      {/* Zoom toggle button with tooltip */}
+      {!downloadOnlyImage && uploadedImage && showEditOverlay && onImageClick  && (
+        <div className="relative group">
+          <div className={`absolute z-20 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap left-1/2 transform -translate-x-1/2 -top-8 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`}>
+            {isZoomedOut ? 'Zoom in to edit' : 'Zoom out to see how it fits on your wall'}
+          </div>
+          <button
+            type="button"
+            aria-label={isZoomedOut ? 'Zoom In' :'Zoom Out'}
+            // title={isZoomedOut ? 'Zoom in to edit' : 'Zoom out to see how it fits on your wall'}
+            className={`absolute z-10 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors ${isZoomedOut ? 'top-16 left-16 md:top-20 md:left-20' : 'top-2 left-2'}`}
+            onClick={toggleZoom}
+          >
+            {isZoomedOut ? <ZoomIn size={18} color="#000" /> : <ZoomOut size={18} color="#000" />}
+          </button>
+        </div>
+      )}
+
+      <Stage
+        ref={stageRef}
+        width={canvasWidth}
+        height={canvasHeight}
+        style={{ borderRadius: 6, background: 'transparent' }}
+        scaleX={stageScale}
+        scaleY={stageScale}
+        x={stageX}
+        y={stageY}>
+        <Layer >
           {/* Frame */}
           {customization.material === 'classic' ? (
                 // Draw 3D beveled classic frame using polygons
@@ -406,7 +469,7 @@ const KonvaFrameRenderer = forwardRef<
                       frameBorder, frameBorder
                     ]}
                     closed
-                    fill={bevelTop}
+                    fill={bevelLeft}
                     listening={false}
                   />
                   {/* Left bevel (trapezoid) */}
@@ -442,7 +505,7 @@ const KonvaFrameRenderer = forwardRef<
                       0, canvasHeight
                     ]}
                     closed
-                    fill={bevelBottom}
+                    fill={bevelLeft}
                     listening={false}
                   />
                   {/* Bottom left triangle */}
@@ -564,21 +627,6 @@ const KonvaFrameRenderer = forwardRef<
                     onDragEnd={handleImageDragEnd}
                   />
                 )}
-                {/* Custom Border (now inside image group, overlays image) */}
-                {/* {showCustomBorder && (
-                  <Rect
-                    x={0}
-                    y={0}
-                    width={canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                    height={canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0))}
-                    stroke={customization.borderColor}
-                    strokeWidth={customization.borderWidth}
-                    fillEnabled={false}
-                    listening={false}
-                    cornerRadius={6}
-                  />
-                )} */}
-               
               </Group>
               {/* Frame counter */}
               {frameCount > 1 && showFrameCounter && (
@@ -627,7 +675,6 @@ const KonvaFrameRenderer = forwardRef<
                 cornerRadius={6}
               />
               
-              {/* Image positioned with minimal padding - recalculated for tight crop */}
               {(() => {
                 // Calculate even tighter dimensions for download - minimal padding
                 const downloadPadding = customization.material === 'classic' ? 4 : 2; // Reduced from 8:4 to 4:2
@@ -703,4 +750,4 @@ const KonvaFrameRenderer = forwardRef<
   );
 });
 
-export default KonvaFrameRenderer; 
+export default KonvaFrameRenderer;
