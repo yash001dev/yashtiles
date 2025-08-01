@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import React from "react";
-import { ResponsiveBottomSheet } from "./ResponsiveBottomSheet";
-import { MaterialOption, FrameCustomization } from "../types";
-import TooltipCard from "./common/TooltipCard";
+import React from 'react';
+import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
+import { MaterialOption, FrameCustomization } from '../types';
+import TooltipCard from './common/TooltipCard';
 
 interface MaterialBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  currentMaterial: FrameCustomization["material"];
-  onSelect: (material: FrameCustomization["material"]) => void;
+  currentMaterial: FrameCustomization['material'];
+  onSelect: (material: FrameCustomization['material']) => void;
 }
 
 const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
@@ -20,46 +20,42 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
 }) => {
   const materials: MaterialOption[] = [
     {
-      id: "classic",
-      name: "Classic Frame",
-      image: "/frames/classic_frame.jpg",
-      description: "Traditional frame with mounting",
-      content:
-        "Timeless, premium look, printed on superios paper. Available in regular and wide frame options. ",
-      link: "https://www.freepik.com/search?format=search&last_filter=query&last_value=Classic+Frames&query=Classic+Frames",
+      id: 'classic',
+      name: 'Classic Frame',
+      image: '/frames/classic_frame.jpg',
+      description: 'Traditional frame with mounting',
+      content: 'Timeless, premium look, printed on superios paper. Available in regular and wide frame options. ',
+      link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Classic+Frames&query=Classic+Frames',
     },
     {
-      id: "frameless",
-      name: "Frameless",
-      image: "/frames/frameless_frame.jpg",
-      description: "Clean, modern look",
-      content:
-        "Clean, modern look, printed on superios paper. with easy magenetic mounting. ",
-      link: "https://www.freepik.com/search?format=search&last_filter=query&last_value=Frameless+Frames&query=Frameless+Frames",
+      id: 'frameless',
+      name: 'Frameless',
+      image: '/frames/frameless_frame.jpg',
+      description: 'Clean, modern look',
+      content: 'Clean, modern look, printed on superios paper. with easy magenetic mounting. ',
+      link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Frameless+Frames&query=Frameless+Frames',
     },
     {
-      id: "canvas",
-      name: "Canvas",
-      image: "/frames/canvas_frame.jpg",
-      description: "Textured canvas finish",
-      content:
-        "wooden structure used to stretch and hold a canvas taut, providing a sturdy surface for painting and a way to display your artwork.",
-      link: "https://www.freepik.com/search?format=search&last_filter=query&last_value=Canvas+Frames&query=Canvas+Frames",
+      id: 'canvas',
+      name: 'Canvas',
+      image: '/frames/canvas_frame.jpg',
+      description: 'Textured canvas finish',
+      content:"wooden structure used to stretch and hold a canvas taut, providing a sturdy surface for painting and a way to display your artwork.",
+      link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Canvas+Frames&query=Canvas+Frames',
     },
   ];
 
-  const handleSelect = (materialId: FrameCustomization["material"]) => {
+  const handleSelect = (materialId: FrameCustomization['material']) => {
     onSelect(materialId);
-    onClose();
+    // onClose();
   };
   return (
-    <ResponsiveBottomSheet
-      isOpen={isOpen}
-      onClose={onClose}
-      childClassName="!overflow-y-visible"
+    <ResponsiveBottomSheet 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      childClassName='!overflow-y-visible'
       title="Select Material"
-      description="Choose the perfect material for your frame"
-    >
+      description="Choose the perfect material for your frame"    >
       <div className="space-y-4 mt-[0.4rem]">
         {materials.map((material) => (
           <button
@@ -67,8 +63,8 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
             onClick={() => handleSelect(material.id)}
             className={`relative group rounded-xl border-2 transition-all duration-300 transform hover:scale-105 w-full ${
               currentMaterial === material.id
-                ? "border-pink-500 ring-2 ring-pink-200 shadow-lg"
-                : "border-gray-200 hover:border-gray-300"
+                ? 'border-pink-500 ring-2 ring-pink-200 shadow-lg'
+                : 'border-gray-200 hover:border-gray-300'
             }`}
           >
             <div className="flex items-center space-x-4 p-4">
@@ -79,12 +75,14 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
               </div>
-
+              
               <div className="flex-1 text-left">
                 <h3 className="font-semibold text-gray-900 text-lg mb-1">
                   {material.name}
                 </h3>
-                <p className="text-gray-600 text-sm">{material.description}</p>
+                <p className="text-gray-600 text-sm">
+                  {material.description}
+                </p>
               </div>
 
               {/* {currentMaterial === material.id && (

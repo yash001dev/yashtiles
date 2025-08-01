@@ -85,7 +85,7 @@ const FrameItWhatWeCover = () => {
           </div>
 
           {/* Special note */}
-          {/* <div className="bg-gradient-to-bl from-pink-400 to-pink-800 rounded-2xl p-8 text-center border border-gold-500/20">
+          <div className="bg-gradient-to-bl from-pink-400 to-pink-800 rounded-2xl p-8 text-center border border-gold-500/20">
             <div className="max-w-3xl mx-auto text-white">
               <h3 className="text-2xl font-bold  mb-4">
                 Don&apos;t See Your Type? We&apos;ve Got You Covered!
@@ -107,7 +107,7 @@ const FrameItWhatWeCover = () => {
                 </span>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </section>

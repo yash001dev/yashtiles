@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
 import { Image as ImageIcon, Palette } from "lucide-react";
@@ -37,7 +37,7 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
       preview: "bg-gradient-to-br from-amber-100 to-orange-200",
     },
     {
-      id: "framedecor2",
+      id: "framedecor2", 
       name: "Artist Studio",
       image: "/framedecor2.png",
       preview: "bg-gradient-to-br from-blue-100 to-indigo-200",
@@ -93,7 +93,34 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
       description="Choose a background to enhance your frame preview"
     >
       <div className="space-y-6">
-      
+        {/* Preview */}
+        <div className="flex justify-center">
+          <div className="relative">
+            <div 
+              className="w-32 h-32 rounded-lg shadow-lg overflow-hidden border-2 border-gray-200"
+              style={{
+                backgroundColor: selectedType === "color" ? currentWallColor : "transparent",
+                backgroundImage: selectedType === "image" && currentBackground ? `url(${currentBackground})` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            >
+              {!currentBackground && selectedType !== "color" && (
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                  <ImageIcon size={24} className="text-gray-400" />
+                </div>
+              )}
+              {/* Sample frame overlay */}
+              <div className="absolute inset-4 bg-white border-4 border-gray-800 rounded shadow-lg">
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-xs text-gray-500">Frame</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Background Type Selection */}
         <div className="space-y-3">
           <h3 className="font-semibold text-gray-900">Background Type</h3>
@@ -141,8 +168,7 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                   key={option.id}
                   onClick={() => handleBackgroundSelect(option.image)}
                   className={`relative group p-3 rounded-xl border-2 transition-all duration-200 transform hover:scale-105 ${
-                    currentBackground === option.image &&
-                    selectedType === "image"
+                    currentBackground === option.image && selectedType === "image"
                       ? "border-pink-500 bg-pink-50"
                       : "border-gray-200 hover:border-gray-300"
                   }`}
@@ -153,15 +179,13 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                 >
                   <div className="space-y-2">
                     {/* Background Preview */}
-                    <div
+                    <div 
                       className={`w-full h-16 rounded-lg shadow-sm relative overflow-hidden ${option.preview}`}
                       style={{
-                        backgroundImage: option.image
-                          ? `url(${option.image})`
-                          : "none",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
+                        backgroundImage: option.image ? `url(${option.image})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
                       }}
                     >
                       {option.id === "none" && (
@@ -170,14 +194,14 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                         </div>
                       )}
                     </div>
-
+                    
                     <div className="text-center">
                       <p className="text-xs font-medium text-gray-700">
                         {option.name}
                       </p>
                     </div>
                   </div>
-
+                    
                   {/* Checkmark for selected background we do for second version */}
                   {/* {currentBackground === option.image && selectedType === "image" && (
                     <div className="absolute top-1 right-1 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
@@ -215,7 +239,7 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                 >
                   <div className="space-y-2">
                     {/* Color Preview */}
-                    <div
+                    <div 
                       className="w-full h-12 rounded-lg shadow-sm border border-gray-200"
                       style={{ backgroundColor: color.color }}
                     >
@@ -224,14 +248,14 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                         <div className="w-6 h-4 bg-white border border-gray-600 rounded-sm shadow-sm"></div>
                       </div>
                     </div>
-
+                    
                     <div className="text-center">
                       <p className="text-xs font-medium text-gray-700">
                         {color.name}
                       </p>
                     </div>
                   </div>
-                  {/* Checkmark for selected background we do for second version */}
+                    {/* Checkmark for selected background we do for second version */}
                   {/* {currentWallColor === color.color && selectedType === "color" && (
                     <div className="absolute top-1 right-1 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
                       <div className="w-1.5 h-1.5 bg-white rounded-full" />
@@ -253,9 +277,9 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
                   onChange={(e) => handleWallColorSelect(e.target.value)}
                   className="w-12 h-10 rounded-lg border-2 border-gray-300 cursor-pointer appearance-none focus:outline-none focus:ring-0 focus:border-gray-300"
                   style={{
-                    background: "none",
-                    WebkitAppearance: "none",
-                    MozAppearance: "none",
+                    background: 'none',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
                   }}
                 />
                 <div className="flex-1">
@@ -276,12 +300,12 @@ const BackgroundBottomSheet: React.FC<BackgroundBottomSheetProps> = ({
         {selectedType === "image" && (
           <div className="space-y-3">
             <h3 className="font-semibold text-gray-900">Custom Background</h3>
-            <button className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-pink-400 hover:bg-pink-5 cursor-auto transition-all duration-200 flex flex-col items-center space-y-2">
+            <button
+              className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-pink-400 hover:bg-pink-50 transition-all duration-200 flex flex-col items-center space-y-2"
+            >
               <ImageIcon size={24} className="text-gray-400" />
-              <span className="text-sm text-gray-600">
-                Upload Custom Background
-              </span>
-              <span className="text-xs text-gray-700 font-extrabold">Coming Soon</span>
+              <span className="text-sm text-gray-600">Upload Custom Background</span>
+              <span className="text-xs text-gray-500">Coming Soon</span>
             </button>
           </div>
         )}

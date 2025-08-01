@@ -108,6 +108,7 @@ const BorderBottomSheet: React.FC<BorderBottomSheetProps> = ({
     if (enabled) {
       setSelectedBorderType("solid");
     } else {
+       onBorderUpdate({ borderColor: 'white' });
       setSelectedBorderType("none");
     }
   };

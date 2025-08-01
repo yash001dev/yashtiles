@@ -17,6 +17,7 @@ import TutorialTooltip from "../../src/components/TutorialTooltip";
 import CheckoutModal from "../../src/components/checkout/CheckoutModal";
 import AuthModal from "../../src/components/auth/AuthModal";
 import LoadingOverlay from "../../src/components/ui/LoadingOverlay";
+import PreviewModeToggle from "../../src/components/PreviewModeToggle";
 import { AuthProvider, useAuth } from "../../src/contexts/AuthContext";
 import {
   NotificationProvider,
@@ -66,6 +67,10 @@ function AppContent() {
   
   // State for toolbar more button (mobile only)
   const [isMoreOpen, setIsMoreOpen] = React.useState(false);
+  
+  // State for preview mode toggle
+  const [previewMode, setPreviewMode] = React.useState<'edit' | 'preview'>('edit');
+  
   // Update active frame when customization or image changes
   React.useEffect(() => {
     if (frameCollection.activeFrameId && uploadedImage) {
@@ -109,6 +114,12 @@ function AppContent() {
   const handleWallColorUpdate = (newWallColor: string) => {
     setWallColor(newWallColor);
   };
+  
+  const handleFrameDrag = (pos: { x: number; y: number }) => {
+    console.log('Frame dragged to:', pos);
+    // You can store this position in state if needed
+  };
+  
   const handleAddFrame = React.useCallback(() => {
     if (uploadedImage) {
       addFrameToCollection();
@@ -357,17 +368,27 @@ function AppContent() {
           {!uploadedImage ? (
             <PhotoUpload onImageSelect={handleImageUpload} />
           ) : (
-            <FramePreview
-              customization={customization}
-              uploadedImage={uploadedImage}
-              onImageClick={handleImageClick}
-              frameCount={frameCollection.frames.length}
-              currentFrameIndex={frameCollection.frames.findIndex(
-                (f: any) => f.id === frameCollection.activeFrameId
-              )}
-              backgroundImage={backgroundImage}
-              wallColor={wallColor}
-            />
+            <>
+              <div className="px-4 sm:px-0">
+                <PreviewModeToggle
+                  mode={previewMode}
+                  onModeChange={setPreviewMode}
+                />
+              </div>
+              <FramePreview
+                customization={customization}
+                uploadedImage={uploadedImage}
+                onImageClick={handleImageClick}
+                frameCount={frameCollection.frames.length}
+                currentFrameIndex={frameCollection.frames.findIndex(
+                  (f: any) => f.id === frameCollection.activeFrameId
+                )}
+                backgroundImage={backgroundImage}
+                wallColor={wallColor}
+                mode={previewMode}
+                onFrameDrag={handleFrameDrag}
+              />
+            </>
           )}
         </main>
         {uploadedImage && (
