@@ -116,7 +116,6 @@ function AppContent() {
   };
   
   const handleFrameDrag = (pos: { x: number; y: number }) => {
-    console.log('Frame dragged to:', pos);
     // You can store this position in state if needed
   };
   
