@@ -178,10 +178,9 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
     const finalWidth = Math.max(baseFrameWidth * responsiveScale, minWidth);
     const finalHeight = Math.max(baseFrameHeight * responsiveScale, minHeight);
     
-     const scale = 0.8; 
-    return {
-      width: finalWidth * scale,
-      height: finalHeight * scale
+     return {
+      width: finalWidth,
+      height: finalHeight
     };
   };
 
@@ -515,13 +514,13 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
       </Stage>
       
       {/* Instructions overlay */}
-      <div className="absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm">
+      <div className="max-w-xs md:mx-0 md:max-w-none absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm">
         <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          <div className="w-4 h-2 md:w-2 md:h-2 bg-white rounded-full animate-pulse"></div>
           <span>Click and drag the frame to place it anywhere on the wall</span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          <div className="w-4 h-2 md:w-2 md:h-2 bg-white rounded-full animate-pulse"></div>
           <span>
             Select your preferred image or color from the <b>Background </b>menu
             in the left panel.
