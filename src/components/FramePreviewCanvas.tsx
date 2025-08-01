@@ -518,9 +518,16 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
       <div className="absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm">
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          <span>Drag the frame to position it on the wall</span>
+          <span>Click and drag the frame to place it anywhere on the wall</span>
         </div>
-      </div>
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+          <span>
+            Select your preferred image or color from the <b>Background </b>menu
+            in the left panel.
+          </span>
+        </div>
+        </div>
     </div>
   );
 };
