@@ -25,28 +25,27 @@ const FrameItHero = () => {
         }}></div>
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 pt-7 pb-12 md:pt-0 md:pb-0  relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Content */}
             <div className="text-center lg:text-left space-y-8">
-              <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight py-3 md:py-0">
+              <div className="space-y-1 md:space-y-4">
+                <h1 className="leading-relaxed text-lg md:text-xl max-w-lg mx-auto lg:mx-0 font-semibold">Frame Your Moments</h1>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight py-3 md:py-0">
                   Transform Your
                   <span className="text-primary block">Memories</span>
                   Into Stunning Wall Art
-                </h1>
+                </h2>
                 <p className="text-lg md:text-xl max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                  Upload your favorite photos and get them delivered as
-                  beautifully framed art. Premium quality, handcrafted frames
-                  that turn your memories into masterpieces.
+                  Make every moment special with our online photo frame maker
                 </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button
                   size="lg"
-                  className="text-white font-semibold px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className=" text-white font-semibold px-10 py-8 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => {
                     if (isMounted && typeof window !== 'undefined') {
                       window.location.href = "/frame";
@@ -58,7 +57,7 @@ const FrameItHero = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-2 border-pink-800 text-black hover:bg-pink-800 hover:text-cream-50 font-semibold px-8 py-6 text-lg rounded-xl transition-all duration-300"
+                  className="border-2 border-pink-800 text-black hover:bg-pink-700 hover:text-cream-50 font-semibold px-10 py-[30px] text-lg rounded-xl transition-all duration-300"
                   onClick={() => {
                     if (isMounted && typeof window !== 'undefined' && typeof document !== 'undefined') {
                       const element = document.querySelector("#work");

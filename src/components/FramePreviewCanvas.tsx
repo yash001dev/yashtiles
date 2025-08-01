@@ -178,9 +178,10 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
     const finalWidth = Math.max(baseFrameWidth * responsiveScale, minWidth);
     const finalHeight = Math.max(baseFrameHeight * responsiveScale, minHeight);
     
+     const scale = 0.8; 
     return {
-      width: finalWidth,
-      height: finalHeight
+      width: finalWidth * scale,
+      height: finalHeight * scale
     };
   };
 

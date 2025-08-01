@@ -3,7 +3,7 @@ import { Hammer, Upload, Truck, Heart } from "lucide-react";
 const features = [
   {
     icon: Hammer,
-    title: "Premium Handmade Frames",
+    title: "Premium Solid Frames",
     description:
       "Crafted with the highest quality wood and finishes by skilled artisans who care about every detail.",
   },

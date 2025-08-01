@@ -39,7 +39,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({ onImageSelect }) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh] px-4 py-8">
+    <div className="flex items-center justify-center min-h-[60vh] px-4 py-8 photo-upload-area">
       <div className="w-full max-w-md animate-fadeInUp">
         <div
           className={`relative bg-white rounded-3xl shadow-xl border-2 border-dashed transition-all duration-300 p-12 text-center cursor-pointer group ${

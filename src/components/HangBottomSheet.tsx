@@ -42,7 +42,7 @@ const HangBottomSheet: React.FC<HangBottomSheetProps> = ({
 }) => {
   const handleSelect = (hangType: FrameCustomization['hangType']) => {
     onSelect(hangType);
-    // onClose();
+    onClose();
   };
   return (
     <ResponsiveBottomSheet
