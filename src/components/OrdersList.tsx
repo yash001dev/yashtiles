@@ -60,7 +60,7 @@ export function OrdersList({ onViewOrderDetails, className = '' }: OrdersListPro
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Orders Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row gap-2  md:items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Your Orders</h2>
           {meta && (
@@ -74,7 +74,7 @@ export function OrdersList({ onViewOrderDetails, className = '' }: OrdersListPro
           <select
             value={meta?.limit || 10}
             onChange={(e) => setLimit(Number(e.target.value))}
-            className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="border border-gray-300 text-white rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
           >
             <option value={5}>5 per page</option>
             <option value={10}>10 per page</option>
