@@ -26,10 +26,17 @@ import {
 import { useFrameCustomizer } from "../../src/hooks/useFrameCustomizer";
 import { downloadFramedImage } from "../../src/utils/downloadImage";
 import HangBottomSheet from "../../src/components/HangBottomSheet";
+import { useGTM } from "../../src/hooks/useGTM";
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
   const { addNotification } = useNotifications();
+  const { trackPageView, trackEvent, trackEcommerceEvent } = useGTM();
+  
+  // Track page view on component mount
+  React.useEffect(() => {
+    trackPageView('Frame Customizer');
+  }, [trackPageView]);
 
   const {
     customization,
@@ -84,17 +91,20 @@ function AppContent() {
   ]);
 
   const handleToolClick = (tool: string) => {
+    trackEvent('tool_open', 'frame_customizer', tool);
     openModal(tool);
   };
 
   const handleImageClick = () => {
     if (uploadedImage) {
+      trackEvent('image_edit', 'frame_customizer', 'Open image editor');
       openModal("imageEditor");
     }
   };
 
   const handleDownload = async () => {
     if (uploadedImage) {
+      trackEvent('download', 'frame_customizer', 'Download framed image');
       await downloadFramedImage(uploadedImage, customization);
       closeModal();
     }
@@ -197,6 +207,18 @@ function AppContent() {
       return;
     }
 
+    // Track add to cart event
+    const frameItem = {
+      item_id: frameCollection.activeFrameId || 'temp-frame',
+      item_name: `Custom Frame - ${customization.material}`,
+      price: getSizePrice(customization.size),
+      quantity: 1,
+      item_category: 'Custom Frames',
+      item_variant: `${customization.size} - ${customization.material}`,
+    };
+    
+    trackEcommerceEvent('add_to_cart', [frameItem]);
+    
     // Add to cart functionality - no redirect, just show success message
     console.log("Adding to cart:", { customization, uploadedImage });
     addNotification({
@@ -221,7 +243,31 @@ function AppContent() {
       setIsAuthModalOpen(true);
       return;
     }
-
+    
+    // Track begin checkout event
+    const frameItems = frameCollection.frames.map(frame => ({
+      item_id: frame.id,
+      item_name: `Custom Frame - ${frame.customization.material}`,
+      price: getSizePrice(frame.customization.size),
+      quantity: 1,
+      item_category: 'Custom Frames',
+      item_variant: `${frame.customization.size} - ${frame.customization.material}`,
+    }));
+    
+    // If no frames in collection but we have an uploaded image, add the current customization
+    if (frameItems.length === 0 && uploadedImage) {
+      frameItems.push({
+        item_id: 'temp-frame',
+        item_name: `Custom Frame - ${customization.material}`,
+        price: getSizePrice(customization.size),
+        quantity: 1,
+        item_category: 'Custom Frames',
+        item_variant: `${customization.size} - ${customization.material}`,
+      });
+    }
+    
+    trackEcommerceEvent('begin_checkout', frameItems);
+    
     setIsCheckoutModalOpen(true);
   };
 

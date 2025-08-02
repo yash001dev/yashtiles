@@ -4,6 +4,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers/Providers";
+import { GoogleTagManager } from '@next/third-parties/google';
+
 const prompt = Prompt({
   weight: [
     "100",
@@ -134,6 +136,9 @@ export default function RootLayout({
           <Sonner />
         </Providers>
       </body>
+       {process.env.NEXT_PUBLIC_GTM_ID && (
+         <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
+       )}
     </html>
   );
 }
