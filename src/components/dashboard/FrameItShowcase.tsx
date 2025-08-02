@@ -148,6 +148,7 @@ const FrameItShowcase = () => {
               variant="outline"
               size="icon"
               onClick={prevSlide}
+              aria-label="Previous slide"
               className="absolute left-4 top-1/3 -translate-y-1/2 bg-white/80 text-primary backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-20"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -156,6 +157,7 @@ const FrameItShowcase = () => {
             <Button
               variant="outline"
               size="icon"
+              aria-label="Next slide"
               onClick={nextSlide}
               className="absolute right-4 top-1/3  -translate-y-1/2 bg-white/80 text-primary backdrop-blur-sm border-0 shadow-lg hover:bg-white hover:scale-110 transition-all duration-300 z-20"
             >
@@ -173,6 +175,7 @@ const FrameItShowcase = () => {
                       ? "bg-primary scale-125"
                       : "bg-pink-600 hover:bg-primary"
                   }`}
+                  aria-label={`Slide ${index + 1}`}
                 />
               ))}
             </div>
