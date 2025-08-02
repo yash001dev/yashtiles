@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header className="w-full bg-white shadow-sm border-b border-gray-100 relative z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-14">
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-6 md:gap-0">
             <div className="flex items-center space-x-2">
               <Frame className="h-8 w-8 text-primary" />
