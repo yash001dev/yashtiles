@@ -107,10 +107,32 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   const [framePosition, setFramePosition] = useState({ x: 200, y: 150 });
   const [isDragging, setIsDragging] = useState(false);
   const [hasBeenDragged, setHasBeenDragged] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Load images
   const [backgroundImg] = useImage(backgroundImage, 'anonymous');
   const [frameImg] = useImage(uploadedImage?.url || '', 'anonymous');
+
+  // Handle loading state
+  useEffect(() => {
+    if (backgroundImg && frameImg) {
+      // Small delay to ensure smooth transition
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [backgroundImg, frameImg]);
+
+  // Fallback for failed image loads
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isLoading) {
+        setIsLoading(false);
+      }
+    }, 3000); // 3 second timeout
+    return () => clearTimeout(timer);
+  }, [isLoading]);
 
   // Responsive stage size
   useEffect(() => {
@@ -138,7 +160,7 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
     const [width, height] = customization.size.split('x').map(Number);
     
     // Base size calculation (inches to pixels)
-    const pixelsPerInch = 72;
+    const pixelsPerInch = 76;
     const baseFrameWidth = width * pixelsPerInch;
     const baseFrameHeight = height * pixelsPerInch;
     
@@ -302,7 +324,17 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   };
 
   return (
-    <div className="w-full h-full min-h-[60vh] relative">
+    <div className="w-full h-full min-h-[60vh] relative animate-frame-transition">
+      {/* Loading state */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center z-10">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-8 h-8 border-2 border-gray-300 border-t-pink-500 rounded-full animate-spin"></div>
+            <div className="text-gray-500 text-sm">Loading preview...</div>
+          </div>
+        </div>
+      )}
+      
       <Stage
         ref={stageRef}
         width={stageSize.width}
@@ -310,7 +342,13 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
         style={{ 
           background: wallColor,
           borderRadius: '8px',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          opacity: isLoading ? 0 : 1,
+          transition: 'opacity 0.3s ease-in-out'
+        }}
+        onError={(e) => {
+          console.error('Stage error:', e);
+          setIsLoading(false);
         }}
       >
         <Layer>
@@ -514,12 +552,14 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
       </Stage>
       
       {/* Instructions overlay */}
-      <div className="absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm">
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          <span>Drag the frame to position it on the wall</span>
+      {!isLoading && (
+        <div className="absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            <span>Drag the frame to position it on the wall</span>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

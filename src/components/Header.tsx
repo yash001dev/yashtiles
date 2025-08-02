@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from "react";
-import { Frame, ShoppingCart } from "lucide-react";
+import { Frame, ShoppingCart, Sparkles } from "lucide-react";
 import UserMenu from "./auth/UserMenu";
 import AuthModal from "./auth/AuthModal";
 import Link from "next/link";
@@ -38,6 +38,24 @@ const Header: React.FC<HeaderProps> = ({
                 <Link href="/">{process.env.NEXT_PUBLIC_APP_NAME}</Link>
               </span>
             </div>
+            
+            {/* Navigation Menu */}
+            <nav className="hidden md:flex items-center space-x-6">
+              <Link 
+                href="/frame" 
+                className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium"
+              >
+                Frame Designer
+              </Link>
+              <Link 
+                href="/ai-design" 
+                className="text-gray-600 hover:text-gray-900 transition-colors duration-200 font-medium flex items-center space-x-1"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>AI Design</span>
+              </Link>
+            </nav>
+            
             <div className="flex items-center space-x-4">
               <button
                 onClick={onCartClick}

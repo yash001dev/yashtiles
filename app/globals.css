@@ -232,3 +232,35 @@
 .swiper-pagination {
   display: none !important;
 }
+
+/* Frame Preview Transition Animations */
+@keyframes frameTransition {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modeSwitch {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-frame-transition {
+  animation: frameTransition 0.3s ease-out;
+}
+
+.animate-mode-switch {
+  animation: modeSwitch 0.3s ease-out;
+}

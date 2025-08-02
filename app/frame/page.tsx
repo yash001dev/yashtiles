@@ -26,6 +26,7 @@ import {
 import { useFrameCustomizer } from "../../src/hooks/useFrameCustomizer";
 import { downloadFramedImage } from "../../src/utils/downloadImage";
 import HangBottomSheet from "../../src/components/HangBottomSheet";
+import { useSearchParams } from "next/navigation";
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
@@ -70,6 +71,10 @@ function AppContent() {
   
   // State for preview mode toggle
   const [previewMode, setPreviewMode] = React.useState<'edit' | 'preview'>('edit');
+  
+  // Handle AI-generated image from URL params
+  const searchParams = useSearchParams();
+  const aiImageUrl = searchParams.get('aiImage');
   
   // Update active frame when customization or image changes
   React.useEffect(() => {
@@ -145,6 +150,49 @@ function AppContent() {
       setIsLoading(false);
     }
   };
+  // Handle AI-generated image from URL params
+  React.useEffect(() => {
+    if (aiImageUrl && !uploadedImage) {
+      const handleAIImage = async () => {
+        try {
+          setLoadingMessage("Loading your AI-generated image...");
+          setIsLoading(true);
+          
+          // Fetch the image from the blob URL
+          const response = await fetch(aiImageUrl);
+          const blob = await response.blob();
+          
+          // Create a file from the blob
+          const file = new File([blob], 'ai-generated-image.png', { type: 'image/png' });
+          
+          // Upload the image using the existing upload handler
+          await setImage(file);
+          
+          // Add a small delay to show the loading animation
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 1000);
+          
+          // Clear the URL parameter to prevent re-processing
+          const url = new URL(window.location.href);
+          url.searchParams.delete('aiImage');
+          window.history.replaceState({}, '', url.toString());
+          
+        } catch (error) {
+          console.error('Error loading AI image:', error);
+          setIsLoading(false);
+          addNotification({
+            type: "error",
+            title: "Failed to load AI image",
+            message: "There was an error loading your AI-generated image.",
+          });
+        }
+      };
+      
+      handleAIImage();
+    }
+  }, [aiImageUrl, uploadedImage, setImage, addNotification]);
+
   // Add first frame to Redux when image is uploaded and no frames exist
   React.useEffect(() => {
     if (uploadedImage && frameCollection.frames.length === 0) {

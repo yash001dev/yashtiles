@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FrameCustomization, UploadedImage } from '../types';
 import FrameRenderer from './ui/FrameRenderer';
 import FramePreviewCanvas from './FramePreviewCanvas';
@@ -28,28 +28,73 @@ const FramePreview: React.FC<FramePreviewProps> = ({
   mode = 'edit',
   onFrameDrag
 }) => {
-  if (mode === 'preview') {
-    return (
-      <FramePreviewCanvas
-        customization={customization}
-        uploadedImage={uploadedImage}
-        backgroundImage={backgroundImage}
-        wallColor={wallColor}
-        onFrameDrag={onFrameDrag}
-      />
-    );
-  }
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [previousMode, setPreviousMode] = useState(mode);
+  const [showEditMode, setShowEditMode] = useState(mode === 'edit');
+  const [showPreviewMode, setShowPreviewMode] = useState(mode === 'preview');
+  const [isLoading, setIsLoading] = useState(false);
 
-  return (
+  // Handle mode changes with smooth transitions
+  useEffect(() => {
+    if (mode !== previousMode) {
+      setIsTransitioning(true);
+      setIsLoading(true);
+      
+      // Start transition
+      if (mode === 'preview') {
+        setShowEditMode(false);
+        setTimeout(() => {
+          setShowPreviewMode(true);
+          setIsTransitioning(false);
+          // Add a small delay before hiding loading to ensure smooth transition
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 100);
+        }, 200); // Reduced transition time
+      } else {
+        setShowPreviewMode(false);
+        setTimeout(() => {
+          setShowEditMode(true);
+          setIsTransitioning(false);
+          // Add a small delay before hiding loading to ensure smooth transition
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 100);
+        }, 200); // Reduced transition time
+      }
+      
+      setPreviousMode(mode);
+    }
+  }, [mode, previousMode]);
+
+  // Initialize modes on first render
+  useEffect(() => {
+    if (mode === 'edit') {
+      setShowEditMode(true);
+      setShowPreviewMode(false);
+    } else {
+      setShowEditMode(false);
+      setShowPreviewMode(true);
+    }
+  }, []);
+
+  const renderEditMode = () => (
     <div 
-      className="flex items-center justify-center min-h-[60vh] px-4 py-8 relative"
+      className={`flex items-center justify-center min-h-[60vh] px-4 py-8 relative transition-all duration-200 ease-in-out ${
+        showEditMode 
+          ? 'opacity-100 transform translate-y-0' 
+          : 'opacity-0 transform translate-y-4 pointer-events-none absolute inset-0'
+      }`}
       style={{
         backgroundColor: 'transparent',
         backgroundImage: 'none'
       }}
     >
-      
-      <div className="relative animate-fadeIn z-10">
+      <div className={`relative transition-all duration-200 ease-in-out ${
+        showEditMode 
+          ? 'opacity-100 transform scale-100' 
+          : 'opacity-0 transform scale-95'
+      }`}>
         {/* Outer frame with 3D shadow effect */}
         <div className="relative">
           <FrameRenderer
@@ -65,30 +110,55 @@ const FramePreview: React.FC<FramePreviewProps> = ({
           />
         </div>
 
-        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white drop-shadow-lg whitespace-nowrap animate-slideUp">
+        <div className={`absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white drop-shadow-lg whitespace-nowrap transition-all duration-200 ease-in-out ${
+          showEditMode 
+            ? 'opacity-100 transform translate-x-1/2 translate-y-0' 
+            : 'opacity-0 transform translate-x-1/2 translate-y-2'
+        }`}>
           {customization.size.replace('x', ' × ')} • {customization.material} • {customization.frameColor}
         </div>
       </div>
+    </div>
+  );
 
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-          to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out;
-        }
-        
-        .animate-slideUp {
-          animation: slideUp 0.6s ease-out 0.3s both;
-        }
-      `}</style>
+  const renderPreviewMode = () => (
+    <div className={`w-full h-full min-h-[60vh] relative transition-all duration-200 ease-in-out ${
+      showPreviewMode 
+        ? 'opacity-100 transform scale-100' 
+        : 'opacity-0 transform scale-95 pointer-events-none absolute inset-0'
+    }`}>
+      <FramePreviewCanvas
+        customization={customization}
+        uploadedImage={uploadedImage}
+        backgroundImage={backgroundImage}
+        wallColor={wallColor}
+        onFrameDrag={onFrameDrag}
+      />
+    </div>
+  );
+
+  return (
+    <div className="relative w-full h-full min-h-[60vh]">
+      {/* Edit Mode */}
+      {renderEditMode()}
+      
+      {/* Preview Mode */}
+      {renderPreviewMode()}
+      
+      {/* Improved Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-xl p-6 flex flex-col items-center space-y-4">
+            <div className="relative">
+              <div className="w-12 h-12 border-4 border-gray-200 border-t-pink-500 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 w-12 h-12 border-4 border-transparent border-t-pink-300 rounded-full animate-ping"></div>
+            </div>
+            <div className="text-gray-600 font-medium text-sm">
+              {mode === 'preview' ? 'Loading Wall Preview...' : 'Loading Edit Mode...'}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
