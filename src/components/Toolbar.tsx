@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useAuth } from "../contexts/AuthContext";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface ToolbarProps {
   onToolClick: (tool: string) => void;
@@ -37,9 +38,13 @@ const Toolbar: React.FC<ToolbarProps> = ({
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 1024px)");
   const { isAuthenticated } = useAuth();
+  const { trackEvent } = useAnalytics();
   const [showMore, setShowMore] = useState(false);
 
   const handleAddFrame = () => {
+    // Track the add frame event
+    trackEvent('Engagement', 'Button Click', 'Add Frame');
+    
     if (!isAuthenticated && onAuthRequired) {
       onAuthRequired();
       return;
@@ -74,7 +79,10 @@ const Toolbar: React.FC<ToolbarProps> = ({
             {mainTools.map((tool, index) => (
               <button
                 key={tool.id}
-                onClick={() => onToolClick(tool.id)}
+                onClick={() => {
+                trackEvent('Tool Usage', 'Tool Click', tool.id);
+                onToolClick(tool.id);
+              }}
                 className="group flex flex-col items-center space-y-2 p-2 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 active:scale-95 relative"
                 style={{
                   animationDelay: `${index * 100}ms`,

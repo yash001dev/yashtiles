@@ -33,12 +33,20 @@ const nextConfig = {
   // Environment-specific configuration
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
+    NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
+    NEXT_PUBLIC_ENABLE_ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS,
+    NEXT_PUBLIC_ENABLE_ANALYTICS_IN_DEV: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS_IN_DEV,
   },
 
   // Public runtime configuration
   publicRuntimeConfig: {
     baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
     environment: process.env.NEXT_PUBLIC_ENVIRONMENT,
+    analytics: {
+      enabled: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true',
+      gtmId: process.env.NEXT_PUBLIC_GTM_ID,
+      enabledInDev: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS_IN_DEV === 'true',
+    },
   },
 
   // Redirects based on environment

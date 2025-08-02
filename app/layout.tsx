@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers/Providers";
+import Analytics from "@/components/analytics/Analytics";
 const prompt = Prompt({
   weight: [
     "100",
@@ -132,6 +133,7 @@ export default function RootLayout({
           {children}
           <Toaster />
           <Sonner />
+          <Analytics />
         </Providers>
       </body>
     </html>

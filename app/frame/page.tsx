@@ -26,10 +26,17 @@ import {
 import { useFrameCustomizer } from "../../src/hooks/useFrameCustomizer";
 import { downloadFramedImage } from "../../src/utils/downloadImage";
 import HangBottomSheet from "../../src/components/HangBottomSheet";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 function AppContent() {
   const { isAuthenticated } = useAuth();
   const { addNotification } = useNotifications();
+  const { trackPageView, trackEvent, trackEcommerceEvent } = useAnalytics();
+  
+  // Track page view when component mounts
+  React.useEffect(() => {
+    trackPageView('Frame Editor');
+  }, [trackPageView]);
 
   const {
     customization,
@@ -84,17 +91,20 @@ function AppContent() {
   ]);
 
   const handleToolClick = (tool: string) => {
+    trackEvent('Tool Usage', 'Open Tool', tool);
     openModal(tool);
   };
 
   const handleImageClick = () => {
     if (uploadedImage) {
+      trackEvent('Image Interaction', 'Edit Image', 'Open Editor');
       openModal("imageEditor");
     }
   };
 
   const handleDownload = async () => {
     if (uploadedImage) {
+      trackEvent('Engagement', 'Download', 'Framed Image');
       await downloadFramedImage(uploadedImage, customization);
       closeModal();
     }
@@ -192,6 +202,7 @@ function AppContent() {
     }
 
     if (!isAuthenticated) {
+      trackEvent('Ecommerce', 'Add to Cart Attempt', 'Not Authenticated');
       setPendingAction("cart");
       setIsAuthModalOpen(true);
       return;
@@ -199,6 +210,21 @@ function AppContent() {
 
     // Add to cart functionality - no redirect, just show success message
     console.log("Adding to cart:", { customization, uploadedImage });
+    
+    // Track ecommerce event
+    trackEcommerceEvent('add_to_cart', {
+      currency: 'INR',
+      value: getSizePrice(customization.size),
+      items: [{
+        item_id: frameCollection.activeFrameId || 'temp-frame',
+        item_name: 'Custom Photo Frame',
+        price: getSizePrice(customization.size),
+        quantity: 1,
+        item_category: customization.material,
+        item_variant: customization.frameColor
+      }]
+    });
+    
     addNotification({
       type: "success",
       title: "Added to Cart",
