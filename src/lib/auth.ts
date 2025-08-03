@@ -61,7 +61,8 @@ interface GoogleJWTPayload {
 }
 
 // API base URL - this should come from environment variables
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 class AuthService {
   private accessToken: string | null = null;
@@ -108,8 +109,43 @@ class AuthService {
     return !!this.accessToken;
   }
 
-  // Make authenticated API request
-  private async apiRequest(
+  // Validate token without refreshing (for initial checks)
+  async validateToken(): Promise<boolean> {
+    if (!this.accessToken) {
+      return false;
+    }
+
+    try {
+      // Make a simple request to validate the token using query parameter
+      const response = await fetch(
+        `${API_BASE_URL}/api/v1/auth/validate?token=${encodeURIComponent(
+          this.accessToken
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const result = await response.json();
+      return result.isValid === true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // Global flag to prevent multiple refresh attempts
+  private static isRefreshing = false;
+  private static refreshPromise: Promise<boolean> | null = null;
+
+  // Make authenticated API request with automatic refresh and logout
+  public async apiRequest(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<Response> {
@@ -130,16 +166,60 @@ class AuthService {
       headers,
     });
 
-    // If we get a 401 and have a refresh token, try to refresh
-    if (response.status === 401 && this.refreshToken) {
-      const refreshed = await this.refreshTokens();
-      if (refreshed) {
-        // Retry the original request with new token
-        headers.Authorization = `Bearer ${this.accessToken}`;
-        return fetch(url, {
-          ...options,
-          headers,
-        });
+    // Handle 401 Unauthorized with automatic refresh and logout
+    if (response.status === 401) {
+      // If we're already refreshing, wait for that to complete
+      if (AuthService.isRefreshing && AuthService.refreshPromise) {
+        const refreshed = await AuthService.refreshPromise;
+        if (refreshed) {
+          // Retry the original request with new token
+          const newAccessToken = this.getAccessToken();
+          if (newAccessToken) {
+            headers.Authorization = `Bearer ${newAccessToken}`;
+            const retryResponse = await fetch(url, {
+              ...options,
+              headers,
+            });
+
+            if (retryResponse.ok) {
+              return retryResponse;
+            }
+          }
+        }
+        // If refresh failed, logout automatically
+        await this.logout();
+        throw new Error("Session expired. Please log in again.");
+      }
+
+      // Start refresh process
+      AuthService.isRefreshing = true;
+      AuthService.refreshPromise = this.refreshTokens();
+
+      try {
+        const refreshed = await AuthService.refreshPromise;
+
+        if (refreshed) {
+          // Retry the original request with new token
+          const newAccessToken = this.getAccessToken();
+          if (newAccessToken) {
+            headers.Authorization = `Bearer ${newAccessToken}`;
+            const retryResponse = await fetch(url, {
+              ...options,
+              headers,
+            });
+
+            if (retryResponse.ok) {
+              return retryResponse;
+            }
+          }
+        }
+
+        // If refresh failed, logout automatically
+        await this.logout();
+        throw new Error("Session expired. Please log in again.");
+      } finally {
+        AuthService.isRefreshing = false;
+        AuthService.refreshPromise = null;
       }
     }
 
@@ -162,11 +242,11 @@ class AuthService {
     }
 
     const authResponse = await response.json();
-    
+
     // Registration doesn't provide tokens - user needs to verify email first
     // Don't set tokens or store user data yet since they're not authenticated
     // Only store user data temporarily for email verification flow
-    
+
     return authResponse;
   }
 
@@ -403,3 +483,54 @@ class AuthService {
 
 // Create a singleton instance
 export const authService = new AuthService();
+
+/**
+ * Global API request function with automatic refresh token handling
+ * Use this for all authenticated API calls throughout the app
+ */
+export async function authenticatedApiRequest(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<Response> {
+  return authService.apiRequest(endpoint, options);
+}
+
+/**
+ * Helper function to make authenticated GET requests
+ */
+export async function authenticatedGet(endpoint: string): Promise<Response> {
+  return authenticatedApiRequest(endpoint, { method: "GET" });
+}
+
+/**
+ * Helper function to make authenticated POST requests
+ */
+export async function authenticatedPost(
+  endpoint: string,
+  data?: any
+): Promise<Response> {
+  return authenticatedApiRequest(endpoint, {
+    method: "POST",
+    body: data ? JSON.stringify(data) : undefined,
+  });
+}
+
+/**
+ * Helper function to make authenticated PUT requests
+ */
+export async function authenticatedPut(
+  endpoint: string,
+  data?: any
+): Promise<Response> {
+  return authenticatedApiRequest(endpoint, {
+    method: "PUT",
+    body: data ? JSON.stringify(data) : undefined,
+  });
+}
+
+/**
+ * Helper function to make authenticated DELETE requests
+ */
+export async function authenticatedDelete(endpoint: string): Promise<Response> {
+  return authenticatedApiRequest(endpoint, { method: "DELETE" });
+}

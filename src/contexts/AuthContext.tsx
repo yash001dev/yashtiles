@@ -108,11 +108,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (authService.isAuthenticated()) {
           const storedUser = authService.getStoredUser();
           if (storedUser) {
+            // User has valid stored data, set as authenticated
+            // Token validation will be handled by enhanced fetch base query
             dispatch({ type: 'AUTH_SUCCESS', payload: storedUser });
           } else {
             // Access token exists but no user data, try to refresh
             const refreshed = await authService.refreshTokens();
-            if (!refreshed) {
+            if (refreshed) {
+              // Get user data after successful refresh
+              const refreshedUser = authService.getStoredUser();
+              if (refreshedUser) {
+                dispatch({ type: 'AUTH_SUCCESS', payload: refreshedUser });
+              } else {
+                dispatch({ type: 'AUTH_LOGOUT' });
+              }
+            } else {
               dispatch({ type: 'AUTH_LOGOUT' });
             }
           }
