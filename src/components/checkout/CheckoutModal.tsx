@@ -163,7 +163,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       // Convert print-ready images to File objects and append to FormData
       const imagePromises = items.map(async (item, index) => {
         // Use print-ready image if available, otherwise fall back to original image
-        const imageToUse = printReadyImages[item.id] || item.image;
+        const imageToUse = printReadyImages[index+1] || item.image;
         
         if (imageToUse) {
           try {
@@ -321,7 +321,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                           />
                         )}
                         <div>
-                          <p className="font-medium text-gray-900">{item.name} {items.length > 1 ? `${index + 1}` : ''}</p>
+                          <p className="font-medium text-gray-900">{item.name} </p>
                           <p className="text-sm text-gray-600">
                             {item.customization.size} • {item.customization.material} • {item.customization.frameColor}
                           </p>
