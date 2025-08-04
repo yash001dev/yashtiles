@@ -269,3 +269,7 @@ export class StorageHelper {
     return false;
   }
 }
+
+
+// Maximum file size for uploads (15MB in bytes)
+export const MAX_FILE_SIZE = 20 * 1024 * 1024;

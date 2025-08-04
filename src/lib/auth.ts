@@ -9,6 +9,14 @@ export interface User {
   role: string;
   avatar?: string;
   isEmailVerified?: boolean;
+  address?: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  phone?: string;
 }
 
 export interface AuthTokens {

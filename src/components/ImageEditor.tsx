@@ -7,6 +7,8 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { updateActiveFrame } from '@/redux/slices/frameCustomizerSlice';
 import KonvaFrameRenderer from './ui/KonvaFrameRenderer';
 import { Input } from '@/components/ui/input';
+import { useNotifications } from '@/contexts/NotificationContext';
+import { MAX_FILE_SIZE } from '@/lib/api-utils';
 
 interface ImageEditorProps {
   isOpen: boolean;
@@ -35,6 +37,9 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const [localTransform, setLocalTransform] = useState<ImageTransform>(image.transform);
   const [hasChanges, setHasChanges] = useState(false);
   
+  const { addNotification } = useNotifications();
+  const maxFileSizeMB = Math.round(MAX_FILE_SIZE / (1024 * 1024));
+
   // Refs to track current values for cleanup
   const hasChangesRef = useRef(false);
   const localTransformRef = useRef<ImageTransform>(image.transform);
@@ -157,7 +162,28 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+
+    if (!file) return;
+
+    // Check file type
+    if (!(file.type === 'image/png' || file.type === 'image/jpeg')) {
+      addNotification({
+        type: "error",
+        title: "Invalid File Type",
+        message: "Please upload a valid image file (PNG or JPEG).",
+      });
+      return;
+    }
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      addNotification({
+        type: "error",
+        title: "File Too Large",
+        message: `The selected file exceeds the ${maxFileSizeMB}MB size limit. Please choose a smaller file.`,
+      });
+      return;
+    }
       onImageReplace(file);
       // Reset local transform when replacing image
       setLocalTransform({
@@ -170,7 +196,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       setTimeout(() => {
         dispatch(updateActiveFrame());
       }, 100);
-    }
+    
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }

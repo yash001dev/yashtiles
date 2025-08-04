@@ -18,7 +18,9 @@ const shippingSchema = z.object({
   firstName: z.string().min(1, 'First name is required').min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(1, 'Last name is required').min(2, 'Last name must be at least 2 characters'),
   email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
-  phone: z.string().min(1, 'Phone number is required').min(10, 'Phone number must be at least 10 digits').regex(/^[0-9+\-\s()]+$/, 'Please enter a valid phone number'),
+  phone: z.string()
+    .min(1, 'Phone number is required')
+    .regex(/^(\+91|91)?[6-9][0-9]{9}$/, 'Please enter a valid Indian phone number'),
   address: z.string().min(1, 'Address is required').min(5, 'Address must be at least 5 characters'),
   city: z.string().min(1, 'City is required').min(2, 'City must be at least 2 characters'),
   state: z.string().min(1, 'State is required').min(2, 'State must be at least 2 characters'),
@@ -41,7 +43,7 @@ interface CheckoutModalProps {
 }
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items }) => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, updateUser } = useAuth();
   const { processCheckout, error, clearError } = useCheckout();
   
   // Access print-ready images from Redux
@@ -50,6 +52,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'razorpay'>('stripe');
+  const [saveAddress, setSaveAddress] = useState(false);
 
   // Initialize form with react-hook-form and zod validation
   const form = useForm<ShippingFormData>({
@@ -68,16 +71,25 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
     mode: 'onChange',
   });
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors, isValid } } = form;
+  const { register, handleSubmit, reset, formState: { errors, isValid } } = form;
 
-  // Update form values when user data changes
+  // Prefill form with user address if available
   useEffect(() => {
+    if(!user) return;
     if (user) {
-      setValue('firstName', user.firstName || '');
-      setValue('lastName', user.lastName || '');
-      setValue('email', user.email || '');
+      reset({
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+        email: user?.email || '',
+        address: user?.address?.street || '',
+        city: user?.address?.city || '',
+        state: user?.address?.state || '',
+        zipCode: user?.address?.zipCode || '',
+        country: user?.address?.country || 'IN',
+        phone: user?.phone || ''
+      });
     }
-  }, [user, setValue]);
+  }, [user,reset]);
 
   // Reset form when modal is closed
   useEffect(() => {
@@ -277,6 +289,38 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       };
 
       await handleCartClick(formData);
+      // Save address for future if checked
+      if (saveAddress && user) {
+        const addressPayload = {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: {
+            street: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zipCode: formData.zipCode,
+            country: formData.country,
+          },
+        };
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/v1/users/${user.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            },
+            body: JSON.stringify(addressPayload),
+          });
+          if (res.ok) {
+            const updatedUser = await res.json();
+            updateUser(updatedUser);
+          }
+        } catch (err) {
+          // Optionally show a toast or ignore
+        }
+      }
       
     } catch (err) {
       // Error is handled by the hook
@@ -483,7 +527,20 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                 </div>
               </div>
 
-
+              {/* Save address for future checkbox */}
+              <div className="flex items-center mt-2">
+                <input
+                  type="checkbox"
+                  id="save-address"
+                  checked={saveAddress}
+                  onChange={e => setSaveAddress(e.target.checked)}
+                  className="mr-2  h-4 w-4"
+                  disabled={!isAuthenticated}
+                />
+                <label htmlFor="save-address" className="text-sm text-gray-700">
+                  Save this address for future purchases
+                </label>
+              </div>
 
               {/* Order Total */}
               <div className="border-t border-gray-200 pt-4">
