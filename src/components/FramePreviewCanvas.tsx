@@ -205,10 +205,15 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   let frameBorder = 0;
   let frameColor = getFrameColor(customization.frameColor);
   let frameBorderColor = getFrameBorderColor(customization.frameColor);
-  const bevelTop = shadeColor(frameBorderColor, 30);
-  const bevelLeft = shadeColor(frameBorderColor, -30);
-  const bevelRight = shadeColor(frameBorderColor, -15);
-  const bevelBottom = shadeColor(frameBorderColor, 30);
+  // const bevelTop = shadeColor(frameBorderColor, 30);
+  // const bevelLeft = shadeColor(frameBorderColor, -30);
+  // const bevelRight = shadeColor(frameBorderColor, -15);
+  // const bevelBottom = shadeColor(frameBorderColor, 30);
+  const bevelTop = '#333';
+  const bevelLeft = '#000';
+  const bevelRight = '#000';
+  const bevelBottom = '#333';
+
   let shadow = {};
   
   if (customization.material === 'classic') {
@@ -399,28 +404,8 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
                    fill={bevelBottom}
                    listening={false}
                  />
-                 {/* Bottom left triangle */}
-                 <Line
-                   points={[
-                     0, frameSize.height,
-                     frameBorder, frameSize.height - frameBorder,
-                     0, frameSize.height - frameBorder
-                   ]}
-                   closed
-                   fill={bevelLeft}
-                   listening={false}
-                 />
-                 {/* Bottom right triangle */}
-                 <Line
-                   points={[
-                     frameSize.width, frameSize.height,
-                     frameSize.width, frameSize.height - frameBorder,
-                     frameSize.width - frameBorder, frameSize.height - frameBorder
-                   ]}
-                   closed
-                   fill={bevelRight}
-                   listening={false}
-                 />
+              
+                
                </>
              ) : customization.material === 'frameless' ? (
                // Border rectangle illusion for frameless

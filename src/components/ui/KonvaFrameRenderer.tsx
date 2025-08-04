@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle, useMemo } from 'react';
 import { Stage, Layer, Rect, Image as KonvaImage, Group, Text, Line } from 'react-konva';
 import useImage from 'use-image';
 import { Scaling } from 'lucide-react';
@@ -284,6 +284,15 @@ const KonvaFrameRenderer = forwardRef<
   // Drag logic for image
   const [dragging, setDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const sideBevelColor=useMemo(()=>{
+    if(frameColor === '#fff') {
+      return '#4D4D4D'; // light gray for white frame
+    }
+    else if(frameColor === '#a0522d') {
+      return shadeColor(frameColor,-20); // light brown for brown frame
+    }
+    return '#4D4D4D'; // default gray for other colors
+  },[frameColor])
 
   const handleImageDragStart = (e: any) => {
     if (!isEditable) return;
@@ -353,6 +362,7 @@ const KonvaFrameRenderer = forwardRef<
 
    const outline = 9;
     const translate = 8;
+      console.log("frame color:",frameColor)
 
 
   return (
@@ -364,23 +374,6 @@ const KonvaFrameRenderer = forwardRef<
           aria-label="Edit Image"
           className='absolute top-2 right-2 z-10 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors'
           onClick={onImageClick}
-          // style={{
-          //   position: 'absolute',
-          //   top: 8,
-          //   right: 20,
-          //   zIndex: 10,
-          //   background: 'rgba(255,255,255,0.85)',
-          //   border: 'none',
-          //   borderRadius: '50%',
-          //   width: 32,
-          //   height: 32,
-          //   display: 'flex',absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white drop-shadow-lg whitespace-nowrap animate-slideUp
-          //   alignItems: 'center',
-          //   justifyContent: 'center',
-          //   boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-          //   cursor: 'pointer',
-          //   padding: 0,
-          // }}
         >
           {/* Simple pencil SVG icon */}
           <Scaling size={18} color="#ec4899" />
@@ -398,7 +391,9 @@ const KonvaFrameRenderer = forwardRef<
                     y={0}
                     width={canvasWidth}
                     height={canvasHeight}
-                    fill={'#000000'}
+                    fill={
+                      frameColor
+                    }
                     shadowColor='black'
                     shadowBlur={10}
                     shadowOffset={{
@@ -417,7 +412,7 @@ const KonvaFrameRenderer = forwardRef<
                     y={frameBorder}
                     width={canvasWidth - 2 * frameBorder}
                     height={canvasHeight - 2 * frameBorder}
-                    fill={ '#fff'}
+                    fill={ frameBorderColor}
                     // cornerRadius={4}
                    
                   />
@@ -441,7 +436,7 @@ const KonvaFrameRenderer = forwardRef<
 
                     lineCap="round"
                     lineJoin="round"
-                     fill={'#4D4D4D'}  
+                     fill={sideBevelColor}  
                      closed={true}
 
                       shadowColor='black'
@@ -473,7 +468,7 @@ const KonvaFrameRenderer = forwardRef<
                     strokeWidth={0}
                     lineCap="round"
                     lineJoin="round"
-                    fill={'#4D4D4D'}  
+                    fill={sideBevelColor}  
                     closed={true}
                     perfectDrawEnabled={false}
                     />
@@ -500,7 +495,7 @@ const KonvaFrameRenderer = forwardRef<
                     y={0}
                     width={canvasWidth}
                     height={canvasHeight}
-                    fill={'#000000'}
+                    fill={frameColor}
                     shadowColor='black'
                     shadowBlur={10}
                     shadowOffset={{
@@ -519,7 +514,7 @@ const KonvaFrameRenderer = forwardRef<
                     y={frameBorder}
                     width={canvasWidth - 2 * frameBorder}
                     height={canvasHeight - 2 * frameBorder}
-                    fill={ '#c95b5b'}
+                    fill={ frameBorderColor}
                     // cornerRadius={4}
                    
                   />
@@ -543,7 +538,7 @@ const KonvaFrameRenderer = forwardRef<
 
                     lineCap="round"
                     lineJoin="round"
-                     fill={'#4D4D4D'}  
+                     fill={sideBevelColor}   
                      closed={true}
 
                       shadowColor='black'
@@ -575,7 +570,7 @@ const KonvaFrameRenderer = forwardRef<
                     strokeWidth={0}
                     lineCap="round"
                     lineJoin="round"
-                    fill={'#4D4D4D'}  
+                    fill={sideBevelColor}  
                     closed={true}
                     perfectDrawEnabled={false}
                     />
@@ -602,7 +597,9 @@ const KonvaFrameRenderer = forwardRef<
                     y={0}
                     width={canvasWidth}
                     height={canvasHeight}
-                    fill={'#000000'}
+                     fill={
+                      frameColor
+                    }
                     shadowColor='black'
                     shadowBlur={10}
                     shadowOffset={{
@@ -621,7 +618,7 @@ const KonvaFrameRenderer = forwardRef<
                     y={frameBorder}
                     width={canvasWidth - 2 * frameBorder}
                     height={canvasHeight - 2 * frameBorder}
-                    fill={ '#c95b5b'}
+                    fill={frameBorderColor}
                     // cornerRadius={4}
                    
                   />
@@ -645,7 +642,7 @@ const KonvaFrameRenderer = forwardRef<
 
                     lineCap="round"
                     lineJoin="round"
-                     fill={'#4D4D4D'}  
+                     fill={sideBevelColor}   
                      closed={true}
 
                       shadowColor='black'
@@ -677,7 +674,7 @@ const KonvaFrameRenderer = forwardRef<
                     strokeWidth={0}
                     lineCap="round"
                     lineJoin="round"
-                    fill={'#4D4D4D'}  
+                    fill={sideBevelColor}  
                     closed={true}
                     perfectDrawEnabled={false}
                     />
