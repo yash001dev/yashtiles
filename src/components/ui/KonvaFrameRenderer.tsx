@@ -158,7 +158,7 @@ const KonvaFrameRenderer = forwardRef<
 
   // Calculate aspect ratio and canvas size
   const aspect = getAspectRatio(customization.size);
-  const canvasWidth = responsiveWidth;
+  const canvasWidth = responsiveWidth-30;
   const canvasHeight = height || responsiveWidth / aspect;
 
 
@@ -180,7 +180,7 @@ const KonvaFrameRenderer = forwardRef<
   const classicTopBottom = '#333';
   const classicLeftRight = '#000';
   if (customization.material === 'classic') {
-    frameBorder = 13;
+    frameBorder = 15;
     shadow = {
       shadowColor: 'black',
       shadowBlur: 12,
@@ -196,7 +196,7 @@ const KonvaFrameRenderer = forwardRef<
       shadowOpacity: 0.3,
     };
   } else if (customization.material === 'canvas') {
-    frameBorder = 8;
+    frameBorder = 0;
     shadow = {
       shadowColor: 'black',
       shadowBlur: 10,
@@ -351,7 +351,7 @@ const KonvaFrameRenderer = forwardRef<
     },
   }));
 
-   const outline = 10;
+   const outline = 9;
     const translate = 8;
 
 
@@ -374,7 +374,7 @@ const KonvaFrameRenderer = forwardRef<
           //   borderRadius: '50%',
           //   width: 32,
           //   height: 32,
-          //   display: 'flex',
+          //   display: 'flex',absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white drop-shadow-lg whitespace-nowrap animate-slideUp
           //   alignItems: 'center',
           //   justifyContent: 'center',
           //   boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
@@ -479,117 +479,225 @@ const KonvaFrameRenderer = forwardRef<
                     />
 
                     {/* Bottom-right edge with custom stroke */}
-<Line
-  points={[
-    canvasWidth, canvasHeight,
-    canvasWidth+outline, canvasHeight + translate
-  ]}
-  stroke={'#FFF'} // Your custom color
-  strokeWidth={0.5}
-  lineCap="round"
-  perfectDrawEnabled={false}
-/>
+                    <Line
+                      points={[
+                        canvasWidth, canvasHeight,
+                        canvasWidth+outline, canvasHeight + translate
+                      ]}
+                      stroke={'#FFF'} // Your custom color
+                      strokeWidth={0.2}
+                      lineCap="round"
+                      perfectDrawEnabled={false}
+                    />
 
-                  {/* Top bevel (trapezoid) */}
-                  {/* <Line
-                    points={[
-                      0, 0,
-                      canvasWidth, 0,
-                      canvasWidth - frameBorder, frameBorder,
-                      frameBorder, frameBorder
-                    ]}
-                    closed
-                    fill={bevelTop}
-                    listening={false}
-                  /> */}
-                  {/* Left bevel (trapezoid) */}
-                  {/* <Line
-                    points={[
-                      0, 0,
-                      frameBorder, frameBorder,
-                      frameBorder, canvasHeight - frameBorder,
-                      0, canvasHeight
-                    ]}
-                    closed
-                    fill={bevelLeft}
-                    listening={false}
-                  /> */}
-                  {/* Right bevel (trapezoid) */}
-                  {/* <Line
-                    points={[
-                      canvasWidth, 0,
-                      canvasWidth, canvasHeight,
-                      canvasWidth - frameBorder, canvasHeight - frameBorder,
-                      canvasWidth - frameBorder, frameBorder
-                    ]}
-                    closed
-                    fill={bevelRight}
-                    listening={false}
-                  /> */}
-                  {/* Bottom bevel (trapezoid) */}
-                  {/* <Line
-                    points={[
-                      frameBorder, canvasHeight - frameBorder,
-                      canvasWidth - frameBorder, canvasHeight - frameBorder,
-                      canvasWidth, canvasHeight,
-                      0, canvasHeight
-                    ]}
-                    closed
-                    fill={bevelBottom}
-                    listening={false}
-                  /> */}
-                  {/* Bottom left triangle */}
-                  {/* <Line
-                    points={[
-                      0, canvasHeight,
-                      frameBorder, canvasHeight - frameBorder,
-                      0, canvasHeight - frameBorder
-                    ]}
-                    closed
-                    fill={bevelLeft}
-                    listening={false}
-                  /> */}
-                  {/* Bottom right triangle */}
-                  {/* <Line
-                    points={[
-                      canvasWidth, canvasHeight,
-                      canvasWidth, canvasHeight - frameBorder,
-                      canvasWidth - frameBorder, canvasHeight - frameBorder
-                    ]}
-                    closed
-                    fill={bevelRight}
-                    listening={false}
-                  /> */}
                 </>
               ) : customization.material === 'frameless' ? (
                 // Border rectangle illusion for frameless
-                <Rect
-                  x={0}
-                  y={0}
-                  width={canvasWidth}
-                  height={canvasHeight}
-                  fill={customization.borderColor ?? '#fff'}
-                  stroke={getFrameBorderColor(customization.frameColor)}
-                  strokeWidth={showCustomBorder ? customization.borderWidth! : 2}
-                  cornerRadius={6}
-                  {...shadow}
-                />
+                <>
+                  {/* Main background */}
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={canvasWidth}
+                    height={canvasHeight}
+                    fill={'#000000'}
+                    shadowColor='black'
+                    shadowBlur={10}
+                    shadowOffset={{
+                      x:8,
+                      y:18
+                    }}
+                    shadowOpacity={0.3}
+                    listening={false}
+                    // cornerRadius={6}
+                    // {...shadow}
+                  />
+                  
+                  {/* Matting/inner border */}
+                  <Rect
+                    x={frameBorder}
+                    y={frameBorder}
+                    width={canvasWidth - 2 * frameBorder}
+                    height={canvasHeight - 2 * frameBorder}
+                    fill={ '#c95b5b'}
+                    // cornerRadius={4}
+                   
+                  />
+
+
+                  {/* Black inner shadow on all four sides */}
+                  {/* Natural inner shadow for layered look (black, soft fade) */}
+                  {/* Top edge shadow */}
+                
+
+                  {/* Right Face  */}
+                  <Line
+                    points={[
+                      canvasWidth, 0, //Top-Right
+                      canvasWidth+outline, translate, //Outer Top-Right
+                      canvasWidth+outline, canvasHeight + translate, //Outer Bottom-Right
+                      canvasWidth, canvasHeight //Bottom-Right
+                    ]}
+                    stroke={'#FFF'}
+                    strokeWidth={0}
+
+                    lineCap="round"
+                    lineJoin="round"
+                     fill={'#4D4D4D'}  
+                     closed={true}
+
+                      shadowColor='black'
+                     shadowBlur={10}
+                     shadowOffset={{
+                      x:8,
+                      y:8
+                     }}
+                     shadowOpacity={0.3}
+                     listening={false}
+                    
+
+                    // perfectDrawEnabled={false}
+                    // shadowColor={'black'}
+                    // shadowBlur={10}
+                    // shadowOffsetX={5}
+                    // shadowOffsetY={5}
+                  />
+
+                  {/* Bottom Face */}
+                  <Line
+                    points={[
+                      0, canvasHeight, //Bottom-Left
+                      canvasWidth, canvasHeight, //Bottom-Right
+                      canvasWidth+outline, canvasHeight + translate, //Outer Bottom-Right
+                      0+outline-5, canvasHeight + translate //Outer Bottom-Left
+                    ]}
+                    stroke={'#FFF'}
+                    strokeWidth={0}
+                    lineCap="round"
+                    lineJoin="round"
+                    fill={'#4D4D4D'}  
+                    closed={true}
+                    perfectDrawEnabled={false}
+                    />
+
+                    {/* Bottom-right edge with custom stroke */}
+                    <Line
+                      points={[
+                        canvasWidth, canvasHeight,
+                        canvasWidth+outline, canvasHeight + translate
+                      ]}
+                      stroke={'#FFF'} // Your custom color
+                      strokeWidth={0.2}
+                      lineCap="round"
+                      perfectDrawEnabled={false}
+                    />
+
+                </>
               ) : (
                 // Other frame types
-                <Rect
-                  x={0}
-                  y={0}
-                  width={canvasWidth}
-                  height={canvasHeight}
-                  fill={frameColor}
-                  stroke={frameBorderColor}
-                  strokeWidth={frameBorder}
-                  cornerRadius={6}
-                  {...shadow}
-                />
+                <>
+                  {/* Main background */}
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={canvasWidth}
+                    height={canvasHeight}
+                    fill={'#000000'}
+                    shadowColor='black'
+                    shadowBlur={10}
+                    shadowOffset={{
+                      x:8,
+                      y:18
+                    }}
+                    shadowOpacity={0.3}
+                    listening={false}
+                    // cornerRadius={6}
+                    // {...shadow}
+                  />
+                  
+                  {/* Matting/inner border */}
+                  <Rect
+                    x={frameBorder}
+                    y={frameBorder}
+                    width={canvasWidth - 2 * frameBorder}
+                    height={canvasHeight - 2 * frameBorder}
+                    fill={ '#c95b5b'}
+                    // cornerRadius={4}
+                   
+                  />
+
+
+                  {/* Black inner shadow on all four sides */}
+                  {/* Natural inner shadow for layered look (black, soft fade) */}
+                  {/* Top edge shadow */}
+                
+
+                  {/* Right Face  */}
+                  <Line
+                    points={[
+                      canvasWidth, 0, //Top-Right
+                      canvasWidth+outline, translate, //Outer Top-Right
+                      canvasWidth+outline, canvasHeight + translate, //Outer Bottom-Right
+                      canvasWidth, canvasHeight //Bottom-Right
+                    ]}
+                    stroke={'#FFF'}
+                    strokeWidth={0}
+
+                    lineCap="round"
+                    lineJoin="round"
+                     fill={'#4D4D4D'}  
+                     closed={true}
+
+                      shadowColor='black'
+                     shadowBlur={10}
+                     shadowOffset={{
+                      x:8,
+                      y:8
+                     }}
+                     shadowOpacity={0.3}
+                     listening={false}
+                    
+
+                    // perfectDrawEnabled={false}
+                    // shadowColor={'black'}
+                    // shadowBlur={10}
+                    // shadowOffsetX={5}
+                    // shadowOffsetY={5}
+                  />
+
+                  {/* Bottom Face */}
+                  <Line
+                    points={[
+                      0, canvasHeight, //Bottom-Left
+                      canvasWidth, canvasHeight, //Bottom-Right
+                      canvasWidth+outline, canvasHeight + translate, //Outer Bottom-Right
+                      0+outline-5, canvasHeight + translate //Outer Bottom-Left
+                    ]}
+                    stroke={'#FFF'}
+                    strokeWidth={0}
+                    lineCap="round"
+                    lineJoin="round"
+                    fill={'#4D4D4D'}  
+                    closed={true}
+                    perfectDrawEnabled={false}
+                    />
+
+                    {/* Bottom-right edge with custom stroke */}
+                    <Line
+                      points={[
+                        canvasWidth, canvasHeight,
+                        canvasWidth+outline, canvasHeight + translate
+                      ]}
+                      stroke={'#FFF'} // Your custom color
+                      strokeWidth={0.2}
+                      lineCap="round"
+                      perfectDrawEnabled={false}
+                    />
+
+                </>
               )}
               {/* Matting/inner border - only for non-classic */}
-              {customization.material !== 'classic' && (
+              {/* {customization.material !== 'classic' && (
                 <Rect
                   x={frameBorder}
                   y={frameBorder}
@@ -601,7 +709,7 @@ const KonvaFrameRenderer = forwardRef<
                   shadowBlur={2}
                   shadowOpacity={0.08}
                 />  
-              )}
+              )} */}
               {/* Image group (for transform) */}
               <Group
                 x={customization.material === 'frameless' 

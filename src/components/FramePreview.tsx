@@ -65,7 +65,7 @@ const FramePreview: React.FC<FramePreviewProps> = ({
           />
         </div>
 
-        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white drop-shadow-lg whitespace-nowrap animate-slideUp">
+        <div className="absolute -bottom-[2.5rem] left-1/2 transform -translate-x-1/2 text-sm text-black drop-shadow-lg whitespace-nowrap animate-slideUp">
           {customization.size.replace('x', ' × ')} • {customization.material} • {customization.frameColor}
         </div>
       </div>
