@@ -180,7 +180,7 @@ const KonvaFrameRenderer = forwardRef<
   const classicTopBottom = '#333';
   const classicLeftRight = '#000';
   if (customization.material === 'classic') {
-    frameBorder = 15;
+    frameBorder = 13;
     shadow = {
       shadowColor: 'black',
       shadowBlur: 12,
@@ -342,6 +342,7 @@ const KonvaFrameRenderer = forwardRef<
         const dataUrl = targetStage.toDataURL({ pixelRatio: 2 });
         // Also store it in Redux if frameId is available
         if (frameId) {
+          console.log("frame id:",frameId)
           dispatch(setPrintReadyImage({ frameId, dataUrl }));
         }
         return dataUrl;
@@ -349,6 +350,10 @@ const KonvaFrameRenderer = forwardRef<
       return undefined;
     },
   }));
+
+   const outline = 10;
+    const translate = 8;
+
 
   return (
     <div className={className} style={{ width: canvasWidth, height: canvasHeight, display: downloadOnlyImage ? 'none' : undefined, position: 'relative' }}>
@@ -381,7 +386,7 @@ const KonvaFrameRenderer = forwardRef<
           <Scaling size={18} color="#ec4899" />
         </button>
       )}
-      <Stage ref={stageRef} width={canvasWidth} height={canvasHeight} style={{ borderRadius: 6, background: 'transparent' }}>
+      <Stage ref={stageRef} width={canvasWidth+30} height={canvasHeight+30} style={{ borderRadius: 6, background: 'transparent' }}>
         <Layer>
           {/* Frame */}
           {customization.material === 'classic' ? (
@@ -393,12 +398,100 @@ const KonvaFrameRenderer = forwardRef<
                     y={0}
                     width={canvasWidth}
                     height={canvasHeight}
-                    fill={customization.borderColor ?? '#fff'}
-                    cornerRadius={6}
-                    {...shadow}
+                    fill={'#000000'}
+                    shadowColor='black'
+                    shadowBlur={10}
+                    shadowOffset={{
+                      x:8,
+                      y:18
+                    }}
+                    shadowOpacity={0.3}
+                    listening={false}
+                    // cornerRadius={6}
+                    // {...shadow}
                   />
-                  {/* Top bevel (trapezoid) */}
+                  
+                  {/* Matting/inner border */}
+                  <Rect
+                    x={frameBorder}
+                    y={frameBorder}
+                    width={canvasWidth - 2 * frameBorder}
+                    height={canvasHeight - 2 * frameBorder}
+                    fill={ '#fff'}
+                    // cornerRadius={4}
+                   
+                  />
+
+
+                  {/* Black inner shadow on all four sides */}
+                  {/* Natural inner shadow for layered look (black, soft fade) */}
+                  {/* Top edge shadow */}
+                
+
+                  {/* Right Face  */}
                   <Line
+                    points={[
+                      canvasWidth, 0, //Top-Right
+                      canvasWidth+outline, translate, //Outer Top-Right
+                      canvasWidth+outline, canvasHeight + translate, //Outer Bottom-Right
+                      canvasWidth, canvasHeight //Bottom-Right
+                    ]}
+                    stroke={'#FFF'}
+                    strokeWidth={0}
+
+                    lineCap="round"
+                    lineJoin="round"
+                     fill={'#4D4D4D'}  
+                     closed={true}
+
+                      shadowColor='black'
+                     shadowBlur={10}
+                     shadowOffset={{
+                      x:8,
+                      y:8
+                     }}
+                     shadowOpacity={0.3}
+                     listening={false}
+                    
+
+                    // perfectDrawEnabled={false}
+                    // shadowColor={'black'}
+                    // shadowBlur={10}
+                    // shadowOffsetX={5}
+                    // shadowOffsetY={5}
+                  />
+
+                  {/* Bottom Face */}
+                  <Line
+                    points={[
+                      0, canvasHeight, //Bottom-Left
+                      canvasWidth, canvasHeight, //Bottom-Right
+                      canvasWidth+outline, canvasHeight + translate, //Outer Bottom-Right
+                      0+outline-5, canvasHeight + translate //Outer Bottom-Left
+                    ]}
+                    stroke={'#FFF'}
+                    strokeWidth={0}
+                    lineCap="round"
+                    lineJoin="round"
+                    fill={'#4D4D4D'}  
+                    closed={true}
+                    perfectDrawEnabled={false}
+                    />
+
+                    {/* Bottom-right edge with custom stroke */}
+<Line
+  points={[
+    canvasWidth, canvasHeight,
+    canvasWidth+outline, canvasHeight + translate
+  ]}
+  stroke={'#FFF'} // Your custom color
+  strokeWidth={0.5}
+  lineCap="round"
+  perfectDrawEnabled={false}
+/>
+
+                  {/* Top bevel (trapezoid) */}
+                  {/* <Line
                     points={[
                       0, 0,
                       canvasWidth, 0,
@@ -408,9 +501,9 @@ const KonvaFrameRenderer = forwardRef<
                     closed
                     fill={bevelTop}
                     listening={false}
-                  />
+                  /> */}
                   {/* Left bevel (trapezoid) */}
-                  <Line
+                  {/* <Line
                     points={[
                       0, 0,
                       frameBorder, frameBorder,
@@ -420,9 +513,9 @@ const KonvaFrameRenderer = forwardRef<
                     closed
                     fill={bevelLeft}
                     listening={false}
-                  />
+                  /> */}
                   {/* Right bevel (trapezoid) */}
-                  <Line
+                  {/* <Line
                     points={[
                       canvasWidth, 0,
                       canvasWidth, canvasHeight,
@@ -432,9 +525,9 @@ const KonvaFrameRenderer = forwardRef<
                     closed
                     fill={bevelRight}
                     listening={false}
-                  />
+                  /> */}
                   {/* Bottom bevel (trapezoid) */}
-                  <Line
+                  {/* <Line
                     points={[
                       frameBorder, canvasHeight - frameBorder,
                       canvasWidth - frameBorder, canvasHeight - frameBorder,
@@ -444,9 +537,9 @@ const KonvaFrameRenderer = forwardRef<
                     closed
                     fill={bevelBottom}
                     listening={false}
-                  />
+                  /> */}
                   {/* Bottom left triangle */}
-                  <Line
+                  {/* <Line
                     points={[
                       0, canvasHeight,
                       frameBorder, canvasHeight - frameBorder,
@@ -455,9 +548,9 @@ const KonvaFrameRenderer = forwardRef<
                     closed
                     fill={bevelLeft}
                     listening={false}
-                  />
+                  /> */}
                   {/* Bottom right triangle */}
-                  <Line
+                  {/* <Line
                     points={[
                       canvasWidth, canvasHeight,
                       canvasWidth, canvasHeight - frameBorder,
@@ -466,7 +559,7 @@ const KonvaFrameRenderer = forwardRef<
                     closed
                     fill={bevelRight}
                     listening={false}
-                  />
+                  /> */}
                 </>
               ) : customization.material === 'frameless' ? (
                 // Border rectangle illusion for frameless
@@ -504,10 +597,10 @@ const KonvaFrameRenderer = forwardRef<
                   height={canvasHeight - 2 * frameBorder}
                   fill={customization.borderColor ?? '#fff'}
                   cornerRadius={4}
-                  shadowColor={'#000'}
+                  shadowColor={'#e42a2a'}
                   shadowBlur={2}
                   shadowOpacity={0.08}
-                />
+                />  
               )}
               {/* Image group (for transform) */}
               <Group
@@ -562,6 +655,9 @@ const KonvaFrameRenderer = forwardRef<
                     onDragStart={handleImageDragStart}
                     onDragMove={handleImageDragMove}
                     onDragEnd={handleImageDragEnd}
+                    //Add shadow
+                   
+
                   />
                 )}
                 {/* Custom Border (now inside image group, overlays image) */}
