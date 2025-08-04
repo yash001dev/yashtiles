@@ -473,6 +473,9 @@ const KonvaFrameRenderer = forwardRef<
                     perfectDrawEnabled={false}
                     />
 
+
+                   
+
                     {/* Bottom-right edge with custom stroke */}
                     <Line
                       points={[
@@ -662,6 +665,33 @@ const KonvaFrameRenderer = forwardRef<
                     // shadowOffsetY={5}
                   />
 
+                  <Group
+  clipFunc={ctx => {
+    ctx.beginPath();
+    ctx.moveTo(canvasWidth, 0);
+    ctx.lineTo(canvasWidth+outline, translate);
+    ctx.lineTo(canvasWidth+outline, canvasHeight + translate);
+    ctx.lineTo(canvasWidth, canvasHeight);
+    ctx.closePath();
+  }}
+>
+  {image && (
+    <KonvaImage
+      image={image}
+      x={canvasWidth}
+      y={0}
+      width={outline}
+      height={canvasHeight + translate}
+      crop={{
+    x: image.width * 0.9, // start at 90% of image width
+    y: 19,
+    width: image.width * 0.1, // last 10% of image width
+    height: image.height
+  }}
+    />
+  )}
+                  </Group>
+
                   {/* Bottom Face */}
                   <Line
                     points={[
@@ -678,6 +708,35 @@ const KonvaFrameRenderer = forwardRef<
                     closed={true}
                     perfectDrawEnabled={false}
                     />
+
+                     <Group
+                      clipFunc={ctx => {
+                        ctx.beginPath();
+                        ctx.moveTo(0, canvasHeight);
+                        ctx.lineTo(canvasWidth, canvasHeight);
+                        ctx.lineTo(canvasWidth+outline, canvasHeight + translate);
+                        ctx.lineTo(0+outline-5, canvasHeight + translate);
+                        ctx.closePath();
+                      }}
+                    >
+                      {image && (
+                        <KonvaImage
+                          image={image}
+                          x={0}
+                          y={canvasHeight}
+                          width={canvasWidth+outline}
+                          height={translate}
+                            crop={{
+        x: 0,
+        y: image.height * 0.9, // start at 90% of image height
+        width: image.width,     // full width
+        height: image.height * 0.1 // last 10% of image height
+      }}
+                          listening={false}
+                        />
+                      )}
+                    </Group>
+
 
                     {/* Bottom-right edge with custom stroke */}
                     <Line
