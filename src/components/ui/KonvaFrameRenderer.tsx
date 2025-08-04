@@ -413,8 +413,51 @@ const KonvaFrameRenderer = forwardRef<
                     width={canvasWidth - 2 * frameBorder}
                     height={canvasHeight - 2 * frameBorder}
                     fill={customization.borderColor ?? '#fff'}
-                    // cornerRadius={4}
-                   
+                  />
+                  {/* Inner shadow for border thickness illusion */}
+                  {/* Top inner shadow */}
+                  <Rect
+                    x={frameBorder}
+                    y={frameBorder}
+                    width={canvasWidth - 2 * frameBorder}
+                    height={8}
+                    fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientEndPoint={{ x: 0, y: 8 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+                  {/* Bottom inner shadow */}
+                  <Rect
+                    x={frameBorder}
+                    y={canvasHeight - frameBorder - 8}
+                    width={canvasWidth - 2 * frameBorder}
+                    height={8}
+                    fillLinearGradientStartPoint={{ x: 0, y: 8 }}
+                    fillLinearGradientEndPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+                  {/* Left inner shadow */}
+                  <Rect
+                    x={frameBorder}
+                    y={frameBorder}
+                    width={8}
+                    height={canvasHeight - 2 * frameBorder}
+                    fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientEndPoint={{ x: 8, y: 0 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+                  {/* Right inner shadow */}
+                  <Rect
+                    x={canvasWidth - frameBorder - 8}
+                    y={frameBorder}
+                    width={8}
+                    height={canvasHeight - 2 * frameBorder}
+                    fillLinearGradientStartPoint={{ x: 8, y: 0 }}
+                    fillLinearGradientEndPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
                   />
 
 
@@ -524,6 +567,52 @@ const KonvaFrameRenderer = forwardRef<
                    
                   />
 
+                    {/* Inner shadow for border thickness illusion */}
+                  {/* Top inner shadow */}
+                  <Rect
+                    x={frameBorder}
+                    y={frameBorder}
+                    width={canvasWidth - 2 * frameBorder}
+                    height={8}
+                    fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientEndPoint={{ x: 0, y: 8 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+                  {/* Bottom inner shadow */}
+                  <Rect
+                    x={frameBorder}
+                    y={canvasHeight - frameBorder - 8}
+                    width={canvasWidth - 2 * frameBorder}
+                    height={8}
+                    fillLinearGradientStartPoint={{ x: 0, y: 8 }}
+                    fillLinearGradientEndPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+                  {/* Left inner shadow */}
+                  <Rect
+                    x={frameBorder}
+                    y={frameBorder}
+                    width={8}
+                    height={canvasHeight - 2 * frameBorder}
+                    fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientEndPoint={{ x: 8, y: 0 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+                  {/* Right inner shadow */}
+                  <Rect
+                    x={canvasWidth - frameBorder - 8}
+                    y={frameBorder}
+                    width={8}
+                    height={canvasHeight - 2 * frameBorder}
+                    fillLinearGradientStartPoint={{ x: 8, y: 0 }}
+                    fillLinearGradientEndPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+
 
                   {/* Black inner shadow on all four sides */}
                   {/* Natural inner shadow for layered look (black, soft fade) */}
@@ -626,6 +715,53 @@ const KonvaFrameRenderer = forwardRef<
                     fill={customization.borderColor ?? '#fff'}
                     // cornerRadius={4}
                    
+                  />
+
+
+                  {/* Inner shadow for border thickness illusion */}
+                  {/* Top inner shadow */}
+                  <Rect
+                    x={frameBorder}
+                    y={frameBorder}
+                    width={canvasWidth - 2 * frameBorder}
+                    height={8}
+                    fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientEndPoint={{ x: 0, y: 8 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+                  {/* Bottom inner shadow */}
+                  <Rect
+                    x={frameBorder}
+                    y={canvasHeight - frameBorder - 8}
+                    width={canvasWidth - 2 * frameBorder}
+                    height={8}
+                    fillLinearGradientStartPoint={{ x: 0, y: 8 }}
+                    fillLinearGradientEndPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+                  {/* Left inner shadow */}
+                  <Rect
+                    x={frameBorder}
+                    y={frameBorder}
+                    width={8}
+                    height={canvasHeight - 2 * frameBorder}
+                    fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientEndPoint={{ x: 8, y: 0 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
+                  />
+                  {/* Right inner shadow */}
+                  <Rect
+                    x={canvasWidth - frameBorder - 8}
+                    y={frameBorder}
+                    width={8}
+                    height={canvasHeight - 2 * frameBorder}
+                    fillLinearGradientStartPoint={{ x: 8, y: 0 }}
+                    fillLinearGradientEndPoint={{ x: 0, y: 0 }}
+                    fillLinearGradientColorStops={[0, 'rgba(0,0,0,0.18)', 1, 'rgba(0,0,0,0)']}
+                    listening={false}
                   />
 
 
