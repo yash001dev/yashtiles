@@ -82,7 +82,7 @@ const getFrameBorderColor = (color: string) => {
     case 'brown':
       return '#8b5c2d'; // darker brown
     default:
-      return '#1f2937'; // gray-800
+       return '#1f2937'; // white
   }
 };
 
@@ -412,7 +412,7 @@ const KonvaFrameRenderer = forwardRef<
                     y={frameBorder}
                     width={canvasWidth - 2 * frameBorder}
                     height={canvasHeight - 2 * frameBorder}
-                    fill={ frameBorderColor}
+                    fill={customization.borderColor ?? '#fff'}
                     // cornerRadius={4}
                    
                   />
@@ -517,7 +517,9 @@ const KonvaFrameRenderer = forwardRef<
                     y={frameBorder}
                     width={canvasWidth - 2 * frameBorder}
                     height={canvasHeight - 2 * frameBorder}
-                    fill={ frameBorderColor}
+                    fill={ 
+                      customization.borderColor ?? '#fff'
+                    }
                     // cornerRadius={4}
                    
                   />
@@ -621,7 +623,7 @@ const KonvaFrameRenderer = forwardRef<
                     y={frameBorder}
                     width={canvasWidth - 2 * frameBorder}
                     height={canvasHeight - 2 * frameBorder}
-                    fill={frameBorderColor}
+                    fill={customization.borderColor ?? '#fff'}
                     // cornerRadius={4}
                    
                   />
