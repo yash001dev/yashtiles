@@ -209,36 +209,36 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   // const bevelLeft = shadeColor(frameBorderColor, -30);
   // const bevelRight = shadeColor(frameBorderColor, -15);
   // const bevelBottom = shadeColor(frameBorderColor, 30);
-  const bevelTop = '#333';
-  const bevelLeft = '#000';
-  const bevelRight = '#000';
-  const bevelBottom = '#333';
+  const bevelTop = frameColor;
+  const bevelLeft = frameColor;
+  const bevelRight = frameColor;
+  const bevelBottom = frameColor;
 
   let shadow = {};
   
   if (customization.material === 'classic') {
-    frameBorder = 15;
+    frameBorder = 12;
     shadow = {
       shadowColor: 'black',
       shadowBlur: 12,
-      shadowOffset: { x: 2, y: 2 },
-      shadowOpacity: 0.6,
+      shadowOffset: { x: 4, y: 2 },
+      shadowOpacity: 0.8,
     };
   } else if (customization.material === 'frameless') {
     frameBorder = 0;
     shadow = {
       shadowColor: 'black',
-      shadowBlur: 8,
-      shadowOffset: { x: 1, y: 1 },
-      shadowOpacity: 0.3,
+      shadowBlur: 12,
+      shadowOffset: { x: 4, y: 2 },
+      shadowOpacity: 0.8,
     };
   } else if (customization.material === 'canvas') {
-    frameBorder = 8;
+    frameBorder = 0;
     shadow = {
       shadowColor: 'black',
-      shadowBlur: 10,
-      shadowOffset: { x: 2, y: 2 },
-      shadowOpacity: 0.4,
+      shadowBlur: 12,
+      shadowOffset: { x: 4, y: 2 },
+      shadowOpacity: 0.8,
     };
   }
 
@@ -353,7 +353,7 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
                    width={frameSize.width}
                    height={frameSize.height}
                    fill={customization.borderColor ?? '#fff'}
-                   cornerRadius={6}
+                  //  cornerRadius={6}
                    {...shadow}
                  />
                  {/* Top bevel (trapezoid) */}
@@ -407,7 +407,7 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
               
                 
                </>
-             ) : customization.material === 'frameless' ? (
+             ) : customization.material === 'frameless' || customization.material === 'canvas' ? (
                // Border rectangle illusion for frameless
                <Rect
                  x={0}
@@ -416,8 +416,8 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
                  height={frameSize.height}
                  fill={customization.borderColor ?? '#fff'}
                  stroke={getFrameBorderColor(customization.frameColor)}
-                 strokeWidth={showCustomBorder ? customization.borderWidth! : 2}
-                 cornerRadius={6}
+                 strokeWidth={0}
+                //  cornerRadius={6}
                  {...shadow}
                />
              ) : (
@@ -443,7 +443,6 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
                  width={frameSize.width - 2 * frameBorder}
                  height={frameSize.height - 2 * frameBorder}
                  fill={customization.borderColor ?? '#fff'}
-                 cornerRadius={4}
                  shadowColor={'#000'}
                  shadowBlur={2}
                  shadowOpacity={0.08}
