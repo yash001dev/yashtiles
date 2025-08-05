@@ -34,6 +34,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   // Local state for smooth editing without Redux updates
   const [localTransform, setLocalTransform] = useState<ImageTransform>(image.transform);
   const [hasChanges, setHasChanges] = useState(false);
+  const [showGrid, setShowGrid] = useState(true); // Grid overlay toggle
   
   // Refs to track current values for cleanup
   const hasChangesRef = useRef(false);
@@ -407,6 +408,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     customization={customization}
                     uploadedImage={{...image, transform: currentTransform}}
                     isEditable={true}
+                    showGrid={showGrid}
                     onMouseDown={handleKonvaMouseDown}
                     onMouseMove={handleKonvaMouseMove}
                     onMouseUp={handleKonvaMouseUp}
@@ -515,8 +517,27 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                       onClick={handleReset}
                       className="w-full p-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium text-gray-700"
                     >
-                      Reset  Scale
+                      Reset Scale
                     </button>
+                    
+                    {/* Grid Toggle */}
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-gray-700">
+                        Show 9×9 Grid
+                      </label>
+                      <button
+                        onClick={() => setShowGrid(!showGrid)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          showGrid ? 'bg-pink-600' : 'bg-gray-200'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            showGrid ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-4">
@@ -545,6 +566,9 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Drag image to reposition</li>
                     <li>• Use scale controls to resize</li>
+                    <li>• Toggle grid to see composition guides</li>
+                    <li className="text-amber-600">• Orange lines show rule of thirds</li>
+                    <li className="text-red-600">• Red dot marks the center point</li>
                     {customization.border && customization.borderWidth && customization.borderColor && (
                       <li className="text-orange-600">• Image is constrained within the custom border</li>
                     )}

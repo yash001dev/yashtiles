@@ -13,6 +13,7 @@ interface KonvaFrameRendererProps {
   frameCount?: number;
   currentFrameIndex?: number;
   isEditable?: boolean;
+  showGrid?: boolean; // Show 9x9 grid overlay for positioning guidance
   onMouseDown?: (e: any) => void;
   onMouseMove?: (e: any) => void;
   onMouseUp?: () => void;
@@ -127,6 +128,7 @@ const KonvaFrameRenderer = forwardRef<
   frameCount = 0,
   currentFrameIndex = 0,
   isEditable = false,
+  showGrid = false,
   onMouseDown,
   onMouseMove,
   onMouseUp,
@@ -991,6 +993,92 @@ const KonvaFrameRenderer = forwardRef<
 
                   />
                 )}
+                
+                {/* 9x9 Grid Overlay for positioning guidance */}
+                {showGrid && isEditable && (
+                  <>
+                    {/* Vertical grid lines */}
+                    {Array.from({ length: 8 }, (_, i) => (
+                      <Line
+                        key={`v-${i}`}
+                        points={[
+                          (availableWidth / 9) * (i + 1), 0,
+                          (availableWidth / 9) * (i + 1), availableHeight
+                        ]}
+                        stroke="rgba(255, 255, 255, 0.6)"
+                        strokeWidth={1}
+                        listening={false}
+                        dash={[4, 4]}
+                      />
+                    ))}
+                    {/* Horizontal grid lines */}
+                    {Array.from({ length: 8 }, (_, i) => (
+                      <Line
+                        key={`h-${i}`}
+                        points={[
+                          0, (availableHeight / 9) * (i + 1),
+                          availableWidth, (availableHeight / 9) * (i + 1)
+                        ]}
+                        stroke="rgba(255, 255, 255, 0.6)"
+                        strokeWidth={1}
+                        listening={false}
+                        dash={[4, 4]}
+                      />
+                    ))}
+                    {/* Center crosshair for rule of thirds */}
+                    <Line
+                      points={[
+                        availableWidth / 3, 0,
+                        availableWidth / 3, availableHeight
+                      ]}
+                      stroke="rgba(255, 200, 100, 0.8)"
+                      strokeWidth={2}
+                      listening={false}
+                      dash={[6, 6]}
+                    />
+                    <Line
+                      points={[
+                        (availableWidth / 3) * 2, 0,
+                        (availableWidth / 3) * 2, availableHeight
+                      ]}
+                      stroke="rgba(255, 200, 100, 0.8)"
+                      strokeWidth={2}
+                      listening={false}
+                      dash={[6, 6]}
+                    />
+                    <Line
+                      points={[
+                        0, availableHeight / 3,
+                        availableWidth, availableHeight / 3
+                      ]}
+                      stroke="rgba(255, 200, 100, 0.8)"
+                      strokeWidth={2}
+                      listening={false}
+                      dash={[6, 6]}
+                    />
+                    <Line
+                      points={[
+                        0, (availableHeight / 3) * 2,
+                        availableWidth, (availableHeight / 3) * 2
+                      ]}
+                      stroke="rgba(255, 200, 100, 0.8)"
+                      strokeWidth={2}
+                      listening={false}
+                      dash={[6, 6]}
+                    />
+                    {/* Center point indicator */}
+                    <Rect
+                      x={availableWidth / 2 - 3}
+                      y={availableHeight / 2 - 3}
+                      width={6}
+                      height={6}
+                      fill="rgba(255, 100, 100, 0.8)"
+                      cornerRadius={3}
+                      listening={false}
+                    />
+                  </>
+                )}
+                
                 {/* Custom Border (now inside image group, overlays image) */}
                 {/* {showCustomBorder && (
                   <Rect
