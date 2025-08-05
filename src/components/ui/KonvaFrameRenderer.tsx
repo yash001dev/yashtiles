@@ -216,13 +216,21 @@ const KonvaFrameRenderer = forwardRef<
   const showCustomBorder = customization.border && customization.borderWidth && customization.borderColor;
 
   // --- Aspect ratio fit logic ---
-  // Calculate available area for image
-  const availableWidth = customization.material === 'frameless' || customization.material === 'canvas'
-    ? canvasWidth - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
-    : canvasWidth - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
-  const availableHeight = customization.material === 'frameless' || customization.material === 'canvas'
-    ? canvasHeight - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
-    : canvasHeight - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
+  // Calculate available area for image (custom border should not affect frame structure)
+  const customBorderWidth = showCustomBorder ? Math.max(customization.borderWidth! * 3, 8) : 0; // Make border more prominent
+  console.log("customBorderWidth:", customBorderWidth);
+  
+  // Base available area calculation (without custom border influence on frame)
+  const baseAvailableWidth = customization.material === 'frameless' || customization.material === 'canvas'
+    ? canvasWidth - 2 * (customization.material === 'canvas' ? frameBorder : 0)
+    : canvasWidth - 2 * (frameBorder + matting);
+  const baseAvailableHeight = customization.material === 'frameless' || customization.material === 'canvas'
+    ? canvasHeight - 2 * (customization.material === 'canvas' ? frameBorder : 0)
+    : canvasHeight - 2 * (frameBorder + matting);
+    
+  // Final available area after accounting for custom border
+  const availableWidth = baseAvailableWidth - 2 * customBorderWidth;
+  const availableHeight = baseAvailableHeight - 2 * customBorderWidth;
 
   // Get natural image size
   const naturalWidth = image?.width || 1;
@@ -904,19 +912,40 @@ const KonvaFrameRenderer = forwardRef<
                   shadowOpacity={0.08}
                 />  
               )} */}
+              
+              {/* Custom Border - Make it more prominent */}
+              {showCustomBorder && (
+                <Rect
+                  x={customization.material === 'frameless' ? customBorderWidth/2 : frameBorder + matting + customBorderWidth/2}
+                  y={customization.material === 'frameless' ? customBorderWidth/2 : frameBorder + matting + customBorderWidth/2}
+                  width={customization.material === 'frameless' 
+                    ? canvasWidth - customBorderWidth 
+                    : canvasWidth - 2 * (frameBorder + matting) - customBorderWidth
+                  }
+                  height={customization.material === 'frameless' 
+                    ? canvasHeight - customBorderWidth 
+                    : canvasHeight - 2 * (frameBorder + matting) - customBorderWidth
+                  }
+                  fill="transparent"
+                  stroke={customization.borderColor}
+                  strokeWidth={customBorderWidth}
+                  listening={false}
+                />
+              )}
+              
               {/* Image group (for transform) */}
               <Group
                 x={customization.material === 'frameless' 
-                  ? (showCustomBorder ? customization.borderWidth! : 0) 
+                  ? customBorderWidth 
                   : customization.material === 'canvas'
-                    ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
-                    : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
+                    ? frameBorder + customBorderWidth
+                    : frameBorder + matting + customBorderWidth
                 }
                 y={customization.material === 'frameless' 
-                  ? (showCustomBorder ? customization.borderWidth! : 0) 
+                  ? customBorderWidth 
                   : customization.material === 'canvas'
-                    ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
-                    : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
+                    ? frameBorder + customBorderWidth
+                    : frameBorder + matting + customBorderWidth
                 }
                 width={availableWidth}
                 height={availableHeight}

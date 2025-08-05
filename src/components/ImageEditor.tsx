@@ -56,29 +56,43 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const getActualImageDimensions = () => {
     const responsiveWidth = typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400;
     const aspect = customization.size === '8x8' || customization.size === '12x12' || customization.size === '18x18' ? 1 : 0.8;
+    const canvasWidth = responsiveWidth - 30;
     const canvasHeight = responsiveWidth / aspect;
     
-    // Calculate available space after borders and frames
-    const frameBorder = customization.material === 'classic' ? 20 : 0;
-    const matting = customization.material === 'classic' ? 30 : 0;
+    // Calculate frame structure
+    const frameBorder = customization.material === 'classic' ? 15 : 0;
+    const matting = customization.material === 'classic' || customization.material === 'frameless' || customization.material === 'canvas' ? 0 : 10;
     const showCustomBorder = customization.border && customization.borderWidth && customization.borderColor;
-    const customBorderWidth = showCustomBorder ? customization.borderWidth! : 0;
+    const customBorderWidth = showCustomBorder ? Math.max(customization.borderWidth! * 3, 8) : 0;
     
-    const availableWidth = customization.material === 'frameless' || customization.material === 'canvas'
-      ? responsiveWidth - 2 * (customBorderWidth + (customization.material === 'canvas' ? frameBorder : 0))
-      : responsiveWidth - 2 * (frameBorder + matting + customBorderWidth);
+    // Base available area calculation (without custom border influence on frame)
+    const baseAvailableWidth = customization.material === 'frameless' || customization.material === 'canvas'
+      ? canvasWidth - 2 * (customization.material === 'canvas' ? frameBorder : 0)
+      : canvasWidth - 2 * (frameBorder + matting);
+    const baseAvailableHeight = customization.material === 'frameless' || customization.material === 'canvas'
+      ? canvasHeight - 2 * (customization.material === 'canvas' ? frameBorder : 0)
+      : canvasHeight - 2 * (frameBorder + matting);
       
-    const availableHeight = customization.material === 'frameless' || customization.material === 'canvas'
-      ? canvasHeight - 2 * (customBorderWidth + (customization.material === 'canvas' ? frameBorder : 0))
-      : canvasHeight - 2 * (frameBorder + matting + customBorderWidth);
+    // Final available area after accounting for custom border
+    const availableWidth = baseAvailableWidth - 2 * customBorderWidth;
+    const availableHeight = baseAvailableHeight - 2 * customBorderWidth;
 
-    // For this calculation, assume square aspect ratio for simplicity
-    // In a real scenario, you'd want to get the actual image aspect ratio
+    // Image group position
+    const imageGroupX = customization.material === 'frameless' 
+      ? customBorderWidth 
+      : customization.material === 'canvas'
+        ? frameBorder + customBorderWidth
+        : frameBorder + matting + customBorderWidth;
+    const imageGroupY = imageGroupX;
+
     return {
       width: availableWidth,
       height: availableHeight,
-      centerX: responsiveWidth / 2,
-      centerY: canvasHeight / 2
+      imageGroupX,
+      imageGroupY,
+      customBorderWidth,
+      canvasWidth,
+      canvasHeight
     };
   };
 
@@ -99,33 +113,55 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   // Helper function to get drag boundaries based on border settings
   const getDragBoundaries = () => {
-    const responsiveWidth = typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400;
-    const aspect = customization.size === '8x8' || customization.size === '12x12' || customization.size === '18x18' ? 1 : 0.8; // simplified aspect ratio
-    const canvasHeight = responsiveWidth / aspect;
+    const dimensions = getActualImageDimensions();
     
-    // If there's a custom border, constrain to border area
+    // If there's a custom border, constrain to the available image area
     if (customization.border && customization.borderWidth && customization.borderColor) {
-      const borderWidth = customization.borderWidth;
+      // The image should stay within the available area (inside the custom border)
       return {
-        minX: borderWidth,
-        maxX: responsiveWidth - borderWidth,
-        minY: borderWidth,
-        maxY: canvasHeight - borderWidth
+        minX: 0, // Relative to image group position
+        maxX: 0, // Image should not move beyond its container
+        minY: 0,
+        maxY: 0,
+        // Boundaries for the visible area
+        containerWidth: dimensions.width,
+        containerHeight: dimensions.height
       };
     }
     
-    // No border constraints - can drag anywhere in canvas
+    // No border constraints - can drag within reasonable bounds
     return {
-      minX: -responsiveWidth * 0.5, // Allow dragging beyond canvas for flexibility
-      maxX: responsiveWidth * 1.5,
-      minY: -canvasHeight * 0.5,
-      maxY: canvasHeight * 1.5
+      minX: -dimensions.width * 0.5,
+      maxX: dimensions.width * 0.5,
+      minY: -dimensions.height * 0.5,
+      maxY: dimensions.height * 0.5,
+      containerWidth: dimensions.width,
+      containerHeight: dimensions.height
     };
   };
 
   // Helper function to constrain position within boundaries
-  const constrainPosition = (x: number, y: number) => {
+  const constrainPosition = (x: number, y: number, scale: number = localTransform.scale) => {
     const boundaries = getDragBoundaries();
+    const dimensions = getActualImageDimensions();
+    
+    // Calculate image dimensions at current scale
+    const scaledWidth = dimensions.width * scale;
+    const scaledHeight = dimensions.height * scale;
+    
+    // If custom border is active, ensure image stays within available area
+    if (customization.border && customization.borderWidth && customization.borderColor) {
+      // Constrain so image doesn't go outside the available container
+      const maxX = Math.max(0, dimensions.width - scaledWidth);
+      const maxY = Math.max(0, dimensions.height - scaledHeight);
+      
+      return {
+        x: Math.max(0, Math.min(maxX, x)),
+        y: Math.max(0, Math.min(maxY, y))
+      };
+    }
+    
+    // No custom border - allow some flexibility but keep image mostly visible
     return {
       x: Math.max(boundaries.minX, Math.min(boundaries.maxX, x)),
       y: Math.max(boundaries.minY, Math.min(boundaries.maxY, y))
@@ -239,8 +275,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
       const newX = pos.x - dragStart.x;
       const newY = pos.y - dragStart.y;
       
-      // Apply boundary constraints
-      const constrainedPos = constrainPosition(newX, newY);
+      // Apply boundary constraints with current scale
+      const constrainedPos = constrainPosition(newX, newY, localTransform.scale);
       
       // Update temp transform for smooth dragging
       setTempTransform({
@@ -265,21 +301,27 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   };
 
   const handleScaleChange = (delta: number) => {
-    const newScale = Math.max(0.5, Math.min(3, localTransform.scale + delta));
+    const dimensions = getActualImageDimensions();
     
-    // Get image dimensions and center
-    const { width, height, centerX, centerY } = getActualImageDimensions();
+    // If custom border is active, constrain maximum scale to ensure image fits
+    let maxScale = 3;
+    if (customization.border && customization.borderWidth && customization.borderColor) {
+      // Ensure the image can't scale larger than the available container
+      maxScale = Math.min(3, Math.max(1, dimensions.width / 100)); // Reasonable maximum
+    }
+    
+    const newScale = Math.max(0.5, Math.min(maxScale, localTransform.scale + delta));
     
     // Calculate current image center position
-    const currentImageCenterX = localTransform.x + (width * localTransform.scale) / 2;
-    const currentImageCenterY = localTransform.y + (height * localTransform.scale) / 2;
+    const currentImageCenterX = localTransform.x + (dimensions.width * localTransform.scale) / 2;
+    const currentImageCenterY = localTransform.y + (dimensions.height * localTransform.scale) / 2;
     
     // Calculate new position to maintain image center
-    const newX = currentImageCenterX - (width * newScale) / 2;
-    const newY = currentImageCenterY - (height * newScale) / 2;
+    const newX = currentImageCenterX - (dimensions.width * newScale) / 2;
+    const newY = currentImageCenterY - (dimensions.height * newScale) / 2;
     
-    // Apply boundary constraints
-    const constrainedPos = constrainPosition(newX, newY);
+    // Apply boundary constraints with new scale
+    const constrainedPos = constrainPosition(newX, newY, newScale);
     
     setLocalTransform(prev => ({
       ...prev,
@@ -332,7 +374,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
             {hasChanges && (
               <button
                 onClick={handleSave}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm"
+                className="bg-pink-600 hover:bg-pink-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-sm"
               >
                 Save Changes
               </button>
@@ -373,8 +415,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     showEditOverlay={true}
                     addClassicPadding={true}
                     onImageDrag={({ x, y }) => {
-                      // Apply boundary constraints to image drag
-                      const constrainedPos = constrainPosition(x, y);
+                      // Apply boundary constraints to image drag with current scale
+                      const constrainedPos = constrainPosition(x, y, localTransform.scale);
                       
                       if (isDragging) {
                         // Use temporary state during dragging for smooth experience
@@ -419,25 +461,23 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                         <input
                           type="range"
                           min="0.5"
-                          max="3"
+                          max={customization.border && customization.borderWidth && customization.borderColor ? "2" : "3"}
                           step="0.1"
                           value={currentTransform.scale}
                           onChange={(e) => {
                             const newScale = parseFloat(e.target.value);
-                            
-                            // Get image dimensions and current center
-                            const { width, height } = getActualImageDimensions();
+                            const dimensions = getActualImageDimensions();
                             
                             // Calculate current image center position
-                            const currentImageCenterX = localTransform.x + (width * localTransform.scale) / 2;
-                            const currentImageCenterY = localTransform.y + (height * localTransform.scale) / 2;
+                            const currentImageCenterX = localTransform.x + (dimensions.width * localTransform.scale) / 2;
+                            const currentImageCenterY = localTransform.y + (dimensions.height * localTransform.scale) / 2;
                             
                             // Calculate new position to maintain image center
-                            const newX = currentImageCenterX - (width * newScale) / 2;
-                            const newY = currentImageCenterY - (height * newScale) / 2;
+                            const newX = currentImageCenterX - (dimensions.width * newScale) / 2;
+                            const newY = currentImageCenterY - (dimensions.height * newScale) / 2;
                             
-                            // Apply boundary constraints
-                            const constrainedPos = constrainPosition(newX, newY);
+                            // Apply boundary constraints with new scale
+                            const constrainedPos = constrainPosition(newX, newY, newScale);
                             
                             setLocalTransform(prev => ({
                               ...prev,
@@ -492,7 +532,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     {hasChanges && (
                       <button
                         onClick={handleSave}
-                        className="w-full p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center justify-center space-x-2 text-sm font-medium"
+                        className="w-full p-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2 text-sm font-medium"
                       >
                         <span>💾</span>
                         <span>Save Changes</span>
@@ -505,6 +545,9 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Drag image to reposition</li>
                     <li>• Use scale controls to resize</li>
+                    {customization.border && customization.borderWidth && customization.borderColor && (
+                      <li className="text-orange-600">• Image is constrained within the custom border</li>
+                    )}
                     <li>• Changes saved automatically on close</li>
                     <li>• Click "Save Changes" to apply immediately</li>
                     {hasChanges && (
