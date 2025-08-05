@@ -20,7 +20,7 @@ export default function OrdersPage() {
   };
 
   const handleBackToHome = () => {
-    router.push('/');
+    router.push('/frame');
   };
 
   const AuthFallback = () => (

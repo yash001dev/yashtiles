@@ -365,7 +365,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
           isEditable={false}
           downloadOnlyImage={true}
           width={800}
-          frameId={activeFrameId?activeFrameId.toString():'0'}
+          frameId={activeFrameId ? activeFrameId.toString() : '0'}
         />
       </div>
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
@@ -416,6 +416,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     showFrameCounter={false}
                     showEditOverlay={true}
                     addClassicPadding={true}
+                    frameId={activeFrameId ? activeFrameId.toString() : '0'}
                     onImageDrag={({ x, y }) => {
                       // Apply boundary constraints to image drag with current scale
                       const constrainedPos = constrainPosition(x, y, localTransform.scale);
@@ -436,7 +437,6 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                         setHasChanges(true);
                       }
                     }}
-                    frameId={activeFrameId?activeFrameId.toString():'0'}
                   />
                 </div>
               </div>

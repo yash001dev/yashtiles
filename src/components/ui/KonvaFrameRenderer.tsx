@@ -26,7 +26,7 @@ interface KonvaFrameRendererProps {
   height?: number;
   downloadOnlyImage?: boolean;
   onImageDrag?: (pos: { x: number; y: number }) => void;
-  frameId?: string; // ID of the frame for storing print-ready image
+  frameId: string; // ID of the frame for storing print-ready image
 }
 
 // Helper for aspect ratio
@@ -1218,4 +1218,4 @@ const KonvaFrameRenderer = forwardRef<
   );
 });
 
-export default KonvaFrameRenderer; 
+export default KonvaFrameRenderer;
