@@ -38,6 +38,23 @@ const Header: React.FC<HeaderProps> = ({
                 <Link href="/">{process.env.NEXT_PUBLIC_APP_NAME}</Link>
               </span>
             </div>
+            
+            {/* Navigation Links */}
+            <nav className="hidden md:flex items-center space-x-6">
+              <Link href="/products" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Products
+              </Link>
+              <Link href="/gallery" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Gallery
+              </Link>
+              <Link href="/create-frame" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Create Frame
+              </Link>
+              <Link href="/contact" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Contact
+              </Link>
+            </nav>
+            
             <div className="flex items-center space-x-4">
               <button
                 onClick={onCartClick}

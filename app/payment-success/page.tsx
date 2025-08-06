@@ -83,7 +83,7 @@ import SuccessCheckIcon from '@/assets/SuccessCheckIcon';
 
         <div className="space-y-3">
           <Link 
-            href="/frame" 
+            href="/create-frame" 
             className="block w-full bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition font-medium"
           >
             Continue Shopping

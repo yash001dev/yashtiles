@@ -169,7 +169,7 @@ const FrameItPhotoGallery = () => {
                 className=" text-white font-semibold px-10 py-6 rounded-xl"
                 onClick={() => {
                   if (isMounted && typeof window !== "undefined") {
-                    window.location.href = "/frame";
+                    window.location.href = "/create-frame";
                   }
                 }}
               >

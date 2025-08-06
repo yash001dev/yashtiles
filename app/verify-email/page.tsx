@@ -44,7 +44,7 @@ function VerifyEmailContent() {
 
         // Redirect to design frame page after 3 seconds
         setTimeout(() => {
-          router.push('/frame');
+          router.push('/create-frame');
         }, 3000);
 
       } catch (error) {
@@ -118,7 +118,7 @@ function VerifyEmailContent() {
                     <span>Redirecting to design page in 3 seconds...</span>
                   </div>
                   <Link 
-                    href="/frame" 
+                    href="/create-frame" 
                     className="inline-flex items-center justify-center w-full bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors space-x-2"
                   >
                     <span>Start Photo Framing</span>
@@ -154,7 +154,7 @@ function VerifyEmailContent() {
                     <span>Go Back to Home</span>
                   </Link>
                   <Link 
-                    href="/frame" 
+                    href="/create-frame" 
                     className="inline-flex items-center justify-center w-full bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition-colors space-x-2"
                   >
                     <span>Try Design Page</span>

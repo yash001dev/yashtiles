@@ -81,7 +81,7 @@ function FrameItHeader({hideMenu=false}) {
               >
                 Contact
               </Link>
-              <Link href="/frame">
+              <Link href="/create-frame">
                 <Button>Start Framing</Button>
               </Link>
             </div>
@@ -143,7 +143,7 @@ function FrameItHeader({hideMenu=false}) {
                     <Link href="/contact" onClick={() => setOpen(false)}>
                       <span className="block text-left text-muted-foreground hover:text-foreground text-lg transition-colors py-2">Contact</span>
                     </Link>
-                    <Link href="/frame" onClick={() => setOpen(false)}>
+                    <Link href="/create-frame" onClick={() => setOpen(false)}>
                       <Button className="w-full mt-2">Start Framing</Button>
                     </Link>
                   </div>

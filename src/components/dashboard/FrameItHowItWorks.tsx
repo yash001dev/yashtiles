@@ -97,7 +97,7 @@ const FrameItHowItWorks: React.FC<FrameItHowItWorksProps> = ({
                   className=" text-white font-semibold px-10 py-8 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => {
                     if (typeof window !== "undefined") {
-                      window.location.href = "/frame";
+                      window.location.href = "/create-frame";
                     }
                   }}
                 >

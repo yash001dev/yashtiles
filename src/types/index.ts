@@ -1,3 +1,42 @@
+// Product types for Contentful integration
+import { Document } from '@contentful/rich-text-types';
+
+export interface ContentfulAsset {
+  sys: { id: string };
+  fields: {
+    title: string;
+    file: {
+      url: string;
+      details: {
+        size: number;
+        image: {
+          width: number;
+          height: number;
+        };
+      };
+    };
+  };
+}
+
+export interface ProductFields {
+  productTitle: string;
+  description: Document; // Rich text document
+  price: number;
+  images: ContentfulAsset[];
+  category: string;
+  stockStatus: boolean;
+  slug?: string;
+}
+
+export interface ContentfulProduct {
+  sys: {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+  fields: ProductFields;
+}
+
 export interface HangOption {
   id: "stickable_tape" | "standard_hook";
   name: string;
@@ -125,7 +164,7 @@ export interface ResetPasswordDto {
 
 export interface VerifyEmailResponse {
   message: string;
-  user: any;
+  user: Record<string, unknown>;
   accessToken: string;
 }
 
