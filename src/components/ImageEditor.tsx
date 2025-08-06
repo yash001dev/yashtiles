@@ -145,20 +145,26 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
   const constrainPosition = (x: number, y: number, scale: number = localTransform.scale) => {
     const boundaries = getDragBoundaries();
     const dimensions = getActualImageDimensions();
-    
+   
     // Calculate image dimensions at current scale
     const scaledWidth = dimensions.width * scale;
     const scaledHeight = dimensions.height * scale;
     
     // If custom border is active, ensure image stays within available area
     if (customization.border && customization.borderWidth && customization.borderColor) {
-      // Constrain so image doesn't go outside the available container
-      const maxX = Math.max(0, dimensions.width - scaledWidth);
-      const maxY = Math.max(0, dimensions.height - scaledHeight);
+      // Allow some movement even when image is larger than container
+      // Calculate how much the image can move while keeping at least some part visible
+      const minVisibleWidth = Math.min(scaledWidth, dimensions.width * 0.3); // At least 30% visible
+      const minVisibleHeight = Math.min(scaledHeight, dimensions.height * 0.3);
+      
+      const maxX = Math.max(0, dimensions.width - minVisibleWidth);
+      const maxY = Math.max(0, dimensions.height - minVisibleHeight);
+      const minX = Math.min(0, dimensions.width - scaledWidth);
+      const minY = Math.min(0, dimensions.height - scaledHeight);
       
       return {
-        x: Math.max(0, Math.min(maxX, x)),
-        y: Math.max(0, Math.min(maxY, y))
+        x: Math.max(minX, Math.min(maxX, x)),
+        y: Math.max(minY, Math.min(maxY, y))
       };
     }
     
@@ -289,7 +295,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
 
   const handleKonvaMouseUp = () => {
     setIsDragging(false);
-    
+   
     // Apply the final transform to local state
     if (tempTransform) {
       setLocalTransform(prev => ({
@@ -361,7 +367,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
         <KonvaFrameRenderer
           ref={downloadImageRef}
           customization={customization}
-          uploadedImage={image}
+          uploadedImage={{...image, transform: currentTransform}}
           isEditable={false}
           downloadOnlyImage={true}
           width={800}
@@ -418,24 +424,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     addClassicPadding={true}
                     frameId={activeFrameId ? activeFrameId.toString() : '0'}
                     onImageDrag={({ x, y }) => {
-                      // Apply boundary constraints to image drag with current scale
-                      const constrainedPos = constrainPosition(x, y, localTransform.scale);
-                      
-                      if (isDragging) {
-                        // Use temporary state during dragging for smooth experience
-                        setTempTransform({
-                          x: constrainedPos.x, 
-                          y: constrainedPos.y 
-                        });
-                      } else {
-                        // Update local state directly for non-mouse drag
-                        setLocalTransform(prev => ({
-                          ...prev,
-                          x: constrainedPos.x, 
-                          y: constrainedPos.y 
-                        }));
-                        setHasChanges(true);
-                      }
+                      console.log("X:",x,"Y:",y)
+                      setLocalTransform(prev => ({
+                        ...prev,
+                        x: x,
+                        y: y
+                      }));
+                      setHasChanges(true);
                     }}
                   />
                 </div>
@@ -550,6 +545,13 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                       <RefreshCw size={16} />
                       <span>Replace Image</span>
                     </button>
+                    {/* <button
+                      onClick={handleDownload}
+                      className="w-full p-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center space-x-2 text-sm font-medium"
+                    >
+                      <Download size={16} />
+                      <span>Download Image</span>
+                    </button> */}
                     {hasChanges && (
                       <button
                         onClick={handleSave}
@@ -574,6 +576,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                     )}
                     <li>• Changes saved automatically on close</li>
                     <li>• Click "Save Changes" to apply immediately</li>
+                    {/* <li>• Use "Download Image" to save your creation</li> */}
                     {hasChanges && (
                       <li className="text-blue-600 font-medium">• You have unsaved changes</li>
                     )}

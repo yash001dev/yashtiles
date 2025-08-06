@@ -307,21 +307,18 @@ const KonvaFrameRenderer = forwardRef<
   const handleImageDragStart = (e: any) => {
     if (!isEditable) return;
     setDragging(true);
-    setDragStart({
-      x: e.target.x() - (uploadedImage?.transform.x || 0),
-      y: e.target.y() - (uploadedImage?.transform.y || 0),
-    });
+   
   };
-  const handleImageDragMove = (e: any) => {
-    if (!isEditable || !dragging || !onImageDrag) return;
-    const newX = e.target.x();
-    const newY = e.target.y();
-    onImageDrag({ x: newX, y: newY });
-  };
+
   const handleImageDragEnd = (e: any) => {
     setDragging(false);
-    setDragStart(null);
-    if (isEditable && onMouseUp) onMouseUp();
+    // setDragStart(null);
+    // if (isEditable && onMouseUp) onMouseUp();
+    const newX=e.target.x();
+    const newY=e.target.y();
+    if(onImageDrag){
+     onImageDrag({x:newX,y:newY});
+    }
   };
 
   // Overlay for edit 
@@ -986,7 +983,6 @@ const KonvaFrameRenderer = forwardRef<
                     perfectDrawEnabled={false}
                     draggable={isEditable}
                     onDragStart={handleImageDragStart}
-                    onDragMove={handleImageDragMove}
                     onDragEnd={handleImageDragEnd}
                     //Add shadow
                    
