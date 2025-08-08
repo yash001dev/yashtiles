@@ -1,405 +1,130 @@
-import { jwtDecode } from "jwt-decode";
+import {
+  User,
+  AuthTokens,
+  LoginData,
+  RegisterData,
+  ForgotPasswordData,
+  ResetPasswordData,
+  VerifyEmailData,
+} from "@/types";
+import {
+  useLoginMutation,
+  useRegisterMutation,
+  useGoogleLoginMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useVerifyEmailMutation,
+  useLogoutMutation,
+  useGetCurrentUserQuery,
+} from "@/redux/api/authApi";
 
-// Authentication service to handle API calls
-export interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  avatar?: string;
-  isEmailVerified?: boolean;
-}
-
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface AuthResponse {
-  user: User;
-  tokens: AuthTokens;
-}
-
-export interface RegisterData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface ForgotPasswordData {
-  email: string;
-}
-
-export interface ResetPasswordData {
-  email: string;
-  token: string;
-  newPassword: string;
-}
-
-export interface GoogleLoginData {
-  accessToken: string;
-}
-
-interface GoogleJWTPayload {
-  email: string;
-  given_name: string;
-  family_name: string;
-  name: string;
-  picture?: string;
-  sub: string;
-  aud: string;
-  iss: string;
-  exp: number;
-  iat: number;
-}
-
-// API base URL - this should come from environment variables
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 class AuthService {
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
 
   constructor() {
-    // Initialize tokens from localStorage if available
     if (typeof window !== "undefined") {
       this.accessToken = localStorage.getItem("accessToken");
       this.refreshToken = localStorage.getItem("refreshToken");
     }
   }
 
-  // Store tokens in localStorage and memory
-  private setTokens(tokens: AuthTokens) {
-    this.accessToken = tokens.accessToken;
-    this.refreshToken = tokens.refreshToken;
-
-    if (typeof window !== "undefined") {
-      localStorage.setItem("accessToken", tokens.accessToken);
-      localStorage.setItem("refreshToken", tokens.refreshToken);
-    }
+  // Use RTK Query hooks instead of fetch
+  async login(data: LoginData): Promise<{ user: User; tokens: AuthTokens }> {
+    // This method is now deprecated - use useLoginMutation hook directly
+    throw new Error("Use useLoginMutation hook instead of this method");
   }
 
-  // Clear tokens from localStorage and memory
-  private clearTokens() {
-    this.accessToken = null;
-    this.refreshToken = null;
-
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("user");
-    }
+  async register(data: RegisterData): Promise<{ message: string; user: User }> {
+    // This method is now deprecated - use useRegisterMutation hook directly
+    throw new Error("Use useRegisterMutation hook instead of this method");
   }
 
-  // Get access token
-  getAccessToken(): string | null {
-    return this.accessToken;
+  async googleLogin(
+    googleToken: string
+  ): Promise<{ user: User; tokens: AuthTokens }> {
+    // This method is now deprecated - use useGoogleLoginMutation hook directly
+    throw new Error("Use useGoogleLoginMutation hook instead of this method");
   }
 
-  // Check if user is authenticated
+  async forgotPassword(data: ForgotPasswordData): Promise<void> {
+    // This method is now deprecated - use useForgotPasswordMutation hook directly
+    throw new Error(
+      "Use useForgotPasswordMutation hook instead of this method"
+    );
+  }
+
+  async resetPassword(data: ResetPasswordData): Promise<void> {
+    // This method is now deprecated - use useResetPasswordMutation hook directly
+    throw new Error("Use useResetPasswordMutation hook instead of this method");
+  }
+
+  async verifyEmail(
+    data: VerifyEmailData
+  ): Promise<{ message: string; user: User; accessToken: string }> {
+    // This method is now deprecated - use useVerifyEmailMutation hook directly
+    throw new Error("Use useVerifyEmailMutation hook instead of this method");
+  }
+
+  async logout(): Promise<void> {
+    // This method is now deprecated - use useLogoutMutation hook directly
+    throw new Error("Use useLogoutMutation hook instead of this method");
+  }
+
+  async refreshTokens(): Promise<boolean> {
+    // This method is now deprecated - use useRefreshTokenMutation hook directly
+    throw new Error("Use useRefreshTokenMutation hook instead of this method");
+  }
+
+  // Utility methods that can still be used
   isAuthenticated(): boolean {
     return !!this.accessToken;
   }
 
-  // Make authenticated API request
-  private async apiRequest(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<Response> {
-    const url = `${API_BASE_URL}/api/v1${endpoint}`;
-
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      ...(options.headers as Record<string, string>),
-    };
-
-    // Add authorization header if we have an access token
-    if (this.accessToken) {
-      headers.Authorization = `Bearer ${this.accessToken}`;
-    }
-
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
-
-    // If we get a 401 and have a refresh token, try to refresh
-    if (response.status === 401 && this.refreshToken) {
-      const refreshed = await this.refreshTokens();
-      if (refreshed) {
-        // Retry the original request with new token
-        headers.Authorization = `Bearer ${this.accessToken}`;
-        return fetch(url, {
-          ...options,
-          headers,
-        });
-      }
-    }
-
-    return response;
+  getAccessToken(): string | null {
+    return this.accessToken;
   }
 
-  // User registration
-  async register(data: RegisterData): Promise<{ message: string; user: User }> {
-    const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Registration failed");
-    }
-
-    const authResponse = await response.json();
-    
-    // Registration doesn't provide tokens - user needs to verify email first
-    // Don't set tokens or store user data yet since they're not authenticated
-    // Only store user data temporarily for email verification flow
-    
-    return authResponse;
-  }
-
-  // User login
-  async login(data: LoginData): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Login failed");
-    }
-
-    const responseData = await response.json();
-
-    // Handle the actual backend response format: { user, accessToken }
-    const tokens = {
-      accessToken: responseData.accessToken,
-      refreshToken: "", // Refresh token comes as HTTP-only cookie
-    };
-
-    this.setTokens(tokens);
-
-    // Store user data
-    if (typeof window !== "undefined") {
-      localStorage.setItem("user", JSON.stringify(responseData.user));
-    }
-
-    return {
-      user: responseData.user,
-      tokens,
-    };
-  }
-
-  // Refresh access token
-  async refreshTokens(): Promise<boolean> {
-    if (!this.refreshToken) {
-      return false;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.refreshToken}`,
-        },
-      });
-
-      if (!response.ok) {
-        this.clearTokens();
-        return false;
-      }
-
-      const tokens: AuthTokens = await response.json();
-      this.setTokens(tokens);
-      return true;
-    } catch (error) {
-      this.clearTokens();
-      return false;
-    }
-  }
-
-  // User logout
-  async logout(): Promise<void> {
-    try {
-      if (this.accessToken) {
-        await this.apiRequest("/auth/logout", {
-          method: "POST",
-        });
-      }
-    } catch (error) {
-      // Ignore logout errors, just clear tokens
-      console.error("Logout error:", error);
-    } finally {
-      this.clearTokens();
-    }
-  }
-
-  // Forgot password
-  async forgotPassword(data: ForgotPasswordData): Promise<{ message: string }> {
-    const response = await fetch(
-      `${API_BASE_URL}/api/v1/auth/forgot-password`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to send reset email");
-    }
-
-    return response.json();
-  }
-
-  // Reset password
-  async resetPassword(data: ResetPasswordData): Promise<{ message: string }> {
-    const response = await fetch(`${API_BASE_URL}/api/v1/auth/reset-password`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Password reset failed");
-    }
-
-    return response.json();
-  }
-
-  // Verify email
-  async verifyEmail(email: string, token: string): Promise<AuthResponse> {
-    const response = await fetch(`${API_BASE_URL}/api/v1/auth/verify-email`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // Include cookies for refresh token
-      body: JSON.stringify({ email, token }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Email verification failed");
-    }
-
-    const data = await response.json();
-
-    // Store access token and user data
-    this.setTokens({
-      accessToken: data.accessToken,
-      refreshToken: "", // Refresh token comes as HTTP-only cookie
-    });
-    this.updateStoredUser(data.user);
-
-    return {
-      user: data.user,
-      tokens: { accessToken: data.accessToken, refreshToken: "" },
-    };
-  }
-
-  // Get stored user data
   getStoredUser(): User | null {
-    if (typeof window === "undefined") {
-      return null;
+    if (typeof window !== "undefined") {
+      const userStr = localStorage.getItem("user");
+      return userStr ? JSON.parse(userStr) : null;
     }
-
-    const userData = localStorage.getItem("user");
-    return userData ? JSON.parse(userData) : null;
+    return null;
   }
 
-  // Update stored user data
   updateStoredUser(user: User): void {
     if (typeof window !== "undefined") {
       localStorage.setItem("user", JSON.stringify(user));
     }
   }
 
-  // Google login
-  async googleLogin(googleCredential: string): Promise<AuthResponse> {
-    try {
-      // Decode the JWT token to extract user information
-      const decodedToken = jwtDecode<GoogleJWTPayload>(googleCredential);
+  private setTokens(tokens: AuthTokens): void {
+    this.accessToken = tokens.accessToken;
+    this.refreshToken = tokens.refreshToken;
 
-      console.log("Decoded Google token:", decodedToken);
-
-      const payload = {
-        accessToken: googleCredential,
-        email: decodedToken.email,
-        firstName: decodedToken.given_name,
-        lastName: decodedToken.family_name,
-      };
-
-      console.log("Sending payload to backend:", payload);
-
-      const response = await fetch(`${API_BASE_URL}/api/v1/auth/google/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Include cookies for refresh token
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Google login failed");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("accessToken", tokens.accessToken);
+      if (tokens.refreshToken) {
+        localStorage.setItem("refreshToken", tokens.refreshToken);
       }
-
-      const data = await response.json();
-
-      // The backend returns { user, accessToken } format for Google login
-      this.setTokens({
-        accessToken: data.accessToken,
-        refreshToken: "", // Refresh token comes as HTTP-only cookie
-      });
-
-      // Store user data
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-
-      return {
-        user: data.user,
-        tokens: {
-          accessToken: data.accessToken,
-          refreshToken: "", // Refresh token comes as HTTP-only cookie
-        },
-      };
-    } catch (error) {
-      console.error("Google login error:", error);
-      throw error;
     }
-  }
-
-  // Get Google OAuth URL for redirect flow
-  getGoogleAuthUrl(): string {
-    return `${API_BASE_URL}/api/v1/auth/google`;
   }
 }
 
-// Create a singleton instance
+// Export the service instance
 export const authService = new AuthService();
+
+// Export hooks for direct use
+export {
+  useLoginMutation,
+  useRegisterMutation,
+  useGoogleLoginMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useVerifyEmailMutation,
+  useLogoutMutation,
+  useGetCurrentUserQuery,
+};

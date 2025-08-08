@@ -12,6 +12,7 @@ import { API_BASE_URL } from '@/lib/auth';
 import { base64ToFile } from '@/redux/utils';
 import { Input } from '@/components/ui/input';
 import { useAppSelector } from '../../redux/hooks';
+import { useGeneratePaymentHashMutation, useInitiatePaymentMutation } from '@/redux/api/checkoutApi';
 
 // Zod schema for form validation
 const shippingSchema = z.object({
@@ -50,6 +51,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal' | 'razorpay'>('stripe');
+
+  const [generatePaymentHash] = useGeneratePaymentHashMutation();
+  const [initiatePayment] = useInitiatePaymentMutation();
 
   // Initialize form with react-hook-form and zod validation
   const form = useForm<ShippingFormData>({
@@ -149,13 +153,21 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       
       console.log({amount});
       
-      // 1. Generate hash
-      const hashRes = await fetch(`${API_BASE_URL}/api/v1/payments/payu/generate-hash`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key, txnid, amount, productinfo, firstname, email, salt, udf1, udf2, udf3, udf4, udf5 })
-      });
-      const { hash } = await hashRes.json();
+      // 1. Generate hash using RTK Query
+      const { hash } = await generatePaymentHash({ 
+        key, 
+        txnid, 
+        amount, 
+        productinfo, 
+        firstname, 
+        email, 
+        salt, 
+        udf1, 
+        udf2, 
+        udf3, 
+        udf4, 
+        udf5 
+      }).unwrap();
       
       // 2. Prepare FormData for PayU initiation with frame images
       const formData = new FormData();
@@ -215,13 +227,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       formData.append('udf4', udf4);
       formData.append('udf5', udf5);
       
-      // 3. Initiate payment with FormData
-      const res = await fetch(`${API_BASE_URL}/api/v1/payments/payu/initiate`, {
-        method: 'POST',
-        body: formData, // Don't set Content-Type header, let browser set it for FormData
-      });
+      // 3. Initiate payment with FormData using RTK Query
+      const data = await initiatePayment(formData).unwrap();
       
-      const data = await res.json();
       if (data && data.action && data.params) {
         if (typeof document !== 'undefined') {
           // Submit to PayU payment gateway using form submission

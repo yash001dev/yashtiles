@@ -1,8 +1,17 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useReducer, ReactNode } from 'react';
-import { authService, User, AuthTokens } from '../lib/auth';
+import { User } from '../types';
 import { useNotifications } from './NotificationContext';
+import { 
+  useLoginMutation, 
+  useRegisterMutation, 
+  useGoogleLoginMutation, 
+  useForgotPasswordMutation, 
+  useResetPasswordMutation, 
+  useVerifyEmailMutation, 
+  useLogoutMutation
+} from '@/redux/api/authApi';
 
 // Auth state interface
 interface AuthState {
@@ -99,23 +108,27 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  
+  // RTK Query hooks
+  const [loginMutation] = useLoginMutation();
+  const [registerMutation] = useRegisterMutation();
+  const [googleLoginMutation] = useGoogleLoginMutation();
+  const [forgotPasswordMutation] = useForgotPasswordMutation();
+  const [resetPasswordMutation] = useResetPasswordMutation();
+  const [verifyEmailMutation] = useVerifyEmailMutation();
+  const [logoutMutation] = useLogoutMutation();
 
   // Initialize auth state on mount
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         // Check if user is already authenticated
-        if (authService.isAuthenticated()) {
-          const storedUser = authService.getStoredUser();
-          if (storedUser) {
-            dispatch({ type: 'AUTH_SUCCESS', payload: storedUser });
-          } else {
-            // Access token exists but no user data, try to refresh
-            const refreshed = await authService.refreshTokens();
-            if (!refreshed) {
-              dispatch({ type: 'AUTH_LOGOUT' });
-            }
-          }
+        const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+        const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+        
+        if (token && userData) {
+          const user = JSON.parse(userData);
+          dispatch({ type: 'AUTH_SUCCESS', payload: user });
         } else {
           dispatch({ type: 'AUTH_LOGOUT' });
         }
@@ -131,7 +144,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string) => {
     try {
       dispatch({ type: 'AUTH_START' });
-      const response = await authService.login({ email, password });
+      const response = await loginMutation({ email, password }).unwrap();
+      
+      // Store access token (refresh token is in HTTP-only cookie)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('user', JSON.stringify(response.user));
+      }
+      
       dispatch({ type: 'AUTH_SUCCESS', payload: response.user });
     } catch (error) {
       dispatch({ type: 'AUTH_ERROR', payload: error instanceof Error ? error.message : 'Login failed' });
@@ -143,7 +163,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const register = async (firstName: string, lastName: string, email: string, password: string) => {
     try {
       dispatch({ type: 'AUTH_START' });
-      const response = await authService.register({ firstName, lastName, email, password });
+      const response = await registerMutation({ firstName, lastName, email, password }).unwrap();
       // Registration successful but user needs to verify email
       // Don't set authentication state yet - user is not fully authenticated
       dispatch({ type: 'AUTH_LOGOUT' }); // Clear any existing auth state
@@ -158,7 +178,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const googleLogin = async (googleToken: string) => {
     try {
       dispatch({ type: 'AUTH_START' });
-      const response = await authService.googleLogin(googleToken);
+      const response = await googleLoginMutation({ googleToken }).unwrap();
+      
+      // Store access token (refresh token is in HTTP-only cookie)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('accessToken', response.tokens.accessToken);
+        localStorage.setItem('user', JSON.stringify(response.user));
+      }
+      
       dispatch({ type: 'AUTH_SUCCESS', payload: response.user });
     } catch (error) {
       dispatch({ type: 'AUTH_ERROR', payload: error instanceof Error ? error.message : 'Google login failed' });
@@ -169,10 +196,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Logout function with notifications
   const logout = async () => {
     try {
-      await authService.logout();
-      dispatch({ type: 'AUTH_LOGOUT' });
+      await logoutMutation().unwrap();
     } catch (error) {
       // Even if logout fails on server, clear local state
+    } finally {
+      // Clear local storage
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('user');
+      }
       dispatch({ type: 'AUTH_LOGOUT' });
     }
   };
@@ -180,7 +212,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Forgot password function
   const forgotPassword = async (email: string) => {
     try {
-      await authService.forgotPassword({ email });
+      await forgotPasswordMutation({ email }).unwrap();
     } catch (error) {
       throw error;
     }
@@ -189,7 +221,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Reset password function
   const resetPassword = async (email: string, token: string, newPassword: string) => {
     try {
-      await authService.resetPassword({ email, token, newPassword });
+      await resetPasswordMutation({ email, token, newPassword }).unwrap();
     } catch (error) {
       throw error;
     }
@@ -202,7 +234,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Update user function
   const updateUser = (user: User) => {
-    authService.updateStoredUser(user);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
     dispatch({ type: 'UPDATE_USER', payload: user });
   };
 

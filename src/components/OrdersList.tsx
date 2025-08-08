@@ -12,9 +12,9 @@ interface OrdersListProps {
 }
 
 export function OrdersList({ onViewOrderDetails, className = '' }: OrdersListProps) {
-  const { orders, meta, loading, error, refetch, setPage, setLimit } = useOrders();
+  const { orders, pagination, isLoading, error, refetch, setPage, setLimit } = useOrders();
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <LoadingSpinner size="lg" />
@@ -63,18 +63,18 @@ export function OrdersList({ onViewOrderDetails, className = '' }: OrdersListPro
       <div className="flex flex-col md:flex-row gap-2  md:items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Your Orders</h2>
-          {meta && (
+          {pagination && (
             <p className="text-gray-600 mt-1">
-              Showing {((meta.page - 1) * meta.limit) + 1} to {Math.min(meta.page * meta.limit, meta.total)} of {meta.total} orders
+              Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} orders
             </p>
           )}
         </div>
         
         <div className="flex items-center space-x-2">
           <select
-            value={meta?.limit || 10}
+            value={pagination?.limit || 10}
             onChange={(e) => setLimit(Number(e.target.value))}
-            className="border border-gray-300 text-white rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="border border-gray-300 text-black rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
           >
             <option value={5}>5 per page</option>
             <option value={10}>10 per page</option>
@@ -96,14 +96,14 @@ export function OrdersList({ onViewOrderDetails, className = '' }: OrdersListPro
       </div>
 
       {/* Pagination */}
-      {meta && meta.pages > 1 && (
+      {pagination && pagination.pages > 1 && (
         <div className="flex justify-center pt-6">
           <Pagination
-            currentPage={meta.page}
-            totalPages={meta.pages}
+            currentPage={pagination.page}
+            totalPages={pagination.pages}
             onPageChange={setPage}
-            hasNextPage={meta.hasNextPage}
-            hasPreviousPage={meta.hasPreviousPage}
+            hasNextPage={pagination.hasNextPage}
+            hasPreviousPage={pagination.hasPreviousPage}
           />
         </div>
       )}

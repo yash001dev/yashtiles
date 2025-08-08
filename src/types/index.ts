@@ -202,3 +202,87 @@ export interface PaginationParams {
   page?: number;
   limit?: number;
 }
+
+// Auth types
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  isEmailVerified: boolean;
+  role: "user" | "admin" | "customer";
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AuthTokens {
+  accessToken: string;
+}
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  user: User;
+  accessToken: string;
+}
+
+export interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export interface ResetPasswordData {
+  email: string;
+  token: string;
+  newPassword: string;
+}
+
+export interface VerifyEmailData {
+  email: string;
+  token: string;
+}
+
+export interface GoogleLoginData {
+  googleToken: string;
+}
+
+// Checkout types
+export interface CheckoutData {
+  items: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    customization: any;
+    image?: string;
+  }[];
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  paymentMethod: "stripe" | "paypal" | "razorpay";
+  totalAmount: number;
+}
+
+export interface CheckoutResponse {
+  success: boolean;
+  orderId: string;
+  paymentUrl?: string;
+  message: string;
+}

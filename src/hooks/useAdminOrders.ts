@@ -1,79 +1,86 @@
-import { useState, useEffect, useCallback } from "react";
-import { adminOrdersService, SearchOrderParams, BulkUpdateOrderData, UpdateOrderData } from "@/lib/admin-orders";
-import { Order, OrdersResponse, PaginationMeta } from "@/types";
+import { useState } from "react";
+import {
+  useGetAllOrdersQuery,
+  useUpdateOrderStatusMutation,
+  useUpdateOrderTrackingMutation,
+  useDeleteOrderMutation,
+} from "@/redux/api/adminOrdersApi";
+import { PaginationParams } from "@/types";
 
-export const useAdminOrders = () => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export const useAdminOrders = (
+  params: PaginationParams = { page: 1, limit: 25 }
+) => {
+  const { data, isLoading, error, refetch } = useGetAllOrdersQuery(params);
+  const [updateOrderStatus] = useUpdateOrderStatusMutation();
+  const [updateOrderTracking] = useUpdateOrderTrackingMutation();
+  const [deleteOrder] = useDeleteOrderMutation();
 
-  const searchOrders = useCallback(async (params: SearchOrderParams = {}) => {
-    setLoading(true);
-    setError(null);
-    
+  const updateOrder = async (
+    orderId: string,
+    data: { status?: string; trackingNumber?: string }
+  ) => {
     try {
-      const response: OrdersResponse = await adminOrdersService.searchOrders(params);
-      setOrders(response.orders);
-      setPagination(response.pagination);
+      if (data.status) {
+        await updateOrderStatus({ orderId, status: data.status }).unwrap();
+      }
+      if (data.trackingNumber) {
+        await updateOrderTracking({
+          orderId,
+          trackingNumber: data.trackingNumber,
+        }).unwrap();
+      }
+      return true;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch orders");
-      setOrders([]);
-      setPagination(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const updateOrder = useCallback(async (orderId: string, data: UpdateOrderData) => {
-    try {
-      const updatedOrder = await adminOrdersService.updateOrder(orderId, data);
-      // Update the order in the current list
-      setOrders(prevOrders => 
-        prevOrders.map(order => 
-          order._id === orderId ? updatedOrder : order
-        )
+      throw new Error(
+        err instanceof Error ? err.message : "Failed to update order"
       );
-      return updatedOrder;
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : "Failed to update order");
     }
-  }, []);
+  };
 
-  const bulkUpdateOrders = useCallback(async (data: BulkUpdateOrderData) => {
+  const bulkUpdateOrders = async (data: {
+    orderIds: string[];
+    status: string;
+  }) => {
     try {
-      const result = await adminOrdersService.bulkUpdateOrders(data);
-      // Refresh orders to get updated data
-      return result;
+      // Since we don't have a bulk update endpoint in RTK Query, we'll update them one by one
+      const promises = data.orderIds.map((orderId) =>
+        updateOrderStatus({ orderId, status: data.status })
+      );
+      await Promise.all(promises);
+      return {
+        success: true,
+        message: `Updated ${data.orderIds.length} orders`,
+      };
     } catch (err) {
-      throw new Error(err instanceof Error ? err.message : "Failed to bulk update orders");
+      throw new Error(
+        err instanceof Error ? err.message : "Failed to bulk update orders"
+      );
     }
-  }, []);
+  };
 
-  const getOrderById = useCallback(async (orderId: string) => {
-    try {
-      return await adminOrdersService.getOrderById(orderId);
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : "Failed to fetch order");
-    }
-  }, []);
+  const getOrderById = async (orderId: string) => {
+    // This would need a separate query, but for now we'll return from the list
+    return data?.orders.find((order) => order._id === orderId);
+  };
 
-  const refreshOrders = useCallback(() => {
-    // Re-run the last search
-    searchOrders();
-  }, [searchOrders]);
-
-  // Initial load
-  useEffect(() => {
-    searchOrders({ page: 1, limit: 25 });
-  }, [searchOrders]);
+  const refreshOrders = () => {
+    refetch();
+  };
 
   return {
-    orders,
-    pagination,
-    loading,
-    error,
-    searchOrders,
+    orders: data?.orders || [],
+    pagination: data?.pagination || {
+      page: 1,
+      limit: 25,
+      total: 0,
+      pages: 0,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    },
+    loading: isLoading,
+    error: error
+      ? (error as any).data?.message || "Failed to fetch orders"
+      : null,
     updateOrder,
     bulkUpdateOrders,
     getOrderById,

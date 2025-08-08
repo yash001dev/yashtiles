@@ -1,241 +1,68 @@
 import { config } from "./config";
-import { Order, OrdersResponse, PaginationParams } from "@/types";
+import { OrdersResponse, Order, PaginationParams } from "@/types";
+import {
+  useGetAllOrdersQuery,
+  useUpdateOrderStatusMutation,
+  useUpdateOrderTrackingMutation,
+  useDeleteOrderMutation,
+} from "@/redux/api/adminOrdersApi";
 
-// Extended types for admin functionality
+// Types for admin orders
 export interface SearchOrderParams extends PaginationParams {
-  orderNumber?: string;
-  customerEmail?: string;
-  customerName?: string;
-  customerPhone?: string;
   status?: string;
-  paymentStatus?: string;
-  fromDate?: string;
-  toDate?: string;
-  trackingNumber?: string;
-  minAmount?: number;
-  maxAmount?: number;
-}
-
-export interface BulkUpdateOrderData {
-  orderIds: string[];
-  status?: string;
-  paymentStatus?: string;
-  trackingNumber?: string;
-  notes?: string;
-}
-
-export interface BulkUpdateResponse {
-  updated: number;
-  failed: string[];
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export interface UpdateOrderData {
   status?: string;
-  paymentStatus?: string;
-  totalAmount?: number;
-  shippingCost?: number;
-  taxAmount?: number;
-  paymentId?: string;
-  paymentMethod?: string;
   trackingNumber?: string;
-  estimatedDelivery?: Date;
   notes?: string;
-  shippingAddress?: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phone?: string;
-    street?: string;
-    city?: string;
-    state?: string;
-    zipCode?: string;
-    country?: string;
-  };
-  items?: Array<{
-    productId?: string;
-    quantity?: number;
-    price?: number;
-    size?: string;
-    frameType?: string;
-    imageUrl?: string;
-    notes?: string;
-  }>;
-  statusNotes?: string;
 }
 
-// Utility function to clean data by removing _id fields
-export const cleanOrderDataForUpdate = (data: any): any => {
-  if (!data) return data;
-  
-  if (Array.isArray(data)) {
-    return data.map(item => cleanOrderDataForUpdate(item));
-  }
-  
-  if (typeof data === 'object' && data !== null) {
-    const cleaned: any = {};
-    for (const [key, value] of Object.entries(data)) {
-      if (key !== '_id') {
-        cleaned[key] = cleanOrderDataForUpdate(value);
-      }
-    }
-    return cleaned;
-  }
-  
-  return data;
-};
+export interface BulkUpdateOrderData {
+  orderIds: string[];
+  status: string;
+}
 
 class AdminOrdersService {
   private baseUrl = config.apiUrl;
 
-  private async makeRequest<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
-      throw new Error("No authentication token found");
-    }
-
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-        ...options.headers,
-      },
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.message || `HTTP error! status: ${response.status}`
-      );
-    }
-
-    return response.json();
-  }
-
-  /**
-   * Advanced search for orders with multiple filters
-   */
+  // Use RTK Query hooks instead of fetch
   async searchOrders(params: SearchOrderParams = {}): Promise<OrdersResponse> {
-    const searchParams = new URLSearchParams();
-
-    // Add pagination params
-    if (params.page) {
-      searchParams.append("page", params.page.toString());
-    }
-    if (params.limit) {
-      searchParams.append("limit", params.limit.toString());
-    }
-
-    // Add search filters
-    if (params.orderNumber) {
-      searchParams.append("orderNumber", params.orderNumber);
-    }
-    if (params.customerEmail) {
-      searchParams.append("customerEmail", params.customerEmail);
-    }
-    if (params.customerName) {
-      searchParams.append("customerName", params.customerName);
-    }
-    if (params.customerPhone) {
-      searchParams.append("customerPhone", params.customerPhone);
-    }
-    if (params.status) {
-      searchParams.append("status", params.status);
-    }
-    if (params.paymentStatus) {
-      searchParams.append("paymentStatus", params.paymentStatus);
-    }
-    if (params.fromDate) {
-      searchParams.append("fromDate", params.fromDate);
-    }
-    if (params.toDate) {
-      searchParams.append("toDate", params.toDate);
-    }
-    if (params.trackingNumber) {
-      searchParams.append("trackingNumber", params.trackingNumber);
-    }
-    if (params.minAmount !== undefined) {
-      searchParams.append("minAmount", params.minAmount.toString());
-    }
-    if (params.maxAmount !== undefined) {
-      searchParams.append("maxAmount", params.maxAmount.toString());
-    }
-
-    const queryString = searchParams.toString();
-    const endpoint = `/api/v1/orders/admin/search${queryString ? `?${queryString}` : ""}`;
-
-    const response = await this.makeRequest<OrdersResponse>(endpoint);
-
-    // Add calculated pagination properties
-    const pagination = response.pagination;
-    pagination.hasNextPage = pagination.page < pagination.pages;
-    pagination.hasPreviousPage = pagination.page > 1;
-
-    return response;
+    // This method is now deprecated - use useGetAllOrdersQuery hook directly
+    throw new Error("Use useGetAllOrdersQuery hook instead of this method");
   }
 
-  /**
-   * Update a single order
-   */
-  async updateOrder(orderId: string, data: UpdateOrderData): Promise<Order> {
-    // Clean the data to remove any _id fields
-    const cleanedData = cleanOrderDataForUpdate(data);
-    
-    return this.makeRequest<Order>(`/api/v1/orders/${orderId}`, {
-      method: "PUT",
-      body: JSON.stringify(cleanedData),
-    });
-  }
-
-  /**
-   * Bulk update multiple orders
-   */
-  async bulkUpdateOrders(data: BulkUpdateOrderData): Promise<BulkUpdateResponse> {
-    // Clean the data to remove any _id fields
-    const cleanedData = cleanOrderDataForUpdate(data);
-    
-    return this.makeRequest<BulkUpdateResponse>(`/api/v1/orders/bulk-update`, {
-      method: "PUT",
-      body: JSON.stringify(cleanedData),
-    });
-  }
-
-  /**
-   * Get order by ID (admin view with all details)
-   */
   async getOrderById(orderId: string): Promise<Order> {
-    return this.makeRequest<Order>(`/api/v1/orders/${orderId}`);
+    // This method is now deprecated - use useGetOrderByIdQuery hook directly
+    throw new Error("Use useGetOrderByIdQuery hook instead of this method");
   }
 
-  /**
-   * Get all orders (admin view)
-   */
-  async getAllOrders(params: PaginationParams = {}): Promise<OrdersResponse> {
-    const searchParams = new URLSearchParams();
+  async updateOrder(orderId: string, data: UpdateOrderData): Promise<Order> {
+    // This method is now deprecated - use useUpdateOrderStatusMutation or useUpdateOrderTrackingMutation hooks directly
+    throw new Error(
+      "Use useUpdateOrderStatusMutation or useUpdateOrderTrackingMutation hooks instead of this method"
+    );
+  }
 
-    if (params.page) {
-      searchParams.append("page", params.page.toString());
-    }
-    if (params.limit) {
-      searchParams.append("limit", params.limit.toString());
-    }
-
-    const queryString = searchParams.toString();
-    const endpoint = `/api/v1/orders/admin${queryString ? `?${queryString}` : ""}`;
-
-    const response = await this.makeRequest<OrdersResponse>(endpoint);
-
-    // Add calculated pagination properties
-    const pagination = response.pagination;
-    pagination.hasNextPage = pagination.page < pagination.pages;
-    pagination.hasPreviousPage = pagination.page > 1;
-
-    return response;
+  async bulkUpdateOrders(
+    data: BulkUpdateOrderData
+  ): Promise<{ success: boolean; message: string }> {
+    // This method is now deprecated - use the mutation hooks directly
+    throw new Error("Use useUpdateOrderStatusMutation hook for bulk updates");
   }
 }
 
+// Export the service instance
 export const adminOrdersService = new AdminOrdersService();
+
+// Export hooks for direct use
+export {
+  useGetAllOrdersQuery,
+  useGetOrderByIdQuery,
+  useUpdateOrderStatusMutation,
+  useUpdateOrderTrackingMutation,
+  useDeleteOrderMutation,
+};
