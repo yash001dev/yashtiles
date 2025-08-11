@@ -22,27 +22,29 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useLazyGetOrderByIdQuery } from '@/redux/api';
 
 export default function OrderDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const orderId = params.id as string;
-  
+
+  const [
+    fetchOrderById,
+    { data: orderData, isLoading, isError, error:fetchError },
+  ] = useLazyGetOrderByIdQuery();
+
   const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        setLoading(true);
-        setError(null);
-        const response = await ordersService.getOrderById(orderId);
-        setOrder(response as Order);
-      } catch (err) {
+        const response = await fetchOrderById(orderId);
+        setOrder(response?.data as Order);
+      } 
+      catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch order details');
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -67,7 +69,7 @@ export default function OrderDetailsPage() {
     // You could add a toast notification here
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <ProtectedRoute>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -80,7 +82,7 @@ export default function OrderDetailsPage() {
     );
   }
 
-  if (error || !order) {
+  if (error || !order || isError || fetchError) {
     return (
       <ProtectedRoute>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -92,7 +94,7 @@ export default function OrderDetailsPage() {
               Order Not Found
             </h2>
             <p className="text-gray-600 mb-4">
-              {error || 'The order you are looking for could not be found.'}
+              {isError || error || fetchError || 'The order you are looking for could not be found.'}
             </p>
             <Button onClick={() => router.push('/orders')} variant="outline">
               <ArrowLeft className="h-4 w-4 mr-2" />

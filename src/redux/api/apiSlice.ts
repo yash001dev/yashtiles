@@ -30,20 +30,34 @@ const baseQuery = fetchBaseQuery({
       headers.set("authorization", `Bearer ${token}`);
     }
 
-    // Only set Content-Type for non-FormData requests
-    // For FormData, let the browser set the Content-Type with boundary
-    const isFormData =
-      getState &&
-      typeof getState === "function" &&
-      (getState() as any)?.body instanceof FormData;
-
-    if (!isFormData) {
-      headers.set("Content-Type", "application/json");
-    }
-
     return headers;
   },
 });
+
+// Custom base query wrapper to handle FormData detection
+const baseQueryWithFormDataHandling = async (args: string | FetchArgs, api: any, extraOptions: any) => {
+  // Check if the request body is FormData
+  let isFormData = false;
+  if (typeof args === 'object' && args.body instanceof FormData) {
+    isFormData = true;
+    console.log('=== API Slice Debug ===');
+    console.log('FormData detected in apiSlice:', true);
+    console.log('Not setting Content-Type header for FormData');
+  }
+
+  // If it's FormData, don't set Content-Type (let browser handle it)
+  // If it's not FormData, set Content-Type to application/json
+  if (typeof args === 'object' && !isFormData) {
+    console.log('=== API Slice Debug ===');
+    console.log('JSON data detected in apiSlice, setting Content-Type');
+    args.headers = {
+      'Content-Type': 'application/json',
+      ...args.headers,
+    };
+  }
+
+  return baseQuery(args, api, extraOptions);
+};
 
 // Custom base query with reauth
 const baseQueryWithReauth: BaseQueryFn<
@@ -51,12 +65,12 @@ const baseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError | CustomError
 > = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
+  let result = await baseQueryWithFormDataHandling(args, api, extraOptions);
 
   // If we get a 401, try to refresh the token using cookies
   if (result.error && "status" in result.error && result.error.status === 401) {
     // Try to refresh the token using cookies (refresh token is HTTP-only)
-    const refreshResult = await baseQuery(
+    const refreshResult = await baseQueryWithFormDataHandling(
       {
         url: "/api/v1/auth/refresh",
         method: "POST",
@@ -74,7 +88,7 @@ const baseQueryWithReauth: BaseQueryFn<
       }
 
       // Retry the original request with the new token
-      result = await baseQuery(args, api, extraOptions);
+      result = await baseQueryWithFormDataHandling(args, api, extraOptions);
     } else {
       // Refresh failed, clear tokens and dispatch logout action
       if (typeof window !== "undefined") {

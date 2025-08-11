@@ -183,7 +183,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
             if (imageToUse.startsWith('data:')) {
               // Handle data URLs (base64 images) using our utility function
               const file = base64ToFile(imageToUse, `frame-${index + 1}.jpg`);
-              formData.append('frameImages', file);
+              formData.append('frameImages', file, file.name);
             } else {
               // Handle regular URLs
               const response = await fetch(imageToUse, { 
@@ -197,7 +197,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
               }
               const blob = await response.blob();
               const file = new File([blob], `frame-${index + 1}.jpg`, { type: blob.type || 'image/jpeg' });
-              formData.append('frameImages', file);
+              formData.append('frameImages', file, file.name);
             }
           } catch (error) {
             console.error(`Failed to fetch image for item ${index}:`, error);
@@ -227,7 +227,24 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       formData.append('udf4', udf4);
       formData.append('udf5', udf5);
       
-      // 3. Initiate payment with FormData using RTK Query
+      
+      // Log all FormData entries
+      let imageCount = 0;
+      for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          imageCount++;
+          console.log(`${key}:`, {
+            name: value.name,
+            size: value.size,
+            type: value.type,
+            lastModified: value.lastModified
+          });
+        } else {
+          console.log(`${key}:`, typeof value === 'string' ? value.substring(0, 100) + '...' : value);
+        }
+      }
+      console.log(`Total images in FormData: ${imageCount}`);
+      
       const data = await initiatePayment(formData).unwrap();
       
       if (data && data.action && data.params) {

@@ -41,17 +41,31 @@ export const checkoutApi = apiSlice.injectEndpoints({
 
     // Initiate payment (for PayU) - handles FormData
     initiatePayment: builder.mutation<any, FormData>({
-      query: (formData) => ({
-        url: "/api/v1/payments/payu/initiate",
-        method: "POST",
-        body: formData,
-        // Don't set Content-Type header for FormData, let browser set it
-        prepareHeaders: (headers) => {
-          // Remove Content-Type header for FormData
-          headers.delete("Content-Type");
-          return headers;
-        },
-      }),
+      query: (formData) => {
+        console.log('=== RTK Query Debug ===');
+        console.log('Input is FormData:', formData instanceof FormData);
+        
+        // Log FormData contents before sending
+        if (formData instanceof FormData) {
+          console.log('FormData entries:');
+          for (let [key, value] of formData.entries()) {
+            if (value instanceof File) {
+              console.log(`${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+            } else {
+              console.log(`${key}: ${typeof value === 'string' ? value.substring(0, 50) + '...' : value}`);
+            }
+          }
+        }
+
+        return {
+          url: "/api/v1/payments/payu/initiate",
+          method: "POST",
+          body: formData,
+          // Content-Type will be automatically handled by apiSlice
+          // For FormData: no Content-Type (browser sets with boundary)
+          // For JSON: application/json
+        };
+      },
     }),
   }),
 });

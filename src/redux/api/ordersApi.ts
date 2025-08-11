@@ -41,4 +41,8 @@ export const ordersApi = apiSlice.injectEndpoints({
 });
 
 // Export hooks
-export const { useGetOrdersQuery, useGetOrderByIdQuery } = ordersApi;
+export const {
+  useGetOrdersQuery,
+  useGetOrderByIdQuery,
+  useLazyGetOrderByIdQuery,
+} = ordersApi;

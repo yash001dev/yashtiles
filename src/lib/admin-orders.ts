@@ -5,6 +5,7 @@ import {
   useUpdateOrderStatusMutation,
   useUpdateOrderTrackingMutation,
   useDeleteOrderMutation,
+  useGetOrderByIdQuery,
 } from "@/redux/api/adminOrdersApi";
 
 // Types for admin orders
