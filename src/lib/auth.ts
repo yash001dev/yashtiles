@@ -103,13 +103,9 @@ class AuthService {
 
   private setTokens(tokens: AuthTokens): void {
     this.accessToken = tokens.accessToken;
-    this.refreshToken = tokens.refreshToken;
 
     if (typeof window !== "undefined") {
       localStorage.setItem("accessToken", tokens.accessToken);
-      if (tokens.refreshToken) {
-        localStorage.setItem("refreshToken", tokens.refreshToken);
-      }
     }
   }
 }
