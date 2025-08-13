@@ -1,3 +1,4 @@
+'use client';
 import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle, useMemo } from 'react';
 import { Stage, Layer, Rect, Image as KonvaImage, Group, Text, Line } from 'react-konva';
 import useImage from 'use-image';
