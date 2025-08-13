@@ -96,3 +96,9 @@ if (imageFile) {
 - Image upload functions are now async (use `await`)
 - Frame images are automatically stored as base64 in the `frameImages` state
 - The hook provides both base64 access and File conversion utilities
+
+## Edit Frame 
+ app/frame/page.tsx -> FramePreview -> FrameRenderer -> KonvaFrameRenderer
+
+## Wall Preview 
+ app/frame/page.tsx -> FramePreview -> FramePreviewCanvas 

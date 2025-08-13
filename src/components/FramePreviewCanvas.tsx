@@ -133,54 +133,17 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
     return () => window.removeEventListener('resize', updateStageSize);
   }, []);
 
-  // Frame size calculation - responsive scaling with better size differentiation
+  // Frame size calculation - use same method as KonvaFrameRenderer for consistency
   const getFrameSize = () => {
-    const [width, height] = customization.size.split('x').map(Number);
+    // Use the same calculation method as KonvaFrameRenderer
+    const responsiveWidth = Math.min(400, window.innerWidth - 32);
+    const aspect = getAspectRatio(customization.size);
+    const canvasWidth = responsiveWidth - 30;
+    const canvasHeight = responsiveWidth / aspect;
     
-    // Base size calculation (inches to pixels)
-    const pixelsPerInch = 72;
-    const baseFrameWidth = width * pixelsPerInch;
-    const baseFrameHeight = height * pixelsPerInch;
-    
-    // Calculate responsive scale based on viewport size
-    const viewportWidth = stageSize.width;
-    const viewportHeight = stageSize.height;
-    
-    // Determine the maximum frame size that fits in the viewport
-    // Use different percentages based on frame size to maintain differentiation
-    let maxFrameWidth, maxFrameHeight;
-    
-    if (width <= 12 && height <= 12) {
-      // Small frames (8x8, 8x10, 9x12, 12x12, etc.)
-      maxFrameWidth = viewportWidth * 0.35; // 35% of viewport width
-      maxFrameHeight = viewportHeight * 0.35; // 35% of viewport height
-    } else if (width <= 18 && height <= 18) {
-      // Medium frames (12x18, 18x12, 18x18, etc.)
-      maxFrameWidth = viewportWidth * 0.45; // 45% of viewport width
-      maxFrameHeight = viewportHeight * 0.45; // 45% of viewport height
-    } else {
-      // Large frames (18x24, 24x18, 24x32, 32x24, etc.)
-      maxFrameWidth = viewportWidth * 0.55; // 55% of viewport width
-      maxFrameHeight = viewportHeight * 0.55; // 55% of viewport height
-    }
-    
-    // Calculate scale factors for both dimensions
-    const scaleX = maxFrameWidth / baseFrameWidth;
-    const scaleY = maxFrameHeight / baseFrameHeight;
-    
-    // Use the smaller scale to ensure frame fits in both dimensions
-    const responsiveScale = Math.min(scaleX, scaleY, 0.6); // Cap at 60% to allow larger frames
-    
-    // Ensure minimum size for very small screens
-    const minWidth = 120;
-    const minHeight = 120;
-    
-    const finalWidth = Math.max(baseFrameWidth * responsiveScale, minWidth);
-    const finalHeight = Math.max(baseFrameHeight * responsiveScale, minHeight);
-    
-     return {
-      width: finalWidth,
-      height: finalHeight
+    return {
+      width: canvasWidth,
+      height: canvasHeight
     };
   };
 
@@ -205,56 +168,44 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   let frameBorder = 0;
   let frameColor = getFrameColor(customization.frameColor);
   let frameBorderColor = getFrameBorderColor(customization.frameColor);
-  // const bevelTop = shadeColor(frameBorderColor, 30);
-  // const bevelLeft = shadeColor(frameBorderColor, -30);
-  // const bevelRight = shadeColor(frameBorderColor, -15);
-  // const bevelBottom = shadeColor(frameBorderColor, 30);
+  
+  // Use exact same values as KonvaFrameRenderer
+  if (customization.material === 'classic') {
+    frameBorder = 15;
+  } else if (customization.material === 'frameless') {
+    frameBorder = 0;
+  } else if (customization.material === 'canvas') {
+    frameBorder = 0;
+  }
+
+  // Shadow and bevel colors - needed for frame rendering
+  let shadow = {};
   const bevelTop = frameColor;
   const bevelLeft = frameColor;
   const bevelRight = frameColor;
   const bevelBottom = frameColor;
 
-  let shadow = {};
-  
-  if (customization.material === 'classic') {
-    frameBorder = 12;
-    shadow = {
-      shadowColor: 'black',
-      shadowBlur: 12,
-      shadowOffset: { x: 4, y: 2 },
-      shadowOpacity: 0.8,
-    };
-  } else if (customization.material === 'frameless') {
-    frameBorder = 0;
-    shadow = {
-      shadowColor: 'black',
-      shadowBlur: 12,
-      shadowOffset: { x: 4, y: 2 },
-      shadowOpacity: 0.8,
-    };
-  } else if (customization.material === 'canvas') {
-    frameBorder = 0;
-    shadow = {
-      shadowColor: 'black',
-      shadowBlur: 12,
-      shadowOffset: { x: 4, y: 2 },
-      shadowOpacity: 0.8,
-    };
-  }
-
+  // Matting/inner border - same as KonvaFrameRenderer
   const matting = customization.material === 'classic' || customization.material === 'frameless' || customization.material === 'canvas' ? 0 : 10;
-  const showCustomBorder = customization.border && customization.borderWidth && customization.borderColor;
 
   // Image transform
   const transform = uploadedImage?.transform || { scale: 1, rotation: 0, x: 0, y: 0 };
 
-  // Calculate available area for image
-  const availableWidth = customization.material === 'frameless' || customization.material === 'canvas'
-    ? frameSize.width - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
-    : frameSize.width - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
-  const availableHeight = customization.material === 'frameless' || customization.material === 'canvas'
-    ? frameSize.height - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
-    : frameSize.height - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
+  // Border - same as KonvaFrameRenderer
+  const showCustomBorder = customization.border && customization.borderWidth && customization.borderColor;
+  const customBorderWidth = showCustomBorder ? Math.max(customization.borderWidth! * 3, 8) : 0;
+
+  // Calculate available area for image - use exact same method as KonvaFrameRenderer
+  const baseAvailableWidth = customization.material === 'frameless' || customization.material === 'canvas'
+    ? frameSize.width - 2 * (customization.material === 'canvas' ? frameBorder : 0)
+    : frameSize.width - 2 * (frameBorder + matting);
+  const baseAvailableHeight = customization.material === 'frameless' || customization.material === 'canvas'
+    ? frameSize.height - 2 * (customization.material === 'canvas' ? frameBorder : 0)
+    : frameSize.height - 2 * (frameBorder + matting);
+    
+  // Final available area after accounting for custom border
+  const availableWidth = baseAvailableWidth - 2 * customBorderWidth;
+  const availableHeight = baseAvailableHeight - 2 * customBorderWidth;
 
   // Get natural image size
   const naturalWidth = frameImg?.width || 1;
@@ -339,8 +290,8 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
              onDragStart={handleFrameDragStart}
              onDragEnd={handleFrameDragEnd}
              opacity={isDragging ? 0.8 : 1}
-             scaleX={isDragging ? 1.05 : 1}
-             scaleY={isDragging ? 1.05 : 1}
+             scaleX={isDragging ? 0.45 : 0.4}
+             scaleY={isDragging ? 0.45 : 0.4}
            >
              {/* Frame rendering (same as KonvaFrameRenderer) */}
              {customization.material === 'classic' ? (
@@ -508,26 +459,22 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
              {/* Image group (for transform) */}
              <Group
                x={customization.material === 'frameless' 
-                 ? (showCustomBorder ? customization.borderWidth! : 0) 
+                 ? customBorderWidth
                  : customization.material === 'canvas'
-                   ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
-                   : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
+                   ? frameBorder + customBorderWidth
+                   : frameBorder + matting + customBorderWidth
                }
                y={customization.material === 'frameless' 
-                 ? (showCustomBorder ? customization.borderWidth! : 0) 
+                 ? customBorderWidth
                  : customization.material === 'canvas'
-                   ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
-                   : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
+                   ? frameBorder + customBorderWidth
+                   : frameBorder + matting + customBorderWidth
                }
                width={availableWidth}
                height={availableHeight}
                clipFunc={ctx => {
                  ctx.beginPath();
-                 if (customization.material === 'frameless') {
-                   ctx.rect(0, 0, availableWidth, availableHeight);
-                 } else {
-                   ctx.rect(0, 0, availableWidth, availableHeight);
-                 }
+                 ctx.rect(0, 0, availableWidth, availableHeight);
                  ctx.closePath();
                }}
              >

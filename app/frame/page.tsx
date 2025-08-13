@@ -79,6 +79,7 @@ function AppContent() {
   }, [
     customization,
     uploadedImage,
+    uploadedImage?.transform, // Add transform as dependency to ensure re-render
     frameCollection.activeFrameId,
     updateActiveFrame,
   ]);
