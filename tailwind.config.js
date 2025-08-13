@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+const tailwindConfig = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -23,8 +23,8 @@ module.exports = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        'dark-green': "hsl(var(--dark-green))",
-        white:'#F4F4F4',
+        "dark-green": "hsl(var(--dark-green))",
+        white: "#F4F4F4",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -130,10 +130,10 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        'custom-lg': '0px 10px 60px rgba(0, 0, 0, 0.07)',
+        "custom-lg": "0px 10px 60px rgba(0, 0, 0, 0.07)",
       },
       borderColor: {
-        'frame-border': '#BBBAB4 #C7C7BF #E5E4DF #C7C7BF',
+        "frame-border": "#BBBAB4 #C7C7BF #E5E4DF #C7C7BF",
       },
       keyframes: {
         "accordion-down": {
@@ -153,3 +153,5 @@ module.exports = {
   },
   plugins: [require("tailwindcss-animate")],
 };
+
+export default tailwindConfig;
