@@ -1,31 +1,31 @@
 "use client";
 import React from "react";
-import Header from "../../src/components/Header";
-import PhotoUpload from "../../src/components/PhotoUpload";
-import FramePreview from "../../src/components/FramePreview";
-import Toolbar from "../../src/components/Toolbar";
-import ImageEditor from "../../src/components/ImageEditor";
-import MaterialBottomSheet from "../../src/components/MaterialBottomSheet";
-import FrameBottomSheet from "../../src/components/FrameBottomSheet";
-import SizeBottomSheet from "../../src/components/SizeBottomSheet";
-import EffectBottomSheet from "../../src/components/EffectBottomSheet";
-import BorderBottomSheet from "../../src/components/BorderBottomSheet";
-import BackgroundBottomSheet from "../../src/components/BackgroundBottomSheet";
-import ResponsiveLayout from "../../src/components/ResponsiveLayout";
-import FloatingAddButton from "../../src/components/FloatingAddButton";
-import TutorialTooltip from "../../src/components/TutorialTooltip";
-import CheckoutModal from "../../src/components/checkout/CheckoutModal";
-import AuthModal from "../../src/components/auth/AuthModal";
-import LoadingOverlay from "../../src/components/ui/LoadingOverlay";
-import PreviewModeToggle from "../../src/components/PreviewModeToggle";
-import { AuthProvider, useAuth } from "../../src/contexts/AuthContext";
+import Header from "@/components/Header";
+import PhotoUpload from "@/components/PhotoUpload";
+import FramePreview from "@/components/FramePreview";
+import Toolbar from "@/components/Toolbar";
+import ImageEditor from "@/components/ImageEditor";
+import MaterialBottomSheet from "@/components/MaterialBottomSheet";
+import FrameBottomSheet from "@/components/FrameBottomSheet";
+import SizeBottomSheet from "@/components/SizeBottomSheet";
+import EffectBottomSheet from "@/components/EffectBottomSheet";
+import BorderBottomSheet from "@/components/BorderBottomSheet";
+import BackgroundBottomSheet from "@/components/BackgroundBottomSheet";
+import ResponsiveLayout from "@/components/ResponsiveLayout";
+import FloatingAddButton from "@/components/FloatingAddButton";
+import TutorialTooltip from "@/components/TutorialTooltip";
+import CheckoutModal from "@/components/checkout/CheckoutModal";
+import AuthModal from "@/components/auth/AuthModal";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import PreviewModeToggle from "@/components/PreviewModeToggle";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import {
   NotificationProvider,
   useNotifications,
-} from "../../src/contexts/NotificationContext";
-import { useFrameCustomizer } from "../../src/hooks/useFrameCustomizer";
-import { downloadFramedImage } from "../../src/utils/downloadImage";
-import HangBottomSheet from "../../src/components/HangBottomSheet";
+} from "@/contexts/NotificationContext";
+import { useFrameCustomizer } from "@/hooks/useFrameCustomizer";
+import { downloadFramedImage } from "@/utils/downloadImage";
+import HangBottomSheet from "@/components/HangBottomSheet";
 
 function AppContent() {
   const { isAuthenticated } = useAuth();

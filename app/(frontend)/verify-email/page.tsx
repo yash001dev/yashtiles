@@ -3,7 +3,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Loader2, Mail, Home, ArrowRight, Frame } from 'lucide-react';
-import { authService } from '../../src/lib/auth';
+import { authService } from '@/lib/auth';
 
 interface VerificationState {
   status: 'loading' | 'success' | 'error';

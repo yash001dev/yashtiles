@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { X, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
-import { useNotifications } from "../../contexts/NotificationContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNotifications } from "@/contexts/NotificationContext";
 import { GoogleLogin } from "@react-oauth/google";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";

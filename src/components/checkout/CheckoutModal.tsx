@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, CreditCard, MapPin, Package } from 'lucide-react';
+import { X, MapPin, Package } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth } from '../../contexts/AuthContext';
-import { useCheckout, CheckoutData } from '../../hooks/useCheckout';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCheckout } from '../../hooks/useCheckout';
 import AuthModal from '../auth/AuthModal';
-import { API_BASE_URL } from '@/lib/auth';
 import { base64ToFile } from '@/redux/utils';
 import { Input } from '@/components/ui/input';
 import { useAppSelector } from '../../redux/hooks';
@@ -291,15 +290,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
     clearError();
 
     try {
-      const checkoutData: CheckoutData = {
-        items: items.map(item => ({
-          ...item,
-          quantity: 1,
-        })),
-        shippingAddress: formData,
-        paymentMethod,
-        totalAmount,
-      };
+      // const checkoutData: CheckoutData = {
+      //   items: items.map(item => ({
+      //     ...item,
+      //     quantity: 1,
+      //   })),
+      //   shippingAddress: formData,
+      //   paymentMethod,
+      //   totalAmount,
+      // };
 
       await handleCartClick(formData);
       

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, LogOut, Settings, Package, Shield, BarChart3 } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useNotifications } from '../../contexts/NotificationContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 interface UserMenuProps {
   onOpenAuthModal?: () => void;
