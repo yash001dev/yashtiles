@@ -68,6 +68,13 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    products: Product;
+    'product-categories': ProductCategory;
+    'frame-sizes': FrameSize;
+    blogs: Blog;
+    'blog-categories': BlogCategory;
+    media: Media;
+    pages: Page;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -75,6 +82,13 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    'product-categories': ProductCategoriesSelect<false> | ProductCategoriesSelect<true>;
+    'frame-sizes': FrameSizesSelect<false> | FrameSizesSelect<true>;
+    blogs: BlogsSelect<false> | BlogsSelect<true>;
+    'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -117,6 +131,11 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  firstName: string;
+  lastName: string;
+  role: 'admin' | 'user' | 'editor';
+  avatar?: (number | null) | Media;
+  bio?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -137,14 +156,656 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Alternative text for accessibility
+   */
+  alt: string;
+  /**
+   * Image caption
+   */
+  caption?: string | null;
+  /**
+   * Tags for organizing media
+   */
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    tablet?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    desktop?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  /**
+   * Product name (e.g., "Classic Black Frame")
+   */
+  name: string;
+  /**
+   * URL-friendly version of the name
+   */
+  slug: string;
+  /**
+   * Detailed product description
+   */
+  description: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Brief description for product cards
+   */
+  shortDescription?: string | null;
+  /**
+   * Base price in INR
+   */
+  price: number;
+  /**
+   * Original price for discount display
+   */
+  compareAtPrice?: number | null;
+  images: {
+    image: number | Media;
+    alt: string;
+    caption?: string | null;
+    id?: string | null;
+  }[];
+  /**
+   * Product categories
+   */
+  categories: (number | ProductCategory)[];
+  /**
+   * Available frame sizes and colors
+   */
+  variants: (number | FrameSize)[];
+  /**
+   * Key product features
+   */
+  features?:
+    | {
+        feature: string;
+        id?: string | null;
+      }[]
+    | null;
+  specifications: {
+    material: string;
+    weight?: string | null;
+    dimensions?: string | null;
+    mounting?: ('stickable_tape' | 'standard_hook' | 'both') | null;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string | null;
+  };
+  status: 'draft' | 'published' | 'archived';
+  /**
+   * Feature this product on homepage
+   */
+  featured?: boolean | null;
+  /**
+   * Available stock quantity
+   */
+  stock?: number | null;
+  /**
+   * Stock Keeping Unit
+   */
+  sku?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-categories".
+ */
+export interface ProductCategory {
+  id: number;
+  /**
+   * Category name (e.g., "Classic Frames", "Modern Frames")
+   */
+  name: string;
+  /**
+   * URL-friendly version of the name
+   */
+  slug: string;
+  /**
+   * Category description
+   */
+  description?: string | null;
+  /**
+   * Category featured image
+   */
+  image: number | Media;
+  /**
+   * Category icon (optional)
+   */
+  icon?: (number | null) | Media;
+  /**
+   * Parent category for hierarchical structure
+   */
+  parentCategory?: (number | null) | ProductCategory;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string | null;
+  };
+  status: 'active' | 'inactive';
+  /**
+   * Display order (lower numbers appear first)
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "frame-sizes".
+ */
+export interface FrameSize {
+  id: number;
+  /**
+   * Size identifier (e.g., "8x10", "12x16")
+   */
+  name: string;
+  /**
+   * Display name (e.g., "8″ × 10″")
+   */
+  displayName: string;
+  dimensions: {
+    /**
+     * Width in inches
+     */
+    width: number;
+    /**
+     * Height in inches
+     */
+    height: number;
+    /**
+     * Calculated aspect ratio (width/height)
+     */
+    aspectRatio: number;
+  };
+  /**
+   * Base price for this size in INR
+   */
+  basePrice: number;
+  colors: {
+    /**
+     * Color name (e.g., "Classic Black", "Pure White")
+     */
+    name: string;
+    /**
+     * Color code or identifier (e.g., "black", "white", "#000000")
+     */
+    value: string;
+    /**
+     * Hex color code for display
+     */
+    hexCode?: string | null;
+    /**
+     * Color swatch or frame sample image
+     */
+    image?: (number | null) | Media;
+    /**
+     * Price adjustment for this color (+ or -)
+     */
+    priceModifier?: number | null;
+    /**
+     * Available stock for this color
+     */
+    stock?: number | null;
+    /**
+     * Default color for this size
+     */
+    isDefault?: boolean | null;
+    id?: string | null;
+  }[];
+  category: 'small' | 'medium' | 'large' | 'extra-large';
+  /**
+   * Mark as popular size
+   */
+  isPopular?: boolean | null;
+  status: 'active' | 'inactive';
+  /**
+   * Display order (lower numbers appear first)
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogs".
+ */
+export interface Blog {
+  id: number;
+  title: string;
+  slug: string;
+  /**
+   * Brief summary for blog cards
+   */
+  excerpt: string;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  featuredImage: number | Media;
+  gallery?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  categories: (number | BlogCategory)[];
+  tags?:
+    | {
+        tag: string;
+        id?: string | null;
+      }[]
+    | null;
+  author: string;
+  publishedDate: string;
+  /**
+   * Estimated read time in minutes
+   */
+  readTime?: number | null;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string | null;
+  };
+  status: 'draft' | 'published' | 'archived';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-categories".
+ */
+export interface BlogCategory {
+  id: number;
+  /**
+   * Category name (e.g., "Frame Care", "Design Tips")
+   */
+  name: string;
+  slug: string;
+  description?: string | null;
+  /**
+   * Hex color code for category badge
+   */
+  color?: string | null;
+  status: 'active' | 'inactive';
+  /**
+   * Display order (lower numbers appear first)
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  slug: string;
+  pageType: 'plp' | 'pdp' | 'custom';
+  content?:
+    | (
+        | {
+            title: string;
+            /**
+             * Optional subtitle for the FAQ section
+             */
+            subtitle?: string | null;
+            faqs: {
+              question: string;
+              answer: {
+                root: {
+                  type: string;
+                  children: {
+                    type: string;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              category?: ('general' | 'shipping' | 'returns' | 'care' | 'installation') | null;
+              sortOrder?: number | null;
+              id?: string | null;
+            }[];
+            style?: ('accordion' | 'tabs' | 'cards') | null;
+            /**
+             * Group FAQs by category
+             */
+            showCategories?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq';
+          }
+        | {
+            title: string;
+            /**
+             * Optional subtitle
+             */
+            subtitle?: string | null;
+            layout: 'image-text' | 'carousel' | 'grid' | 'tabs';
+            specifications: {
+              title: string;
+              description: {
+                root: {
+                  type: string;
+                  children: {
+                    type: string;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              images?:
+                | {
+                    image: number | Media;
+                    caption?: string | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              features?:
+                | {
+                    feature: string;
+                    value: string;
+                    icon?: (number | null) | Media;
+                    id?: string | null;
+                  }[]
+                | null;
+              sortOrder?: number | null;
+              id?: string | null;
+            }[];
+            /**
+             * Show comparison table
+             */
+            showComparison?: boolean | null;
+            comparisonTable?:
+              | {
+                  feature: string;
+                  /**
+                   * Value for Classic frames
+                   */
+                  classic?: string | null;
+                  /**
+                   * Value for Frameless frames
+                   */
+                  frameless?: string | null;
+                  /**
+                   * Value for Canvas frames
+                   */
+                  canvas?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'frame-specifications';
+          }
+        | {
+            type: 'hero' | 'promo' | 'info' | 'cta';
+            title: string;
+            subtitle?: string | null;
+            description?: {
+              root: {
+                type: string;
+                children: {
+                  type: string;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            backgroundImage?: (number | null) | Media;
+            /**
+             * Hex color code (e.g., #ffffff)
+             */
+            backgroundColor?: string | null;
+            /**
+             * Hex color code for text
+             */
+            textColor?: string | null;
+            buttons?:
+              | {
+                  text: string;
+                  url: string;
+                  style?: ('primary' | 'secondary' | 'outline') | null;
+                  openInNewTab?: boolean | null;
+                  id?: string | null;
+                }[]
+              | null;
+            alignment?: ('left' | 'center' | 'right') | null;
+            height?: ('small' | 'medium' | 'large' | 'full') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'banner';
+          }
+        | {
+            /**
+             * Optional slider title
+             */
+            title?: string | null;
+            slides: {
+              image: number | Media;
+              title?: string | null;
+              description?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: string;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              link?: {
+                url?: string | null;
+                text?: string | null;
+                openInNewTab?: boolean | null;
+              };
+              overlay?: {
+                enabled?: boolean | null;
+                color?: string | null;
+                position?: ('center' | 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right') | null;
+              };
+              id?: string | null;
+            }[];
+            settings?: {
+              autoplay?: boolean | null;
+              /**
+               * Delay in milliseconds
+               */
+              autoplayDelay?: number | null;
+              showNavigation?: boolean | null;
+              showPagination?: boolean | null;
+              loop?: boolean | null;
+              effect?: ('slide' | 'fade' | 'cube' | 'coverflow') | null;
+            };
+            height?: ('small' | 'medium' | 'large' | 'auto') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'slider';
+          }
+        | {
+            /**
+             * Internal title for identification
+             */
+            title?: string | null;
+            /**
+             * Custom HTML content
+             */
+            html: string;
+            /**
+             * Optional custom CSS styles
+             */
+            css?: string | null;
+            /**
+             * Optional custom JavaScript
+             */
+            javascript?: string | null;
+            /**
+             * CSS class for the wrapper div
+             */
+            wrapperClass?: string | null;
+            /**
+             * Remove container padding for full-width content
+             */
+            isFullWidth?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'custom-html';
+          }
+      )[]
+    | null;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string | null;
+    ogImage?: (number | null) | Media;
+  };
+  status: 'draft' | 'published' | 'archived';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
   id: number;
-  document?: {
-    relationTo: 'users';
-    value: number | User;
-  } | null;
+  document?:
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'product-categories';
+        value: number | ProductCategory;
+      } | null)
+    | ({
+        relationTo: 'frame-sizes';
+        value: number | FrameSize;
+      } | null)
+    | ({
+        relationTo: 'blogs';
+        value: number | Blog;
+      } | null)
+    | ({
+        relationTo: 'blog-categories';
+        value: number | BlogCategory;
+      } | null)
+    | ({
+        relationTo: 'media';
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
@@ -192,6 +853,11 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  role?: T;
+  avatar?: T;
+  bio?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -208,6 +874,394 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  shortDescription?: T;
+  price?: T;
+  compareAtPrice?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        alt?: T;
+        caption?: T;
+        id?: T;
+      };
+  categories?: T;
+  variants?: T;
+  features?:
+    | T
+    | {
+        feature?: T;
+        id?: T;
+      };
+  specifications?:
+    | T
+    | {
+        material?: T;
+        weight?: T;
+        dimensions?: T;
+        mounting?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?: T;
+      };
+  status?: T;
+  featured?: T;
+  stock?: T;
+  sku?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-categories_select".
+ */
+export interface ProductCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  image?: T;
+  icon?: T;
+  parentCategory?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?: T;
+      };
+  status?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "frame-sizes_select".
+ */
+export interface FrameSizesSelect<T extends boolean = true> {
+  name?: T;
+  displayName?: T;
+  dimensions?:
+    | T
+    | {
+        width?: T;
+        height?: T;
+        aspectRatio?: T;
+      };
+  basePrice?: T;
+  colors?:
+    | T
+    | {
+        name?: T;
+        value?: T;
+        hexCode?: T;
+        image?: T;
+        priceModifier?: T;
+        stock?: T;
+        isDefault?: T;
+        id?: T;
+      };
+  category?: T;
+  isPopular?: T;
+  status?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogs_select".
+ */
+export interface BlogsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  excerpt?: T;
+  content?: T;
+  featuredImage?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  categories?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  author?: T;
+  publishedDate?: T;
+  readTime?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?: T;
+      };
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blog-categories_select".
+ */
+export interface BlogCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  color?: T;
+  status?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        tablet?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        desktop?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  pageType?: T;
+  content?:
+    | T
+    | {
+        faq?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              faqs?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    category?: T;
+                    sortOrder?: T;
+                    id?: T;
+                  };
+              style?: T;
+              showCategories?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'frame-specifications'?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              layout?: T;
+              specifications?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    images?:
+                      | T
+                      | {
+                          image?: T;
+                          caption?: T;
+                          id?: T;
+                        };
+                    features?:
+                      | T
+                      | {
+                          feature?: T;
+                          value?: T;
+                          icon?: T;
+                          id?: T;
+                        };
+                    sortOrder?: T;
+                    id?: T;
+                  };
+              showComparison?: T;
+              comparisonTable?:
+                | T
+                | {
+                    feature?: T;
+                    classic?: T;
+                    frameless?: T;
+                    canvas?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        banner?:
+          | T
+          | {
+              type?: T;
+              title?: T;
+              subtitle?: T;
+              description?: T;
+              backgroundImage?: T;
+              backgroundColor?: T;
+              textColor?: T;
+              buttons?:
+                | T
+                | {
+                    text?: T;
+                    url?: T;
+                    style?: T;
+                    openInNewTab?: T;
+                    id?: T;
+                  };
+              alignment?: T;
+              height?: T;
+              id?: T;
+              blockName?: T;
+            };
+        slider?:
+          | T
+          | {
+              title?: T;
+              slides?:
+                | T
+                | {
+                    image?: T;
+                    title?: T;
+                    description?: T;
+                    link?:
+                      | T
+                      | {
+                          url?: T;
+                          text?: T;
+                          openInNewTab?: T;
+                        };
+                    overlay?:
+                      | T
+                      | {
+                          enabled?: T;
+                          color?: T;
+                          position?: T;
+                        };
+                    id?: T;
+                  };
+              settings?:
+                | T
+                | {
+                    autoplay?: T;
+                    autoplayDelay?: T;
+                    showNavigation?: T;
+                    showPagination?: T;
+                    loop?: T;
+                    effect?: T;
+                  };
+              height?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'custom-html'?:
+          | T
+          | {
+              title?: T;
+              html?: T;
+              css?: T;
+              javascript?: T;
+              wrapperClass?: T;
+              isFullWidth?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        keywords?: T;
+        ogImage?: T;
+      };
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
