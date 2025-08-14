@@ -351,7 +351,7 @@ export default function ProductListingPage() {
 function ProductCard({ product }: { product: Product }) {
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const discount = calculateDiscount(product.price, product.compareAtPrice);
+ 
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -364,6 +364,8 @@ function ProductCard({ product }: { product: Product }) {
     if (!comparePrice || comparePrice <= price) return 0;
     return Math.round(((comparePrice - price) / comparePrice) * 100);
   };
+
+  const discount = calculateDiscount(product.price, product.compareAtPrice);
 
   return (
     <motion.div
@@ -499,6 +501,10 @@ function ProductCard({ product }: { product: Product }) {
 
 // Product List Item Component
 function ProductListItem({ product }: { product: Product }) {
+  const calculateDiscount = (price: number, comparePrice?: number) => {
+    if (!comparePrice || comparePrice <= price) return 0;
+    return Math.round(((comparePrice - price) / comparePrice) * 100);
+  };
   const discount = calculateDiscount(product.price, product.compareAtPrice);
 
   const formatPrice = (price: number) => {
@@ -508,10 +514,7 @@ function ProductListItem({ product }: { product: Product }) {
     }).format(price);
   };
 
-  const calculateDiscount = (price: number, comparePrice?: number) => {
-    if (!comparePrice || comparePrice <= price) return 0;
-    return Math.round(((comparePrice - price) / comparePrice) * 100);
-  };
+  
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
