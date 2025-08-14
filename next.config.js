@@ -2,6 +2,36 @@
 import { withPayload } from "@payloadcms/next/withPayload";
 const nextConfig = {
   // App directory is now stable in Next.js 14
+  
+  // CSS configuration for Payload compatibility
+  experimental: {
+    optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
+    // Ensure CSS modules work properly with Payload
+    cssChunking: 'strict',
+  },
+  
+  // Webpack configuration to handle CSS conflicts
+  webpack: (config, { isServer }) => {
+    // Ensure Payload CSS is loaded with higher specificity
+    config.module.rules.push({
+      test: /\.scss$/,
+      include: /app\/\(payload\)/,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            modules: false,
+            importLoaders: 2,
+          },
+        },
+        'sass-loader',
+      ],
+    });
+    
+    return config;
+  },
+  
   images: {
     remotePatterns: [
       {

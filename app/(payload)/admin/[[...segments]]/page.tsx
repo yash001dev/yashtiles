@@ -19,6 +19,8 @@ export const generateMetadata = ({ params, searchParams }: Args): Promise<Metada
   generatePageMetadata({ config, params, searchParams })
 
 const Page = ({ params, searchParams }: Args) =>
-  RootPage({ config, params, searchParams, importMap })
+  <div className="payload-admin">
+    <RootPage({ config, params, searchParams, importMap }) />
+  </div>
 
 export default Page

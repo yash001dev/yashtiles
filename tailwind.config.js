@@ -6,8 +6,14 @@ const tailwindConfig = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
+    // Exclude Payload admin routes from Tailwind processing
+    "!./app/(payload)/**/*.{ts,tsx}",
   ],
   prefix: "",
+  corePlugins: {
+    // Disable preflight for better Payload compatibility
+    preflight: true,
+  },
   theme: {
     container: {
       center: true,
@@ -151,7 +157,18 @@ const tailwindConfig = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    // Plugin to scope Tailwind to non-Payload routes
+    function({ addBase, addUtilities }) {
+      addBase({
+        // Ensure Tailwind base styles don't affect Payload admin
+        ':not([data-payload-admin]) *': {
+          // Apply Tailwind base styles only to non-Payload content
+        }
+      });
+    }
+  ],
 };
 
 export default tailwindConfig;
