@@ -177,6 +177,7 @@ export interface Media {
         id?: string | null;
       }[]
     | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1046,6 +1047,7 @@ export interface MediaSelect<T extends boolean = true> {
         tag?: T;
         id?: T;
       };
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
