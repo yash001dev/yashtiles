@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Payload CMS Layer - Isolated from main Tailwind */
-@layer payload {
-  /* Payload-specific styles will be loaded here */
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -115,36 +110,6 @@
   }
   body {
     @apply bg-app-background text-app-foreground;
-  }
-  
-  /* Ensure Payload admin pages don't inherit main app styles */
-  body:has([data-payload-admin]) {
-    @apply bg-white text-gray-900;
-  }
-}
-
-/* Payload Admin Isolation */
-[data-payload-admin] {
-  /* Reset any inherited Tailwind utilities that might conflict */
-  * {
-    box-sizing: border-box;
-  }
-  
-  /* Ensure Payload's styles take precedence over Tailwind */
-  button:not(.btn) {
-    all: revert;
-  }
-  
-  input:not(.input) {
-    all: revert;
-  }
-  
-  select:not(.select) {
-    all: revert;
-  }
-  
-  textarea:not(.textarea) {
-    all: revert;
   }
 }
 
