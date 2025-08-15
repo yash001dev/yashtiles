@@ -1,5 +1,5 @@
-import { useGetHangOptionsQuery } from '../redux/api/resourcesApi';
-import { HangOption } from '../types';
+import { useGetHangOptionsQuery } from "../redux/api/resourcesApi";
+import { HangOption } from "../types";
 
 interface HangOptionData {
   id: string;

@@ -1,5 +1,5 @@
-import { useGetMaterialsQuery } from '../redux/api/resourcesApi';
-import { MaterialOption } from '../types';
+import { useGetMaterialsQuery } from "../redux/api/resourcesApi";
+import { MaterialOption } from "../types";
 
 interface MaterialData {
   id: string;

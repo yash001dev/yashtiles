@@ -327,7 +327,7 @@ export default function ProductDetailPage() {
                 <div>
                   <div className="flex items-center gap-4 mb-2">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{product.name}</h1>
-                    {product.featured && (
+                    {product?.featured && (
                       <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
                         <Star className="w-4 h-4 fill-current" />
                         Featured
@@ -553,7 +553,7 @@ function ProductDetailsTabs({ product }: { product: Product }) {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200 mb-8 overflow-x-auto">
+          <div className="flex border-b border-gray-200 mb-8 max-w-full overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}

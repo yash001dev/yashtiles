@@ -1,5 +1,5 @@
-import { useGetSizesQuery } from '../redux/api/resourcesApi';
-import { SizeOption } from '../types';
+import { useGetSizesQuery } from "../redux/api/resourcesApi";
+import { SizeOption } from "../types";
 
 interface SizeData {
   id: string;

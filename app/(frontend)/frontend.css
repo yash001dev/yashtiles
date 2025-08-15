@@ -390,7 +390,7 @@ html {
   box-shadow: 0 8px 25px rgba(236, 72, 153, 0.3);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
-  position: relative;
+  position: absolute;
   overflow: hidden;
 }
 

@@ -1,4 +1,7 @@
-import { useGetProductBySlugQuery, useGetProductBySlugWithSlashQuery } from '../redux/api/resourcesApi';
+import {
+  useGetProductBySlugQuery,
+  useGetProductBySlugWithSlashQuery,
+} from "../redux/api/resourcesApi";
 
 export const useProductBySlug = (slug: string) => {
   // First try without leading slash
@@ -13,7 +16,7 @@ export const useProductBySlug = (slug: string) => {
 
   // If first query returns no product, try with leading slash
   const shouldTryWithSlash = !isLoading1 && !product1 && slug;
-  
+
   const {
     data: product2,
     isLoading: isLoading2,

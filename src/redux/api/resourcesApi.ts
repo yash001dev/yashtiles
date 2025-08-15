@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Types
 interface MaterialData {
@@ -114,32 +114,39 @@ interface PayloadResponse<T> {
 
 // Create the resources API slice
 export const resourcesApi = createApi({
-  reducerPath: 'resourcesApi',
+  reducerPath: "resourcesApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/',
+    baseUrl: "/api/",
   }),
-  tagTypes: ['Materials', 'FrameColors', 'HangOptions', 'Sizes', 'Products', 'Pages'],
+  tagTypes: [
+    "Materials",
+    "FrameColors",
+    "HangOptions",
+    "Sizes",
+    "Products",
+    "Pages",
+  ],
   endpoints: (builder) => ({
     // Materials endpoints
     getMaterials: builder.query<MaterialData[], void>({
-      query: () => 'materials?where[available][equals]=true&sort=sortOrder',
-      transformResponse: (response: PayloadResponse<any>) => 
+      query: () => "materials?where[available][equals]=true&sort=sortOrder",
+      transformResponse: (response: PayloadResponse<any>) =>
         response.docs.map((material: any) => ({
           id: material.id,
           name: material.name,
           description: material.description,
-          content: material.content || '',
-          link: material.link || '',
+          content: material.content || "",
+          link: material.link || "",
           available: material.available,
           sortOrder: material.sortOrder,
           image: material.image,
         })),
-      providesTags: ['Materials'],
+      providesTags: ["Materials"],
     }),
 
     // Frame Colors endpoints
     getFrameColors: builder.query<FrameColorData[], void>({
-      query: () => 'frame-colors?where[available][equals]=true&sort=sortOrder',
+      query: () => "frame-colors?where[available][equals]=true&sort=sortOrder",
       transformResponse: (response: PayloadResponse<any>) =>
         response.docs.map((color: any) => ({
           id: color.id,
@@ -149,29 +156,29 @@ export const resourcesApi = createApi({
           available: color.available,
           sortOrder: color.sortOrder,
         })),
-      providesTags: ['FrameColors'],
+      providesTags: ["FrameColors"],
     }),
 
     // Hang Options endpoints
     getHangOptions: builder.query<HangOptionData[], void>({
-      query: () => 'hang-options?where[available][equals]=true&sort=sortOrder',
+      query: () => "hang-options?where[available][equals]=true&sort=sortOrder",
       transformResponse: (response: PayloadResponse<any>) =>
         response.docs.map((option: any) => ({
           id: option.id,
           name: option.name,
           description: option.description,
-          content: option.content || '',
+          content: option.content || "",
           price: option.price,
           available: option.available,
           sortOrder: option.sortOrder,
           image: option.image,
         })),
-      providesTags: ['HangOptions'],
+      providesTags: ["HangOptions"],
     }),
 
     // Sizes endpoints
     getSizes: builder.query<SizeData[], void>({
-      query: () => 'sizes?where[available][equals]=true&sort=sortOrder',
+      query: () => "sizes?where[available][equals]=true&sort=sortOrder",
       transformResponse: (response: PayloadResponse<any>) =>
         response.docs.map((size: any) => ({
           id: size.id,
@@ -182,7 +189,7 @@ export const resourcesApi = createApi({
           available: size.available,
           sortOrder: size.sortOrder,
         })),
-      providesTags: ['Sizes'],
+      providesTags: ["Sizes"],
     }),
 
     // Products endpoints
@@ -197,7 +204,7 @@ export const resourcesApi = createApi({
         }
         return null;
       },
-      providesTags: ['Products'],
+      providesTags: ["Products"],
     }),
 
     // Fallback query for products with leading slash
@@ -209,12 +216,15 @@ export const resourcesApi = createApi({
         }
         return null;
       },
-      providesTags: ['Products'],
+      providesTags: ["Products"],
     }),
 
     // Products by category
-    getProductsByCategory: builder.query<Product[], { categorySlug: string; limit?: number; excludeId?: string }>({
-      query: ({ categorySlug, limit = 8, excludeId }) => 
+    getProductsByCategory: builder.query<
+      Product[],
+      { categorySlug: string; limit?: number; excludeId?: string }
+    >({
+      query: ({ categorySlug, limit = 8, excludeId }) =>
         `products?where[categories.slug][equals]=${categorySlug}&status=published&limit=${limit}`,
       transformResponse: (response: PayloadResponse<any>, meta, arg) => {
         let products = response.docs || [];
@@ -223,19 +233,20 @@ export const resourcesApi = createApi({
         }
         return products;
       },
-      providesTags: ['Products'],
+      providesTags: ["Products"],
     }),
 
     // Pages endpoints
     getPageContent: builder.query<PageContent | null, string>({
-      query: (pageType) => `pages?where[pageType][equals]=${pageType}&status=published`,
+      query: (pageType) =>
+        `pages?where[pageType][equals]=${pageType}&status=published`,
       transformResponse: (response: PayloadResponse<any>) => {
         if (response.docs && response.docs.length > 0) {
           return response.docs[0];
         }
         return null;
       },
-      providesTags: ['Pages'],
+      providesTags: ["Pages"],
     }),
   }),
 });

@@ -1,5 +1,5 @@
-import { useGetFrameColorsQuery } from '../redux/api/resourcesApi';
-import { FrameColorOption } from '../types';
+import { useGetFrameColorsQuery } from "../redux/api/resourcesApi";
+import { FrameColorOption } from "../types";
 
 interface FrameColorData {
   id: string;
