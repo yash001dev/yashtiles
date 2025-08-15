@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay, EffectCoverflow } from 'swiper/modules';
-import { Filter, Grid, List, Search, Star, Heart, ShoppingCart, Eye } from 'lucide-react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { Filter, Grid, List, Search, Star, Heart, ShoppingCart, Eye, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import FrameItHeader from '@/components/dashboard/FrameItHeader';
@@ -15,7 +15,6 @@ import Link from 'next/link';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import 'swiper/css/effect-coverflow';
 
 interface Product {
   id: string;
@@ -59,7 +58,7 @@ export default function ProductListingPage() {
   const [sortBy, setSortBy] = useState('name');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch products and categories from Payload CMS
+  // Fetch products and categories
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -107,16 +106,8 @@ export default function ProductListingPage() {
       }
     });
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-    }).format(price);
-  };
-
-  const calculateDiscount = (price: number, comparePrice?: number) => {
-    if (!comparePrice || comparePrice <= price) return 0;
-    return Math.round(((comparePrice - price) / comparePrice) * 100);
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), 'MMM dd, yyyy');
   };
 
   if (loading) {
@@ -160,13 +151,16 @@ export default function ProductListingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="mb-8"
+              className="mb-8 relative"
             >
               <Swiper
                 modules={[Navigation, Autoplay]}
                 spaceBetween={20}
                 slidesPerView="auto"
-                navigation
+                navigation={{
+                  nextEl: '.categories-swiper-button-next',
+                  prevEl: '.categories-swiper-button-prev',
+                }}
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
                 className="categories-swiper"
               >
@@ -197,6 +191,15 @@ export default function ProductListingPage() {
                   </SwiperSlide>
                 ))}
               </Swiper>
+              
+              {/* Enhanced Navigation Buttons */}
+              <button className="categories-swiper-button-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+                <ChevronLeft className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
+              </button>
+              
+              <button className="categories-swiper-button-next absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+                <ChevronRight className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
+              </button>
             </motion.div>
           )}
         </div>
@@ -342,16 +345,19 @@ export default function ProductListingPage() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <ProductListingFAQSection />
+
       <FrameItFooter />
     </>
   );
 }
 
-// Product Card Component
+// Enhanced Product Card Component with Auto-Swipe on Hover
 function ProductCard({ product }: { product: Product }) {
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
- 
+  const [autoSwipeTimer, setAutoSwipeTimer] = useState<NodeJS.Timeout | null>(null);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -367,6 +373,31 @@ function ProductCard({ product }: { product: Product }) {
 
   const discount = calculateDiscount(product.price, product.compareAtPrice);
 
+  // Auto-swipe functionality on hover
+  useEffect(() => {
+    if (isHovered && product.images.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
+      }, 1500); // Change image every 1.5 seconds
+      setAutoSwipeTimer(timer);
+    } else {
+      if (autoSwipeTimer) {
+        clearInterval(autoSwipeTimer);
+        setAutoSwipeTimer(null);
+      }
+      // Reset to first image when not hovering
+      if (!isHovered) {
+        setCurrentImageIndex(0);
+      }
+    }
+
+    return () => {
+      if (autoSwipeTimer) {
+        clearInterval(autoSwipeTimer);
+      }
+    };
+  }, [isHovered, product.images.length]);
+
   return (
     <motion.div
       className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300"
@@ -377,20 +408,16 @@ function ProductCard({ product }: { product: Product }) {
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden">
         <AnimatePresence mode="wait">
-          {product.images.map((img, index) => (
-            index === currentImageIndex && (
-              <motion.img
-                key={index}
-                src={img.image.url}
-                alt={img.alt}
-                className="w-full h-full object-cover"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              />
-            )
-          ))}
+          <motion.img
+            key={currentImageIndex}
+            src={product.images[currentImageIndex]?.image.url || product.images[0]?.image.url}
+            alt={product.images[currentImageIndex]?.alt || product.images[0]?.alt}
+            className="w-full h-full object-cover"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          />
         </AnimatePresence>
 
         {/* Image Navigation Dots */}
@@ -501,6 +528,10 @@ function ProductCard({ product }: { product: Product }) {
 
 // Product List Item Component
 function ProductListItem({ product }: { product: Product }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [autoSwipeTimer, setAutoSwipeTimer] = useState<NodeJS.Timeout | null>(null);
+
   const calculateDiscount = (price: number, comparePrice?: number) => {
     if (!comparePrice || comparePrice <= price) return 0;
     return Math.round(((comparePrice - price) / comparePrice) * 100);
@@ -514,21 +545,68 @@ function ProductListItem({ product }: { product: Product }) {
     }).format(price);
   };
 
-  
+  // Auto-swipe functionality on hover
+  useEffect(() => {
+    if (isHovered && product.images.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
+      }, 1500);
+      setAutoSwipeTimer(timer);
+    } else {
+      if (autoSwipeTimer) {
+        clearInterval(autoSwipeTimer);
+        setAutoSwipeTimer(null);
+      }
+      if (!isHovered) {
+        setCurrentImageIndex(0);
+      }
+    }
+
+    return () => {
+      if (autoSwipeTimer) {
+        clearInterval(autoSwipeTimer);
+      }
+    };
+  }, [isHovered, product.images.length]);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+    <div 
+      className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="flex flex-col md:flex-row">
         {/* Image */}
         <div className="relative md:w-64 aspect-square md:aspect-auto overflow-hidden">
-          <img
-            src={product.images[0]?.image.url}
-            alt={product.images[0]?.alt}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-          />
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentImageIndex}
+              src={product.images[currentImageIndex]?.image.url || product.images[0]?.image.url}
+              alt={product.images[currentImageIndex]?.alt || product.images[0]?.alt}
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            />
+          </AnimatePresence>
           {discount > 0 && (
             <div className="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
               {discount}% OFF
+            </div>
+          )}
+          
+          {/* Image dots indicator */}
+          {product.images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-1">
+              {product.images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                  }`}
+                />
+              ))}
             </div>
           )}
         </div>
@@ -590,5 +668,101 @@ function ProductListItem({ product }: { product: Product }) {
         </div>
       </div>
     </div>
+  );
+}
+
+// FAQ Section for Product Listing Page
+function ProductListingFAQSection() {
+  const [openItems, setOpenItems] = useState<Set<number>>(new Set());
+
+  const toggleItem = (index: number) => {
+    const newOpenItems = new Set(openItems);
+    if (newOpenItems.has(index)) {
+      newOpenItems.delete(index);
+    } else {
+      newOpenItems.add(index);
+    }
+    setOpenItems(newOpenItems);
+  };
+
+  const faqs = [
+    {
+      question: "How do I choose the right frame for my photo?",
+      answer: "Consider your photo's style, your room's decor, and the mood you want to create. Classic frames work well for traditional photos, while frameless options suit modern spaces. Our frame guide can help you decide."
+    },
+    {
+      question: "What's the difference between frame materials?",
+      answer: "Classic frames offer a traditional look with wooden borders, frameless frames provide a modern, clean aesthetic, and canvas frames give a textured, artistic finish. Each material affects the overall presentation of your photo."
+    },
+    {
+      question: "Can I see how the frame will look before ordering?",
+      answer: "Yes! Our frame customizer lets you preview exactly how your photo will look in different frame styles, sizes, and colors before you place your order."
+    },
+    {
+      question: "Do you offer custom sizes?",
+      answer: "We offer a wide range of standard sizes from 8×8 to 32×24 inches. For custom sizes, please contact our support team and we'll be happy to help with a custom quote."
+    },
+    {
+      question: "What's your return policy?",
+      answer: "We offer a 7-day satisfaction guarantee. If you're not completely happy with your frame, we'll exchange it or provide a full refund. Your satisfaction is our priority."
+    }
+  ];
+
+  return (
+    <section className="py-12 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            <p className="text-lg text-gray-600">Common questions about our frames and services</p>
+          </motion.div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                className="border border-gray-200 rounded-lg overflow-hidden"
+                initial={false}
+              >
+                <button
+                  onClick={() => toggleItem(index)}
+                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                >
+                  <span className="font-medium text-gray-900">{faq.question}</span>
+                  <motion.div
+                    animate={{ rotate: openItems.has(index) ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Plus className="w-5 h-5 text-gray-500" />
+                  </motion.div>
+                </button>
+                
+                <AnimatePresence>
+                  {openItems.has(index) && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-4 text-gray-600">
+                        {faq.answer}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

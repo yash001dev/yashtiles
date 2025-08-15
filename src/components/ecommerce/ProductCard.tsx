@@ -34,6 +34,32 @@ export function ProductCard({ product, className = '' }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [autoSwipeTimer, setAutoSwipeTimer] = useState<NodeJS.Timeout | null>(null);
+
+  // Auto-swipe functionality on hover
+  React.useEffect(() => {
+    if (isHovered && product.images.length > 1) {
+      const timer = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % product.images.length);
+      }, 1500); // Change image every 1.5 seconds
+      setAutoSwipeTimer(timer);
+    } else {
+      if (autoSwipeTimer) {
+        clearInterval(autoSwipeTimer);
+        setAutoSwipeTimer(null);
+      }
+      // Reset to first image when not hovering
+      if (!isHovered) {
+        setCurrentImageIndex(0);
+      }
+    }
+
+    return () => {
+      if (autoSwipeTimer) {
+        clearInterval(autoSwipeTimer);
+      }
+    };
+  }, [isHovered, product.images.length]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -60,17 +86,13 @@ export function ProductCard({ product, className = '' }: ProductCardProps) {
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden">
         {/* Main Image */}
-        <motion.div
-          className="relative w-full h-full"
+        <motion.img
+          src={product.images[currentImageIndex]?.image.url || product.images[0]?.image.url}
+          alt={product.images[currentImageIndex]?.alt || product.images[0]?.alt}
+          className="w-full h-full object-cover"
           animate={{ scale: isHovered ? 1.05 : 1 }}
           transition={{ duration: 0.3 }}
-        >
-          <img
-            src={product.images[currentImageIndex]?.image.url || product.images[0]?.image.url}
-            alt={product.images[currentImageIndex]?.alt || product.images[0]?.alt}
-            className="w-full h-full object-cover"
-          />
-        </motion.div>
+        />
 
         {/* Image Navigation Dots */}
         {product.images.length > 1 && (

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Thumbs, Zoom } from 'swiper/modules';
+import { Navigation, Pagination, Thumbs, Zoom, Autoplay, EffectFade } from 'swiper/modules';
 import { 
   Star, 
   Heart, 
@@ -16,7 +16,9 @@ import {
   Check,
   Minus,
   Plus,
-  ArrowLeft
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import FrameItHeader from '@/components/dashboard/FrameItHeader';
@@ -31,6 +33,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/thumbs';
 import 'swiper/css/zoom';
+import 'swiper/css/effect-fade';
 import { ProductCard } from '@/components/ecommerce/ProductCard';
 
 interface Product {
@@ -224,39 +227,61 @@ export default function ProductDetailPage() {
       </nav>
 
       {/* Product Details */}
-      <section className="py-12 bg-white">
+      <section className="py-6 md:py-12 bg-white">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Product Gallery */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="space-y-4">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
+            {/* Left Column - Product Gallery (Sticky on Desktop) */}
+            <div className="w-full lg:w-1/2 lg:sticky lg:top-6 lg:self-start">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                className="space-y-4"
+              >
                 {/* Main Image Swiper */}
-                <Swiper
-                  modules={[Navigation, Pagination, Thumbs, Zoom]}
-                  spaceBetween={10}
-                  navigation
-                  pagination={{ clickable: true }}
-                  thumbs={{ swiper: thumbsSwiper }}
-                  zoom={{ maxRatio: 3 }}
-                  onSlideChange={(swiper) => setActiveImageIndex(swiper.activeIndex)}
-                  className="aspect-square rounded-2xl overflow-hidden shadow-lg"
-                >
-                  {product.images.map((img, index) => (
-                    <SwiperSlide key={index}>
-                      <div className="swiper-zoom-container">
-                        <img
-                          src={img.image.url}
-                          alt={img.alt}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
+                <div className="relative">
+                  <Swiper
+                    modules={[Navigation, Pagination, Thumbs, Zoom, EffectFade]}
+                    spaceBetween={10}
+                    navigation={{
+                      nextEl: '.swiper-button-next-custom',
+                      prevEl: '.swiper-button-prev-custom',
+                    }}
+                    pagination={{ 
+                      clickable: true,
+                      dynamicBullets: true,
+                    }}
+                    thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                    zoom={{ maxRatio: 3 }}
+                    effect="fade"
+                    fadeEffect={{ crossFade: true }}
+                    onSlideChange={(swiper) => setActiveImageIndex(swiper.activeIndex)}
+                    className="aspect-square rounded-2xl overflow-hidden shadow-lg bg-gray-100"
+                  >
+                    {product.images.map((img, index) => (
+                      <SwiperSlide key={index}>
+                        <div className="swiper-zoom-container">
+                          <img
+                            src={img.image.url}
+                            alt={img.alt}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+
+                  {/* Enhanced Custom Navigation Buttons */}
+                  <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+                    <ChevronLeft className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                    <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                  </button>
+                  
+                  <button className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+                    <ChevronRight className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                    <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                  </button>
+                </div>
 
                 {/* Thumbnail Swiper */}
                 {product.images.length > 1 && (
@@ -264,6 +289,10 @@ export default function ProductDetailPage() {
                     modules={[Navigation]}
                     spaceBetween={10}
                     slidesPerView={4}
+                    breakpoints={{
+                      640: { slidesPerView: 5 },
+                      768: { slidesPerView: 6 },
+                    }}
                     watchSlidesProgress
                     onSwiper={setThumbsSwiper}
                     className="thumbs-swiper"
@@ -283,210 +312,222 @@ export default function ProductDetailPage() {
                     ))}
                   </Swiper>
                 )}
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
 
-            {/* Product Info */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-6"
-            >
-              {/* Header */}
-              <div>
-                <div className="flex items-center gap-4 mb-2">
-                  <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-                  {product.featured && (
-                    <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                      <Star className="w-4 h-4 fill-current" />
-                      Featured
-                    </div>
-                  )}
-                </div>
-                
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600">(4.8) • 127 reviews</span>
+            {/* Right Column - Product Info (Scrollable) */}
+            <div className="w-full lg:w-1/2 lg:max-h-screen lg:overflow-y-auto lg:pr-4">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="space-y-6"
+              >
+                {/* Header */}
+                <div>
+                  <div className="flex items-center gap-4 mb-2">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{product.name}</h1>
+                    {product.featured && (
+                      <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                        <Star className="w-4 h-4 fill-current" />
+                        Featured
+                      </div>
+                    )}
                   </div>
-                  <span className="text-sm text-gray-600">SKU: {product.sku}</span>
-                </div>
-
-                <p className="text-gray-600 leading-relaxed">
-                  {product.shortDescription}
-                </p>
-              </div>
-
-              {/* Price */}
-              <div className="border-t border-b py-6">
-                <div className="flex items-center gap-4">
-                  <span className="text-3xl font-bold text-gray-900">
-                    {formatPrice(getCurrentPrice())}
-                  </span>
-                  {product.compareAtPrice && product.compareAtPrice > getCurrentPrice() && (
-                    <>
-                      <span className="text-xl text-gray-500 line-through">
-                        {formatPrice(product.compareAtPrice)}
-                      </span>
-                      <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                        Save {formatPrice(product.compareAtPrice - getCurrentPrice())}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Variants */}
-              {product.variants.length > 0 && (
-                <div className="space-y-4">
-                  {/* Size Selection */}
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-3">Size</h3>
-                    <div className="grid grid-cols-3 gap-3">
-                      {product.variants.map((variant) => (
-                        <button
-                          key={variant.name}
-                          onClick={() => {
-                            setSelectedVariant(variant.name);
-                            const defaultColor = variant.colors.find(c => c.isDefault) || variant.colors[0];
-                            if (defaultColor) {
-                              setSelectedColor(defaultColor.value);
-                            }
-                          }}
-                          className={`p-3 border-2 rounded-lg text-center transition-all ${
-                            selectedVariant === variant.name
-                              ? 'border-pink-500 bg-pink-50'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <div className="font-medium text-gray-900">{variant.displayName}</div>
-                          <div className="text-sm text-gray-600">{formatPrice(variant.basePrice)}</div>
-                        </button>
-                      ))}
+                  
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-600">(4.8) • 127 reviews</span>
                     </div>
+                    <span className="text-sm text-gray-600">SKU: {product.sku}</span>
                   </div>
 
-                  {/* Color Selection */}
-                  {selectedVariant && (
+                  <p className="text-gray-600 leading-relaxed">
+                    {product.shortDescription}
+                  </p>
+                </div>
+
+                {/* Price */}
+                <div className="border-t border-b py-6">
+                  <div className="flex items-center gap-4">
+                    <span className="text-2xl md:text-3xl font-bold text-gray-900">
+                      {formatPrice(getCurrentPrice())}
+                    </span>
+                    {product.compareAtPrice && product.compareAtPrice > getCurrentPrice() && (
+                      <>
+                        <span className="text-xl text-gray-500 line-through">
+                          {formatPrice(product.compareAtPrice)}
+                        </span>
+                        <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                          Save {formatPrice(product.compareAtPrice - getCurrentPrice())}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Variants */}
+                {product.variants.length > 0 && (
+                  <div className="space-y-4">
+                    {/* Size Selection */}
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-3">
-                        Color: {product.variants.find(v => v.name === selectedVariant)?.colors.find(c => c.value === selectedColor)?.name}
-                      </h3>
-                      <div className="flex flex-wrap gap-3">
-                        {product.variants.find(v => v.name === selectedVariant)?.colors.map((color) => (
+                      <h3 className="font-semibold text-gray-900 mb-3">Size</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {product.variants.map((variant) => (
                           <button
-                            key={color.value}
-                            onClick={() => setSelectedColor(color.value)}
-                            className={`relative w-12 h-12 rounded-full border-4 transition-all ${
-                              selectedColor === color.value
-                                ? 'border-pink-500 scale-110'
+                            key={variant.name}
+                            onClick={() => {
+                              setSelectedVariant(variant.name);
+                              const defaultColor = variant.colors.find(c => c.isDefault) || variant.colors[0];
+                              if (defaultColor) {
+                                setSelectedColor(defaultColor.value);
+                              }
+                            }}
+                            className={`p-3 border-2 rounded-lg text-center transition-all ${
+                              selectedVariant === variant.name
+                                ? 'border-pink-500 bg-pink-50'
                                 : 'border-gray-200 hover:border-gray-300'
                             }`}
-                            style={{ backgroundColor: color.hexCode || color.value }}
-                            title={`${color.name} - ${color.stock > 0 ? 'In Stock' : 'Out of Stock'}`}
                           >
-                            {color.stock === 0 && (
-                              <div className="absolute inset-0 bg-white/80 rounded-full flex items-center justify-center">
-                                <span className="text-xs text-gray-500">✕</span>
-                              </div>
-                            )}
+                            <div className="font-medium text-gray-900">{variant.displayName}</div>
+                            <div className="text-sm text-gray-600">{formatPrice(variant.basePrice)}</div>
                           </button>
                         ))}
                       </div>
                     </div>
-                  )}
-                </div>
-              )}
 
-              {/* Quantity and Add to Cart */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                    <div className="flex items-center border border-gray-300 rounded-lg">
-                      <button
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-2 hover:bg-gray-50 transition-colors"
-                        disabled={quantity <= 1}
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="px-4 py-2 font-medium">{quantity}</span>
-                      <button
-                        onClick={() => setQuantity(Math.min(getCurrentStock(), quantity + 1))}
-                        className="p-2 hover:bg-gray-50 transition-colors"
-                        disabled={quantity >= getCurrentStock()}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
+                    {/* Color Selection */}
+                    {selectedVariant && (
+                      <div>
+                        <h3 className="font-semibold text-gray-900 mb-3">
+                          Color: {product.variants.find(v => v.name === selectedVariant)?.colors.find(c => c.value === selectedColor)?.name}
+                        </h3>
+                        <div className="flex flex-wrap gap-3">
+                          {product.variants.find(v => v.name === selectedVariant)?.colors.map((color) => (
+                            <button
+                              key={color.value}
+                              onClick={() => setSelectedColor(color.value)}
+                              className={`relative w-12 h-12 rounded-full border-4 transition-all ${
+                                selectedColor === color.value
+                                  ? 'border-pink-500 scale-110'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                              style={{ backgroundColor: color.hexCode || color.value }}
+                              title={`${color.name} - ${color.stock > 0 ? 'In Stock' : 'Out of Stock'}`}
+                            >
+                              {color.stock === 0 && (
+                                <div className="absolute inset-0 bg-white/80 rounded-full flex items-center justify-center">
+                                  <span className="text-xs text-gray-500">✕</span>
+                                </div>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Quantity and Add to Cart */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                      <div className="flex items-center border border-gray-300 rounded-lg">
+                        <button
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          className="p-2 hover:bg-gray-50 transition-colors"
+                          disabled={quantity <= 1}
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="px-4 py-2 font-medium">{quantity}</span>
+                        <button
+                          onClick={() => setQuantity(Math.min(getCurrentStock(), quantity + 1))}
+                          className="p-2 hover:bg-gray-50 transition-colors"
+                          disabled={quantity >= getCurrentStock()}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="text-sm text-gray-600 mb-2">
+                        {getCurrentStock() > 0 ? (
+                          <span className="text-green-600 flex items-center gap-1">
+                            <Check className="w-4 h-4" />
+                            {getCurrentStock()} in stock
+                          </span>
+                        ) : (
+                          <span className="text-red-600">Out of stock</span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="flex-1">
-                    <div className="text-sm text-gray-600 mb-2">
-                      {getCurrentStock() > 0 ? (
-                        <span className="text-green-600 flex items-center gap-1">
-                          <Check className="w-4 h-4" />
-                          {getCurrentStock()} in stock
-                        </span>
-                      ) : (
-                        <span className="text-red-600">Out of stock</span>
-                      )}
-                    </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4">
+                    <Button 
+                      className="flex-1 h-12 text-lg"
+                      disabled={getCurrentStock() === 0}
+                    >
+                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      Add to Cart
+                    </Button>
+                    <Button variant="outline" size="icon" className="h-12 w-12">
+                      <Heart className="w-5 h-5" />
+                    </Button>
+                    <Button variant="outline" size="icon" className="h-12 w-12">
+                      <Share2 className="w-5 h-5" />
+                    </Button>
                   </div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-4">
-                  <Button 
-                    className="flex-1 h-12 text-lg"
-                    disabled={getCurrentStock() === 0}
-                  >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    Add to Cart
-                  </Button>
-                  <Button variant="outline" size="icon" className="h-12 w-12">
-                    <Heart className="w-5 h-5" />
-                  </Button>
-                  <Button variant="outline" size="icon" className="h-12 w-12">
-                    <Share2 className="w-5 h-5" />
-                  </Button>
+                {/* Features */}
+                <div className="grid grid-cols-3 gap-4 py-6 border-t">
+                  <div className="text-center">
+                    <Truck className="w-6 h-6 text-pink-600 mx-auto mb-2" />
+                    <div className="text-sm font-medium text-gray-900">Free Shipping</div>
+                    <div className="text-xs text-gray-600">On orders over ₹2000</div>
+                  </div>
+                  <div className="text-center">
+                    <Shield className="w-6 h-6 text-pink-600 mx-auto mb-2" />
+                    <div className="text-sm font-medium text-gray-900">Quality Guarantee</div>
+                    <div className="text-xs text-gray-600">7-day satisfaction</div>
+                  </div>
+                  <div className="text-center">
+                    <RotateCcw className="w-6 h-6 text-pink-600 mx-auto mb-2" />
+                    <div className="text-sm font-medium text-gray-900">Easy Returns</div>
+                    <div className="text-xs text-gray-600">Hassle-free process</div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Features */}
-              <div className="grid grid-cols-3 gap-4 py-6 border-t">
-                <div className="text-center">
-                  <Truck className="w-6 h-6 text-pink-600 mx-auto mb-2" />
-                  <div className="text-sm font-medium text-gray-900">Free Shipping</div>
-                  <div className="text-xs text-gray-600">On orders over ₹2000</div>
+                {/* Product Details Tabs - Mobile Optimized */}
+                <div className="lg:hidden">
+                  <ProductDetailsTabs product={product} />
                 </div>
-                <div className="text-center">
-                  <Shield className="w-6 h-6 text-pink-600 mx-auto mb-2" />
-                  <div className="text-sm font-medium text-gray-900">Quality Guarantee</div>
-                  <div className="text-xs text-gray-600">7-day satisfaction</div>
-                </div>
-                <div className="text-center">
-                  <RotateCcw className="w-6 h-6 text-pink-600 mx-auto mb-2" />
-                  <div className="text-sm font-medium text-gray-900">Easy Returns</div>
-                  <div className="text-xs text-gray-600">Hassle-free process</div>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Product Details Tabs */}
-      <ProductDetailsTabs product={product} />
+      {/* Product Details Tabs - Desktop */}
+      <div className="hidden lg:block">
+        <ProductDetailsTabs product={product} />
+      </div>
 
       {/* CMS Content Blocks */}
       {pageContent && <CMSContentRenderer content={pageContent.content} />}
+
+      {/* FAQ Section */}
+      <ProductFAQSection />
 
       {/* Related Products */}
       <RelatedProducts categories={product.categories} currentProductId={product.id} />
@@ -512,12 +553,12 @@ function ProductDetailsTabs({ product }: { product: Product }) {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200 mb-8">
+          <div className="flex border-b border-gray-200 mb-8 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 font-medium transition-colors border-b-2 ${
+                className={`px-4 md:px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'border-pink-500 text-pink-600'
                     : 'border-transparent text-gray-600 hover:text-gray-900'
@@ -591,6 +632,98 @@ function ProductDetailsTabs({ product }: { product: Product }) {
               )}
             </motion.div>
           </AnimatePresence>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Product FAQ Section
+function ProductFAQSection() {
+  const [openItems, setOpenItems] = useState<Set<number>>(new Set());
+
+  const toggleItem = (index: number) => {
+    const newOpenItems = new Set(openItems);
+    if (newOpenItems.has(index)) {
+      newOpenItems.delete(index);
+    } else {
+      newOpenItems.add(index);
+    }
+    setOpenItems(newOpenItems);
+  };
+
+  const faqs = [
+    {
+      question: "What materials are used in your frames?",
+      answer: "Our frames are crafted from premium solid wood with high-quality finishes. We use sustainable materials and ensure each frame meets our strict quality standards."
+    },
+    {
+      question: "How do I choose the right size for my space?",
+      answer: "Consider the wall space and surrounding furniture. As a general rule, artwork should take up 60-75% of the wall space above furniture. Our size guide can help you make the perfect choice."
+    },
+    {
+      question: "Can I return or exchange if I'm not satisfied?",
+      answer: "Yes! We offer a 7-day satisfaction guarantee. If you're not completely happy with your frame, contact us for a free exchange or full refund."
+    },
+    {
+      question: "How long does shipping take?",
+      answer: "Standard shipping takes 7-10 business days. We also offer express shipping (3-5 days) and rush orders (1-2 days) for faster delivery."
+    }
+  ];
+
+  return (
+    <section className="py-12 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            <p className="text-lg text-gray-600">Everything you need to know about this product</p>
+          </motion.div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                className="border border-gray-200 rounded-lg overflow-hidden"
+                initial={false}
+              >
+                <button
+                  onClick={() => toggleItem(index)}
+                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                >
+                  <span className="font-medium text-gray-900">{faq.question}</span>
+                  <motion.div
+                    animate={{ rotate: openItems.has(index) ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Plus className="w-5 h-5 text-gray-500" />
+                  </motion.div>
+                </button>
+                
+                <AnimatePresence>
+                  {openItems.has(index) && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-4 text-gray-600">
+                        {faq.answer}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -706,7 +839,7 @@ function FrameSpecificationsSection({ block }: { block: any }) {
 
           {block.layout === 'carousel' && (
             <Swiper
-              modules={[Navigation, Pagination, EffectCoverflow]}
+              modules={[Navigation, Pagination]}
               effect="coverflow"
               grabCursor
               centeredSlides
@@ -718,9 +851,12 @@ function FrameSpecificationsSection({ block }: { block: any }) {
                 modifier: 1,
                 slideShadows: true,
               }}
-              navigation
+              navigation={{
+                nextEl: '.spec-swiper-button-next',
+                prevEl: '.spec-swiper-button-prev',
+              }}
               pagination={{ clickable: true }}
-              className="specifications-swiper"
+              className="specifications-swiper relative"
             >
               {block.specifications.map((spec: any, index: number) => (
                 <SwiperSlide key={index} style={{ width: '400px' }}>
@@ -739,19 +875,28 @@ function FrameSpecificationsSection({ block }: { block: any }) {
                   </div>
                 </SwiperSlide>
               ))}
+              
+              {/* Enhanced Navigation Buttons */}
+              <button className="spec-swiper-button-prev absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+                <ChevronLeft className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+              </button>
+              
+              <button className="spec-swiper-button-next absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+                <ChevronRight className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+              </button>
             </Swiper>
           )}
 
           {block.layout === 'tabs' && (
             <div>
               {/* Tab Navigation */}
-              <div className="flex justify-center mb-8">
-                <div className="flex bg-gray-100 rounded-lg p-1">
+              <div className="flex justify-center mb-8 overflow-x-auto">
+                <div className="flex bg-gray-100 rounded-lg p-1 min-w-max">
                   {block.specifications.map((spec: any, index: number) => (
                     <button
                       key={index}
                       onClick={() => setActiveSpec(index)}
-                      className={`px-4 py-2 rounded-md font-medium transition-all ${
+                      className={`px-4 py-2 rounded-md font-medium transition-all whitespace-nowrap ${
                         activeSpec === index
                           ? 'bg-white text-pink-600 shadow-sm'
                           : 'text-gray-600 hover:text-gray-900'
@@ -906,68 +1051,82 @@ function SliderSection({ block }: { block: any }) {
           </div>
         )}
         
-        <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={30}
-          slidesPerView={1}
-          navigation
-          pagination={{ clickable: true }}
-          autoplay={block.settings?.autoplay ? {
-            delay: block.settings.autoplayDelay || 5000,
-            disableOnInteraction: false,
-          } : false}
-          loop={block.settings?.loop}
-          className={`${getHeightClass()} rounded-2xl overflow-hidden`}
-        >
-          {block.slides.map((slide: any, index: number) => (
-            <SwiperSlide key={index}>
-              <div className="relative w-full h-full">
-                <img
-                  src={slide.image.url}
-                  alt={slide.image.alt}
-                  className="w-full h-full object-cover"
-                />
-                
-                {slide.overlay?.enabled && (
-                  <div 
-                    className="absolute inset-0"
-                    style={{ backgroundColor: slide.overlay.color }}
+        <div className="relative">
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            spaceBetween={30}
+            slidesPerView={1}
+            navigation={{
+              nextEl: '.slider-swiper-button-next',
+              prevEl: '.slider-swiper-button-prev',
+            }}
+            pagination={{ clickable: true }}
+            autoplay={block.settings?.autoplay ? {
+              delay: block.settings.autoplayDelay || 5000,
+              disableOnInteraction: false,
+            } : false}
+            loop={block.settings?.loop}
+            className={`${getHeightClass()} rounded-2xl overflow-hidden`}
+          >
+            {block.slides.map((slide: any, index: number) => (
+              <SwiperSlide key={index}>
+                <div className="relative w-full h-full">
+                  <img
+                    src={slide.image.url}
+                    alt={slide.image.alt}
+                    className="w-full h-full object-cover"
                   />
-                )}
-                
-                {(slide.title || slide.description || slide.link) && (
-                  <div className={`absolute inset-0 flex items-center justify-center ${
-                    slide.overlay?.position === 'bottom-left' ? 'items-end justify-start p-8' :
-                    slide.overlay?.position === 'bottom-right' ? 'items-end justify-end p-8' :
-                    slide.overlay?.position === 'top-left' ? 'items-start justify-start p-8' :
-                    slide.overlay?.position === 'top-right' ? 'items-start justify-end p-8' :
-                    'items-center justify-center'
-                  }`}>
-                    <div className="text-center text-white max-w-2xl">
-                      {slide.title && (
-                        <h3 className="text-3xl md:text-4xl font-bold mb-4">{slide.title}</h3>
-                      )}
-                      {slide.description && (
-                        <div className="prose prose-lg prose-invert mb-6" dangerouslySetInnerHTML={{ __html: slide.description }} />
-                      )}
-                      {slide.link?.url && slide.link?.text && (
-                        <Button size="lg" asChild>
-                          <a
-                            href={slide.link.url}
-                            target={slide.link.openInNewTab ? '_blank' : '_self'}
-                            rel={slide.link.openInNewTab ? 'noopener noreferrer' : undefined}
-                          >
-                            {slide.link.text}
-                          </a>
-                        </Button>
-                      )}
+                  
+                  {slide.overlay?.enabled && (
+                    <div 
+                      className="absolute inset-0"
+                      style={{ backgroundColor: slide.overlay.color }}
+                    />
+                  )}
+                  
+                  {(slide.title || slide.description || slide.link) && (
+                    <div className={`absolute inset-0 flex items-center justify-center ${
+                      slide.overlay?.position === 'bottom-left' ? 'items-end justify-start p-8' :
+                      slide.overlay?.position === 'bottom-right' ? 'items-end justify-end p-8' :
+                      slide.overlay?.position === 'top-left' ? 'items-start justify-start p-8' :
+                      slide.overlay?.position === 'top-right' ? 'items-start justify-end p-8' :
+                      'items-center justify-center'
+                    }`}>
+                      <div className="text-center text-white max-w-2xl">
+                        {slide.title && (
+                          <h3 className="text-3xl md:text-4xl font-bold mb-4">{slide.title}</h3>
+                        )}
+                        {slide.description && (
+                          <div className="prose prose-lg prose-invert mb-6" dangerouslySetInnerHTML={{ __html: slide.description }} />
+                        )}
+                        {slide.link?.url && slide.link?.text && (
+                          <Button size="lg" asChild>
+                            <a
+                              href={slide.link.url}
+                              target={slide.link.openInNewTab ? '_blank' : '_self'}
+                              rel={slide.link.openInNewTab ? 'noopener noreferrer' : undefined}
+                            >
+                              {slide.link.text}
+                            </a>
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+                  )}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          
+          {/* Enhanced Navigation Buttons */}
+          <button className="slider-swiper-button-prev absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+            <ChevronLeft className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+          </button>
+          
+          <button className="slider-swiper-button-next absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+            <ChevronRight className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -1014,25 +1173,39 @@ function RelatedProducts({ categories, currentProductId }: {
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">You Might Also Like</h2>
           
-          <Swiper
-            modules={[Navigation, Pagination]}
-            spaceBetween={30}
-            slidesPerView={1}
-            breakpoints={{
-              640: { slidesPerView: 2 },
-              768: { slidesPerView: 3 },
-              1024: { slidesPerView: 4 },
-            }}
-            navigation
-            pagination={{ clickable: true }}
-            className="related-products-swiper"
-          >
-            {filteredProducts.map((product) => (
-              <SwiperSlide key={product.id}>
-                <ProductCard product={product} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          <div className="relative">
+            <Swiper
+              modules={[Navigation, Pagination]}
+              spaceBetween={30}
+              slidesPerView={1}
+              breakpoints={{
+                640: { slidesPerView: 2 },
+                768: { slidesPerView: 3 },
+                1024: { slidesPerView: 4 },
+              }}
+              navigation={{
+                nextEl: '.related-swiper-button-next',
+                prevEl: '.related-swiper-button-prev',
+              }}
+              pagination={{ clickable: true }}
+              className="related-products-swiper"
+            >
+              {filteredProducts.map((product) => (
+                <SwiperSlide key={product.id}>
+                  <ProductCard product={product} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            
+            {/* Enhanced Navigation Buttons */}
+            <button className="related-swiper-button-prev absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+              <ChevronLeft className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+            </button>
+            
+            <button className="related-swiper-button-next absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+              <ChevronRight className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+            </button>
+          </div>
         </div>
       </div>
     </section>
