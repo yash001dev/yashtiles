@@ -2,7 +2,7 @@ import sharp from "sharp";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
-// import { s3Storage } from "@payloadcms/storage-s3"; // Temporarily disabled
+import { s3Storage } from "@payloadcms/storage-s3"; 
 
 // Import collections
 import { Products } from "./src/payload/collections/Products";
@@ -14,13 +14,6 @@ import { Media } from "./src/payload/collections/Media";
 import { Pages } from "./src/payload/collections/Pages";
 import { Users } from "./src/payload/collections/Users";
 
-// Check if S3 is properly configured
-const isS3Configured = !!(
-  process.env.S3_BUCKET &&
-  process.env.S3_ACCESS_KEY_ID &&
-  process.env.S3_SECRET_ACCESS_KEY &&
-  process.env.S3_REGION
-);
 
 export default buildConfig({
   // If you'd like to use Rich Text, pass your editor here
@@ -38,27 +31,24 @@ export default buildConfig({
     Pages,
   ],
 
-  // Configure plugins conditionally - S3 storage temporarily disabled
   plugins: [
-    // S3 storage is temporarily disabled to fix upload handler context issues
-    // Uncomment and configure S3 environment variables to enable
-    // ...(isS3Configured ? [
-    //   s3Storage({
-    //     collections: {
-    //       media: {
-    //         prefix: 'media',
-    //       },
-    //     },
-    //     bucket: process.env.S3_BUCKET!,
-    //     config: {
-    //       credentials: {
-    //         accessKeyId: process.env.S3_ACCESS_KEY_ID!,
-    //         secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
-    //       },
-    //       region: process.env.S3_REGION!,
-    //     },
-    //   })
-    // ] : []),
+   s3Storage({
+    collections: {
+      media:{
+        prefix:'media'
+      }
+    },
+    bucket:process.env.S3_BUCKET || "",
+    config: {
+      credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+      },
+      region: process.env.S3_REGION || "",
+      // endpoint: process.env.S3_ENDPOINT || "",
+    }
+
+   })
   ],  // Your Payload secret - should be a complex and secure string, unguessable
   secret: process.env.PAYLOAD_SECRET || "",
   // Whichever Database Adapter you're using should go here
