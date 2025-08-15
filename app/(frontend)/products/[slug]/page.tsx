@@ -18,7 +18,9 @@ import {
   Plus,
   ArrowLeft,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Eye,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import FrameItHeader from '@/components/dashboard/FrameItHeader';
@@ -26,6 +28,7 @@ import FrameItFooter from '@/components/dashboard/FrameItFooter';
 import Link from 'next/link';
 import { useProductBySlug } from '@/hooks/useProductBySlug';
 import { useGetPageContentQuery, useGetProductsByCategoryQuery } from '@/redux/api/resourcesApi';
+import { PDPPreviewCanvas } from '@/components/PDPPreviewCanvas';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -134,6 +137,11 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  
+  // New states for Frame/Live View toggle
+  const [viewMode, setViewMode] = useState<'frame' | 'live'>('frame');
+  const [isLiveViewLoading, setIsLiveViewLoading] = useState(false);
+  const [wallImage, setWallImage] = useState('/framedecor1.png');
 
   // Set default selections when product loads
   useEffect(() => {
@@ -213,6 +221,28 @@ export default function ProductDetailPage() {
     }).format(price);
   };
 
+  // Handle view mode change with loading simulation
+  const handleViewModeChange = async (mode: 'frame' | 'live') => {
+    if (mode === 'live' && viewMode === 'frame') {
+      setIsLiveViewLoading(true);
+      // Simulate loading time for dynamic content
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setIsLiveViewLoading(false);
+    }
+    setViewMode(mode);
+  };
+
+  // Get current selected variants
+  const getSelectedVariants = () => {
+    const size = product?.availableSizes?.find(s => s.id === selectedSize);
+    const color = product?.defaultColors?.concat(product?.additionalColors || [])
+      .find(c => c.id === selectedColor);
+    const material = product?.defaultMaterials?.concat(product?.additionalMaterials || [])
+      .find(m => m.id === selectedMaterial);
+    
+    return { size, color, material };
+  };
+
   if (productLoading) {
     return (
       <>
@@ -268,7 +298,7 @@ export default function ProductDetailPage() {
       <section className="py-6 md:py-12 bg-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
-            {/* Left Column - Product Gallery (Sticky on Desktop) */}
+            {/* Left Column - Product Gallery with View Toggle (Sticky on Desktop) */}
             <div className="w-full lg:w-1/2 lg:sticky lg:top-6 lg:self-start">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -276,80 +306,173 @@ export default function ProductDetailPage() {
                 transition={{ duration: 0.6 }}
                 className="space-y-4"
               >
-                {/* Main Image Swiper */}
-                <div className="relative">
-                  <Swiper
-                    modules={[Navigation, Pagination, Thumbs, Zoom, EffectFade]}
-                    spaceBetween={10}
-                    navigation={{
-                      nextEl: '.swiper-button-next-custom',
-                      prevEl: '.swiper-button-prev-custom',
-                    }}
-                    pagination={{ 
-                      clickable: true,
-                      dynamicBullets: true,
-                    }}
-                    thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
-                    zoom={{ maxRatio: 3 }}
-                    effect="fade"
-                    fadeEffect={{ crossFade: true }}
-                    onSlideChange={(swiper) => setActiveImageIndex(swiper.activeIndex)}
-                    className="aspect-square rounded-2xl overflow-hidden shadow-lg bg-gray-100"
-                  >
-                    {product.images.map((img, index) => (
-                      <SwiperSlide key={index}>
-                        <div className="swiper-zoom-container">
-                          <img
-                            src={img.image.url}
-                            alt={img.alt}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-
-                  {/* Enhanced Custom Navigation Buttons */}
-                  <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
-                    <ChevronLeft className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-                    <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                  </button>
-                  
-                  <button className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
-                    <ChevronRight className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-                    <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                  </button>
+                {/* View Mode Toggle */}
+                <div className="flex items-center justify-center mb-6">
+                  <div className="bg-gray-100 p-1 rounded-lg flex">
+                    <button
+                      onClick={() => handleViewModeChange('frame')}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
+                        viewMode === 'frame'
+                          ? 'bg-white text-pink-600 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <ImageIcon className="w-4 h-4" />
+                      Frame View
+                    </button>
+                    <button
+                      onClick={() => handleViewModeChange('live')}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
+                        viewMode === 'live'
+                          ? 'bg-white text-pink-600 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                      disabled={isLiveViewLoading}
+                    >
+                      <Eye className="w-4 h-4" />
+                      Live View
+                      {isLiveViewLoading && (
+                        <div className="w-4 h-4 border-2 border-pink-600 border-t-transparent rounded-full animate-spin ml-1" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
-                {/* Thumbnail Swiper */}
-                {product.images.length > 1 && (
-                  <Swiper
-                    modules={[Navigation]}
-                    spaceBetween={10}
-                    slidesPerView={4}
-                    breakpoints={{
-                      640: { slidesPerView: 5 },
-                      768: { slidesPerView: 6 },
-                    }}
-                    watchSlidesProgress
-                    onSwiper={setThumbsSwiper}
-                    className="thumbs-swiper"
-                  >
-                    {product.images.map((img, index) => (
-                      <SwiperSlide key={index}>
-                        <div className={`aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
-                          index === activeImageIndex ? 'border-pink-500' : 'border-gray-200 hover:border-gray-300'
-                        }`}>
-                          <img
-                            src={img.image.url}
-                            alt={img.alt}
-                            className="w-full h-full object-cover"
-                          />
+                {/* Content Area with Animation */}
+                <AnimatePresence mode="wait">
+                  {viewMode === 'frame' && (
+                    <motion.div
+                      key="frame-view"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {/* Main Image Swiper */}
+                      <div className="relative">
+                        <Swiper
+                          modules={[Navigation, Pagination, Thumbs, Zoom, EffectFade]}
+                          spaceBetween={10}
+                          navigation={{
+                            nextEl: '.swiper-button-next-custom',
+                            prevEl: '.swiper-button-prev-custom',
+                          }}
+                          pagination={{ 
+                            clickable: true,
+                            dynamicBullets: true,
+                          }}
+                          thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+                          zoom={{ maxRatio: 3 }}
+                          effect="fade"
+                          fadeEffect={{ crossFade: true }}
+                          onSlideChange={(swiper) => setActiveImageIndex(swiper.activeIndex)}
+                          className="aspect-square rounded-2xl overflow-hidden shadow-lg bg-gray-100"
+                        >
+                          {product.images.map((img, index) => (
+                            <SwiperSlide key={index}>
+                              <div className="swiper-zoom-container">
+                                <img
+                                  src={img.image.url}
+                                  alt={img.alt}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            </SwiperSlide>
+                          ))}
+                        </Swiper>
+
+                        {/* Enhanced Custom Navigation Buttons */}
+                        <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+                          <ChevronLeft className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                          <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                        </button>
+                        
+                        <button className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+                          <ChevronRight className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
+                          <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                        </button>
+                      </div>
+
+                      {/* Thumbnail Swiper */}
+                      {product.images.length > 1 && (
+                        <Swiper
+                          modules={[Navigation]}
+                          spaceBetween={10}
+                          slidesPerView={4}
+                          breakpoints={{
+                            640: { slidesPerView: 5 },
+                            768: { slidesPerView: 6 },
+                          }}
+                          watchSlidesProgress
+                          onSwiper={setThumbsSwiper}
+                          className="thumbs-swiper"
+                        >
+                          {product.images.map((img, index) => (
+                            <SwiperSlide key={index}>
+                              <div className={`aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
+                                index === activeImageIndex ? 'border-pink-500' : 'border-gray-200 hover:border-gray-300'
+                              }`}>
+                                <img
+                                  src={img.image.url}
+                                  alt={img.alt}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            </SwiperSlide>
+                          ))}
+                        </Swiper>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {viewMode === 'live' && (
+                    <motion.div
+                      key="live-view"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-4"
+                    >
+                      {/* Live View Canvas */}
+                      <div className="flex justify-center">
+                        <PDPPreviewCanvas
+                          selectedImage={product.images[activeImageIndex]?.image.url || product.images[0]?.image.url}
+                          selectedSize={getSelectedVariants().size || { name: 'Standard', dimensions: '12x12', aspectRatio: 1 }}
+                          selectedColor={getSelectedVariants().color?.color || '#8B4513'}
+                          selectedMaterial={getSelectedVariants().material?.name || 'Wood'}
+                          wallImage={wallImage}
+                          onWallImageChange={setWallImage}
+                          className="w-full max-w-md"
+                        />
+                      </div>
+
+                      {/* Product Image Selection for Live View */}
+                      {product.images.length > 1 && (
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-900 mb-3">Select Product Image</h4>
+                          <div className="grid grid-cols-4 gap-2">
+                            {product.images.map((img, index) => (
+                              <button
+                                key={index}
+                                onClick={() => setActiveImageIndex(index)}
+                                className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                                  index === activeImageIndex ? 'border-pink-500' : 'border-gray-200 hover:border-gray-300'
+                                }`}
+                              >
+                                <img
+                                  src={img.image.url}
+                                  alt={img.alt}
+                                  className="w-full h-full object-cover"
+                                />
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                )}
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             </div>
 
