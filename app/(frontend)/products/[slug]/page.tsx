@@ -22,6 +22,8 @@ import { Button } from '@/components/ui/button';
 import FrameItHeader from '@/components/dashboard/FrameItHeader';
 import FrameItFooter from '@/components/dashboard/FrameItFooter';
 import Link from 'next/link';
+import { useProductBySlug } from '@/hooks/useProductBySlug';
+import { useGetPageContentQuery, useGetProductsByCategoryQuery } from '@/redux/api/resourcesApi';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -29,6 +31,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/thumbs';
 import 'swiper/css/zoom';
+import { ProductCard } from '@/components/ecommerce/ProductCard';
 
 interface Product {
   id: string;
@@ -994,29 +997,16 @@ function RelatedProducts({ categories, currentProductId }: {
   categories: Array<{ slug: string }>, 
   currentProductId: string 
 }) {
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const categorySlug = categories[0]?.slug;
+  
+  const { data: relatedProducts = [] } = useGetProductsByCategoryQuery(
+    { categorySlug, limit: 8, excludeId: currentProductId },
+    { skip: !categorySlug }
+  );
 
-  useEffect(() => {
-    const fetchRelatedProducts = async () => {
-      try {
-        const categorySlug = categories[0]?.slug;
-        if (!categorySlug) return;
+  const filteredProducts = relatedProducts.slice(0, 4);
 
-        const response = await fetch(`/api/products?where[categories.slug][equals]=${categorySlug}&status=published&limit=8`);
-        const data = await response.json();
-        
-        // Filter out current product
-        const filtered = (data.docs || []).filter((p: Product) => p.id !== currentProductId);
-        setRelatedProducts(filtered.slice(0, 4));
-      } catch (error) {
-        console.error('Error fetching related products:', error);
-      }
-    };
-
-    fetchRelatedProducts();
-  }, [categories, currentProductId]);
-
-  if (relatedProducts.length === 0) return null;
+  if (filteredProducts.length === 0) return null;
 
   return (
     <section className="py-12 bg-white">
@@ -1037,7 +1027,7 @@ function RelatedProducts({ categories, currentProductId }: {
             pagination={{ clickable: true }}
             className="related-products-swiper"
           >
-            {relatedProducts.map((product) => (
+            {filteredProducts.map((product) => (
               <SwiperSlide key={product.id}>
                 <ProductCard product={product} />
               </SwiperSlide>
