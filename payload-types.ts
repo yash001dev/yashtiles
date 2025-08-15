@@ -267,13 +267,14 @@ export interface Product {
    */
   shortDescription?: string | null;
   /**
-   * Base price in INR
+   * Product categories
    */
-  price: number;
+  categories: (number | ProductCategory)[];
+  status: 'draft' | 'published' | 'archived';
   /**
-   * Original price for discount display
+   * Feature this product on homepage
    */
-  compareAtPrice?: number | null;
+  featured?: boolean | null;
   images: {
     image: number | Media;
     alt: string;
@@ -281,13 +282,53 @@ export interface Product {
     id?: string | null;
   }[];
   /**
-   * Product categories
+   * Base price in INR (before size/color/material modifiers)
    */
-  categories: (number | ProductCategory)[];
+  basePrice: number;
   /**
-   * Available frame sizes
+   * Original price for discount display
    */
-  variants: (number | Size)[];
+  compareAtPrice?: number | null;
+  /**
+   * Available frame sizes (default 6 will be shown)
+   */
+  availableSizes: (number | Size)[];
+  /**
+   * Default colors to show (first 3)
+   */
+  defaultColors: (number | FrameColor)[];
+  /**
+   * Additional colors user can select
+   */
+  additionalColors?: (number | FrameColor)[] | null;
+  /**
+   * Default materials to show (first 3)
+   */
+  defaultMaterials: (number | Material)[];
+  /**
+   * Additional materials user can select
+   */
+  additionalMaterials?: (number | Material)[] | null;
+  /**
+   * Price modifiers for specific combinations
+   */
+  variantPricing?:
+    | {
+        size: number | Size;
+        color: number | FrameColor;
+        material: number | Material;
+        /**
+         * Price adjustment (+ or -) for this combination
+         */
+        priceModifier?: number | null;
+        /**
+         * Stock for this specific variant
+         */
+        stock?: number | null;
+        isAvailable?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Key product features
    */
@@ -297,30 +338,32 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
-  specifications: {
-    material: string;
+  specifications?: {
     weight?: string | null;
     dimensions?: string | null;
     mounting?: ('stickable_tape' | 'standard_hook' | 'both') | null;
   };
-  seo?: {
-    title?: string | null;
-    description?: string | null;
-    keywords?: string | null;
-  };
-  status: 'draft' | 'published' | 'archived';
   /**
-   * Feature this product on homepage
-   */
-  featured?: boolean | null;
-  /**
-   * Available stock quantity
+   * General stock quantity (individual variant stock in Variants tab)
    */
   stock?: number | null;
   /**
    * Stock Keeping Unit
    */
   sku?: string | null;
+  /**
+   * Track inventory for this product
+   */
+  trackInventory?: boolean | null;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+    keywords?: string | null;
+  };
+  /**
+   * Computed from base price (read-only)
+   */
+  price?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -402,6 +445,35 @@ export interface Size {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "frame-colors".
+ */
+export interface FrameColor {
+  id: number;
+  /**
+   * Name of the frame color (e.g., Black, White, Brown)
+   */
+  name: string;
+  /**
+   * CSS class for the color (e.g., bg-gray-900, bg-white)
+   */
+  color: string;
+  /**
+   * Description of the frame color
+   */
+  description: string;
+  /**
+   * Whether this frame color is available for selection
+   */
+  available?: boolean | null;
+  /**
+   * Order in which frame colors should appear in the UI
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "materials".
  */
 export interface Material {
@@ -432,35 +504,6 @@ export interface Material {
   available?: boolean | null;
   /**
    * Order in which materials should appear in the UI
-   */
-  sortOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "frame-colors".
- */
-export interface FrameColor {
-  id: number;
-  /**
-   * Name of the frame color (e.g., Black, White, Brown)
-   */
-  name: string;
-  /**
-   * CSS class for the color (e.g., bg-gray-900, bg-white)
-   */
-  color: string;
-  /**
-   * Description of the frame color
-   */
-  description: string;
-  /**
-   * Whether this frame color is available for selection
-   */
-  available?: boolean | null;
-  /**
-   * Order in which frame colors should appear in the UI
    */
   sortOrder?: number | null;
   updatedAt: string;
@@ -963,8 +1006,9 @@ export interface ProductsSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   shortDescription?: T;
-  price?: T;
-  compareAtPrice?: T;
+  categories?: T;
+  status?: T;
+  featured?: T;
   images?:
     | T
     | {
@@ -973,8 +1017,24 @@ export interface ProductsSelect<T extends boolean = true> {
         caption?: T;
         id?: T;
       };
-  categories?: T;
-  variants?: T;
+  basePrice?: T;
+  compareAtPrice?: T;
+  availableSizes?: T;
+  defaultColors?: T;
+  additionalColors?: T;
+  defaultMaterials?: T;
+  additionalMaterials?: T;
+  variantPricing?:
+    | T
+    | {
+        size?: T;
+        color?: T;
+        material?: T;
+        priceModifier?: T;
+        stock?: T;
+        isAvailable?: T;
+        id?: T;
+      };
   features?:
     | T
     | {
@@ -984,11 +1044,13 @@ export interface ProductsSelect<T extends boolean = true> {
   specifications?:
     | T
     | {
-        material?: T;
         weight?: T;
         dimensions?: T;
         mounting?: T;
       };
+  stock?: T;
+  sku?: T;
+  trackInventory?: T;
   seo?:
     | T
     | {
@@ -996,10 +1058,7 @@ export interface ProductsSelect<T extends boolean = true> {
         description?: T;
         keywords?: T;
       };
-  status?: T;
-  featured?: T;
-  stock?: T;
-  sku?: T;
+  price?: T;
   updatedAt?: T;
   createdAt?: T;
 }

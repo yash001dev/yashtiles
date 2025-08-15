@@ -53,6 +53,7 @@ interface Product {
   description: any;
   shortDescription: string;
   price: number;
+  basePrice: number;
   compareAtPrice?: number;
   images: Array<{
     image: {
@@ -63,27 +64,53 @@ interface Product {
     caption?: string;
   }>;
   categories: Array<{
+    id: string;
     name: string;
     slug: string;
   }>;
-  variants: Array<{
+  availableSizes: Array<{
+    id: string;
     name: string;
-    displayName: string;
-    basePrice: number;
-    colors: Array<{
-      name: string;
-      value: string;
-      hexCode?: string;
-      priceModifier: number;
-      stock: number;
-      isDefault: boolean;
-    }>;
+    dimensions: string;
+    aspectRatio: number;
+    price: number;
+  }>;
+  defaultColors: Array<{
+    id: string;
+    name: string;
+    color: string;
+    description: string;
+  }>;
+  additionalColors?: Array<{
+    id: string;
+    name: string;
+    color: string;
+    description: string;
+  }>;
+  defaultMaterials: Array<{
+    id: string;
+    name: string;
+    description: string;
+    content: string;
+  }>;
+  additionalMaterials?: Array<{
+    id: string;
+    name: string;
+    description: string;
+    content: string;
+  }>;
+  variantPricing?: Array<{
+    size: { id: string; name: string; price: number };
+    color: { id: string; name: string };
+    material: { id: string; name: string };
+    priceModifier: number;
+    stock: number;
+    isAvailable: boolean;
   }>;
   features: Array<{
     feature: string;
   }>;
   specifications: {
-    material: string;
     weight?: string;
     dimensions?: string;
     mounting: string;
@@ -91,6 +118,7 @@ interface Product {
   stock: number;
   sku: string;
   featured?: boolean;
+  status: string;
 }
 
 interface PageContent {

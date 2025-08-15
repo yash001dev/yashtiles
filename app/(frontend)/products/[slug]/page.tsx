@@ -43,6 +43,7 @@ interface Product {
   description: any;
   shortDescription: string;
   price: number;
+  basePrice: number;
   compareAtPrice?: number;
   images: Array<{
     image: {
@@ -53,33 +54,61 @@ interface Product {
     caption?: string;
   }>;
   categories: Array<{
+    id: string;
     name: string;
     slug: string;
   }>;
-  variants: Array<{
+  availableSizes: Array<{
+    id: string;
     name: string;
-    displayName: string;
-    basePrice: number;
-    colors: Array<{
-      name: string;
-      value: string;
-      hexCode?: string;
-      priceModifier: number;
-      stock: number;
-      isDefault: boolean;
-    }>;
+    dimensions: string;
+    aspectRatio: number;
+    price: number;
+  }>;
+  defaultColors: Array<{
+    id: string;
+    name: string;
+    color: string;
+    description: string;
+  }>;
+  additionalColors?: Array<{
+    id: string;
+    name: string;
+    color: string;
+    description: string;
+  }>;
+  defaultMaterials: Array<{
+    id: string;
+    name: string;
+    description: string;
+    content: string;
+  }>;
+  additionalMaterials?: Array<{
+    id: string;
+    name: string;
+    description: string;
+    content: string;
+  }>;
+  variantPricing?: Array<{
+    size: { id: string; name: string; price: number };
+    color: { id: string; name: string };
+    material: { id: string; name: string };
+    priceModifier: number;
+    stock: number;
+    isAvailable: boolean;
   }>;
   features: Array<{
     feature: string;
   }>;
   specifications: {
-    material: string;
     weight?: string;
     dimensions?: string;
     mounting: string;
   };
   stock: number;
   sku: string;
+  featured?: boolean;
+  status: string;
 }
 
 interface PageContent {
@@ -93,79 +122,88 @@ export default function ProductDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
   
-  const [product, setProduct] = useState<Product | null>(null);
-  const [pageContent, setPageContent] = useState<PageContent | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedVariant, setSelectedVariant] = useState<string>('');
+  // Use RTK Query hooks
+  const { data: product, isLoading: productLoading, isError: productError } = useProductBySlug(slug);
+  const { data: pageContent } = useGetPageContentQuery('pdp');
+  
+  const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
+  const [selectedMaterial, setSelectedMaterial] = useState<string>('');
+  const [showAllColors, setShowAllColors] = useState(false);
+  const [showAllMaterials, setShowAllMaterials] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  // Fetch product data
+  // Set default selections when product loads
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch product
-        const productResponse = await fetch(`/api/products?where[slug][equals]=${slug}&status=published`);
-        const productData = await productResponse.json();
-        
-        if (productData.docs && productData.docs.length > 0) {
-          const productItem = productData.docs[0];
-          setProduct(productItem);
-          
-          // Set default variant and color
-          if (productItem.variants && productItem.variants.length > 0) {
-            setSelectedVariant(productItem.variants[0].name);
-            const defaultColor = productItem.variants[0].colors.find((c: any) => c.isDefault) || 
-                               productItem.variants[0].colors[0];
-            if (defaultColor) {
-              setSelectedColor(defaultColor.value);
-            }
-          }
-        }
-
-        // Fetch page content for PDP template
-        const pageResponse = await fetch(`/api/pages?where[pageType][equals]=pdp&status=published`);
-        const pageData = await pageResponse.json();
-        
-        if (pageData.docs && pageData.docs.length > 0) {
-          setPageContent(pageData.docs[0]);
-        }
-      } catch (error) {
-        console.error('Error fetching product:', error);
-      } finally {
-        setLoading(false);
+    if (product) {
+      // Set default size (first available size)
+      if (product.availableSizes && product.availableSizes.length > 0) {
+        setSelectedSize(product.availableSizes[0].id);
       }
-    };
-
-    if (slug) {
-      fetchProduct();
+      
+      // Set default color (first default color)
+      if (product.defaultColors && product.defaultColors.length > 0) {
+        setSelectedColor(product.defaultColors[0].id);
+      }
+      
+      // Set default material (first default material)
+      if (product.defaultMaterials && product.defaultMaterials.length > 0) {
+        setSelectedMaterial(product.defaultMaterials[0].id);
+      }
     }
-  }, [slug]);
+  }, [product]);
 
   const getCurrentPrice = () => {
-    if (!product || !selectedVariant || !selectedColor) return product?.price || 0;
+    if (!product || !selectedSize || !selectedColor || !selectedMaterial) {
+      return product?.basePrice || product?.price || 0;
+    }
     
-    const variant = product.variants.find(v => v.name === selectedVariant);
-    if (!variant) return product.price;
+    // Find the size price
+    const selectedSizeObj = product.availableSizes?.find(s => s.id === selectedSize);
+    const sizePrice = selectedSizeObj?.price || 0;
     
-    const color = variant.colors.find(c => c.value === selectedColor);
-    const priceModifier = color?.priceModifier || 0;
+    // Find variant-specific pricing
+    const variantPricing = product.variantPricing?.find(vp => 
+      vp.size.id === selectedSize && 
+      vp.color.id === selectedColor && 
+      vp.material.id === selectedMaterial
+    );
     
-    return variant.basePrice + priceModifier;
+    const priceModifier = variantPricing?.priceModifier || 0;
+    
+    return (product.basePrice || 0) + sizePrice + priceModifier;
   };
 
   const getCurrentStock = () => {
-    if (!product || !selectedVariant || !selectedColor) return 0;
+    if (!product || !selectedSize || !selectedColor || !selectedMaterial) {
+      return product?.stock || 0;
+    }
     
-    const variant = product.variants.find(v => v.name === selectedVariant);
-    if (!variant) return 0;
+    // Find variant-specific stock
+    const variantPricing = product.variantPricing?.find(vp => 
+      vp.size.id === selectedSize && 
+      vp.color.id === selectedColor && 
+      vp.material.id === selectedMaterial
+    );
     
-    const color = variant.colors.find(c => c.value === selectedColor);
-    return color?.stock || 0;
+    return variantPricing?.stock || product.stock || 0;
+  };
+
+  const isVariantAvailable = () => {
+    if (!product || !selectedSize || !selectedColor || !selectedMaterial) {
+      return false;
+    }
+    
+    // Check if variant is available
+    const variantPricing = product.variantPricing?.find(vp => 
+      vp.size.id === selectedSize && 
+      vp.color.id === selectedColor && 
+      vp.material.id === selectedMaterial
+    );
+    
+    return variantPricing?.isAvailable !== false && getCurrentStock() > 0;
   };
 
   const formatPrice = (price: number) => {
@@ -175,7 +213,7 @@ export default function ProductDetailPage() {
     }).format(price);
   };
 
-  if (loading) {
+  if (productLoading) {
     return (
       <>
         <FrameItHeader />
@@ -372,66 +410,147 @@ export default function ProductDetailPage() {
                 </div>
 
                 {/* Variants */}
-                {product.variants.length > 0 && (
-                  <div className="space-y-4">
-                    {/* Size Selection */}
+                <div className="space-y-6">
+                  {/* Size Selection */}
+                  {product?.availableSizes && product.availableSizes.length > 0 && (
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-3">Size</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        {product.variants.map((variant) => (
+                        {product.availableSizes.slice(0, 6).map((size) => (
                           <button
-                            key={variant.name}
-                            onClick={() => {
-                              setSelectedVariant(variant.name);
-                              const defaultColor = variant.colors.find(c => c.isDefault) || variant.colors[0];
-                              if (defaultColor) {
-                                setSelectedColor(defaultColor.value);
-                              }
-                            }}
+                            key={size.id}
+                            onClick={() => setSelectedSize(size.id)}
                             className={`p-3 border-2 rounded-lg text-center transition-all ${
-                              selectedVariant === variant.name
+                              selectedSize === size.id
                                 ? 'border-pink-500 bg-pink-50'
                                 : 'border-gray-200 hover:border-gray-300'
                             }`}
                           >
-                            <div className="font-medium text-gray-900">{variant.displayName}</div>
-                            <div className="text-sm text-gray-600">{formatPrice(variant.basePrice)}</div>
+                            <div className="font-medium text-gray-900">{size.name}</div>
+                            <div className="text-sm text-gray-600">{size.dimensions}</div>
+                            <div className="text-sm text-gray-600">{formatPrice(size.price)}</div>
                           </button>
                         ))}
                       </div>
                     </div>
+                  )}
 
-                    {/* Color Selection */}
-                    {selectedVariant && (
-                      <div>
-                        <h3 className="font-semibold text-gray-900 mb-3">
-                          Color: {product.variants.find(v => v.name === selectedVariant)?.colors.find(c => c.value === selectedColor)?.name}
-                        </h3>
+                  {/* Color Selection */}
+                  {product?.defaultColors && product.defaultColors.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-3">
+                        Color: {product.defaultColors.concat(product.additionalColors || []).find(c => c.id === selectedColor)?.name || 'Select Color'}
+                      </h3>
+                      <div className="space-y-3">
+                        {/* Default Colors */}
                         <div className="flex flex-wrap gap-3">
-                          {product.variants.find(v => v.name === selectedVariant)?.colors.map((color) => (
+                          {product.defaultColors.map((color) => (
                             <button
-                              key={color.value}
-                              onClick={() => setSelectedColor(color.value)}
+                              key={color.id}
+                              onClick={() => setSelectedColor(color.id)}
                               className={`relative w-12 h-12 rounded-full border-4 transition-all ${
-                                selectedColor === color.value
+                                selectedColor === color.id
                                   ? 'border-pink-500 scale-110'
                                   : 'border-gray-200 hover:border-gray-300'
                               }`}
-                              style={{ backgroundColor: color.hexCode || color.value }}
-                              title={`${color.name} - ${color.stock > 0 ? 'In Stock' : 'Out of Stock'}`}
+                              style={{ backgroundColor: color.color }}
+                              title={color.name}
                             >
-                              {color.stock === 0 && (
-                                <div className="absolute inset-0 bg-white/80 rounded-full flex items-center justify-center">
-                                  <span className="text-xs text-gray-500">✕</span>
-                                </div>
-                              )}
                             </button>
                           ))}
                         </div>
+                        
+                        {/* Additional Colors */}
+                        {product.additionalColors && product.additionalColors.length > 0 && (
+                          <div>
+                            {showAllColors && (
+                              <div className="flex flex-wrap gap-3 mb-3">
+                                {product.additionalColors.map((color) => (
+                                  <button
+                                    key={color.id}
+                                    onClick={() => setSelectedColor(color.id)}
+                                    className={`relative w-12 h-12 rounded-full border-4 transition-all ${
+                                      selectedColor === color.id
+                                        ? 'border-pink-500 scale-110'
+                                        : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                                    style={{ backgroundColor: color.color }}
+                                    title={color.name}
+                                  >
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            <button
+                              onClick={() => setShowAllColors(!showAllColors)}
+                              className="text-sm text-pink-600 hover:text-pink-700 font-medium"
+                            >
+                              {showAllColors ? 'Show Less Colors' : `+${product.additionalColors.length} More Colors`}
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                )}
+                    </div>
+                  )}
+
+                  {/* Material Selection */}
+                  {product?.defaultMaterials && product.defaultMaterials.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-3">
+                        Material: {product.defaultMaterials.concat(product.additionalMaterials || []).find(m => m.id === selectedMaterial)?.name || 'Select Material'}
+                      </h3>
+                      <div className="space-y-3">
+                        {/* Default Materials */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          {product.defaultMaterials.map((material) => (
+                            <button
+                              key={material.id}
+                              onClick={() => setSelectedMaterial(material.id)}
+                              className={`p-3 border-2 rounded-lg text-left transition-all ${
+                                selectedMaterial === material.id
+                                  ? 'border-pink-500 bg-pink-50'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              <div className="font-medium text-gray-900">{material.name}</div>
+                              <div className="text-sm text-gray-600">{material.description}</div>
+                            </button>
+                          ))}
+                        </div>
+                        
+                        {/* Additional Materials */}
+                        {product.additionalMaterials && product.additionalMaterials.length > 0 && (
+                          <div>
+                            {showAllMaterials && (
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                                {product.additionalMaterials.map((material) => (
+                                  <button
+                                    key={material.id}
+                                    onClick={() => setSelectedMaterial(material.id)}
+                                    className={`p-3 border-2 rounded-lg text-left transition-all ${
+                                      selectedMaterial === material.id
+                                        ? 'border-pink-500 bg-pink-50'
+                                        : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                                  >
+                                    <div className="font-medium text-gray-900">{material.name}</div>
+                                    <div className="text-sm text-gray-600">{material.description}</div>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            <button
+                              onClick={() => setShowAllMaterials(!showAllMaterials)}
+                              className="text-sm text-pink-600 hover:text-pink-700 font-medium"
+                            >
+                              {showAllMaterials ? 'Show Less Materials' : `+${product.additionalMaterials.length} More Materials`}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Quantity and Add to Cart */}
                 <div className="space-y-4">
@@ -459,13 +578,15 @@ export default function ProductDetailPage() {
                     
                     <div className="flex-1">
                       <div className="text-sm text-gray-600 mb-2">
-                        {getCurrentStock() > 0 ? (
+                        {isVariantAvailable() ? (
                           <span className="text-green-600 flex items-center gap-1">
                             <Check className="w-4 h-4" />
                             {getCurrentStock()} in stock
                           </span>
                         ) : (
-                          <span className="text-red-600">Out of stock</span>
+                          <span className="text-red-600">
+                            {selectedSize && selectedColor && selectedMaterial ? 'Out of stock' : 'Please select all options'}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -475,7 +596,7 @@ export default function ProductDetailPage() {
                   <div className="flex gap-4">
                     <Button 
                       className="flex-1 h-12 text-lg"
-                      disabled={getCurrentStock() === 0}
+                      disabled={!isVariantAvailable() || getCurrentStock() === 0}
                     >
                       <ShoppingCart className="w-5 h-5 mr-2" />
                       Add to Cart
