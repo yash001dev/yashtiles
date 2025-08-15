@@ -70,7 +70,10 @@ export interface Config {
     users: User;
     products: Product;
     'product-categories': ProductCategory;
-    'frame-sizes': FrameSize;
+    sizes: Size;
+    materials: Material;
+    'frame-colors': FrameColor;
+    'hang-options': HangOption;
     blogs: Blog;
     'blog-categories': BlogCategory;
     media: Media;
@@ -84,7 +87,10 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     'product-categories': ProductCategoriesSelect<false> | ProductCategoriesSelect<true>;
-    'frame-sizes': FrameSizesSelect<false> | FrameSizesSelect<true>;
+    sizes: SizesSelect<false> | SizesSelect<true>;
+    materials: MaterialsSelect<false> | MaterialsSelect<true>;
+    'frame-colors': FrameColorsSelect<false> | FrameColorsSelect<true>;
+    'hang-options': HangOptionsSelect<false> | HangOptionsSelect<true>;
     blogs: BlogsSelect<false> | BlogsSelect<true>;
     'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -279,9 +285,9 @@ export interface Product {
    */
   categories: (number | ProductCategory)[];
   /**
-   * Available frame sizes and colors
+   * Available frame sizes
    */
-  variants: (number | FrameSize)[];
+  variants: (number | Size)[];
   /**
    * Key product features
    */
@@ -363,75 +369,135 @@ export interface ProductCategory {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "frame-sizes".
+ * via the `definition` "sizes".
  */
-export interface FrameSize {
+export interface Size {
   id: number;
   /**
-   * Size identifier (e.g., "8x10", "12x16")
+   * Display name for the size (e.g., 8" × 8")
    */
   name: string;
   /**
-   * Display name (e.g., "8″ × 10″")
+   * Description of the format (e.g., Square format, Portrait format)
    */
-  displayName: string;
-  dimensions: {
-    /**
-     * Width in inches
-     */
-    width: number;
-    /**
-     * Height in inches
-     */
-    height: number;
-    /**
-     * Calculated aspect ratio (width/height)
-     */
-    aspectRatio: number;
-  };
+  dimensions: string;
   /**
-   * Base price for this size in INR
+   * Aspect ratio of the size (width/height)
    */
-  basePrice: number;
-  colors: {
-    /**
-     * Color name (e.g., "Classic Black", "Pure White")
-     */
-    name: string;
-    /**
-     * Color code or identifier (e.g., "black", "white", "#000000")
-     */
-    value: string;
-    /**
-     * Hex color code for display
-     */
-    hexCode?: string | null;
-    /**
-     * Color swatch or frame sample image
-     */
-    image?: (number | null) | Media;
-    /**
-     * Price adjustment for this color (+ or -)
-     */
-    priceModifier?: number | null;
-    /**
-     * Available stock for this color
-     */
-    stock?: number | null;
-    /**
-     * Default color for this size
-     */
-    isDefault?: boolean | null;
-    id?: string | null;
-  }[];
-  category: 'small' | 'medium' | 'large' | 'extra-large';
+  aspectRatio: number;
   /**
-   * Mark as popular size
+   * Price in rupees for this size
    */
-  isPopular?: boolean | null;
-  status: 'active' | 'inactive';
+  price: number;
   /**
-   * Display order (lower numbers appear first)
+   * Whether this size is available for selection
+   */
+  available?: boolean | null;
+  /**
+   * Order in which sizes should appear in the UI
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "materials".
+ */
+export interface Material {
+  id: number;
+  /**
+   * Image URL from Imagekit
+   */
+  image: string;
+  /**
+   * Name of the material (e.g., Classic Frame, Frameless)
+   */
+  name: string;
+  /**
+   * Short description of the material
+   */
+  description: string;
+  /**
+   * Detailed content/description for tooltips
+   */
+  content?: string | null;
+  /**
+   * External link for more information
+   */
+  link?: string | null;
+  /**
+   * Whether this material is available for selection
+   */
+  available?: boolean | null;
+  /**
+   * Order in which materials should appear in the UI
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "frame-colors".
+ */
+export interface FrameColor {
+  id: number;
+  /**
+   * Name of the frame color (e.g., Black, White, Brown)
+   */
+  name: string;
+  /**
+   * CSS class for the color (e.g., bg-gray-900, bg-white)
+   */
+  color: string;
+  /**
+   * Description of the frame color
+   */
+  description: string;
+  /**
+   * Whether this frame color is available for selection
+   */
+  available?: boolean | null;
+  /**
+   * Order in which frame colors should appear in the UI
+   */
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hang-options".
+ */
+export interface HangOption {
+  id: number;
+  /**
+   * Image URL from Imagekit
+   */
+  image: string;
+  /**
+   * Name of the hang option (e.g., Stickable Tape, Standard Hook)
+   */
+  name: string;
+  /**
+   * Price display text (e.g., ₹0)
+   */
+  description: string;
+  /**
+   * Detailed content/description for tooltips
+   */
+  content?: string | null;
+  /**
+   * Price in rupees for this hang option
+   */
+  price?: number | null;
+  /**
+   * Whether this hang option is available for selection
+   */
+  available?: boolean | null;
+  /**
+   * Order in which hang options should appear in the UI
    */
   sortOrder?: number | null;
   updatedAt: string;
@@ -788,8 +854,20 @@ export interface PayloadLockedDocument {
         value: number | ProductCategory;
       } | null)
     | ({
-        relationTo: 'frame-sizes';
-        value: number | FrameSize;
+        relationTo: 'sizes';
+        value: number | Size;
+      } | null)
+    | ({
+        relationTo: 'materials';
+        value: number | Material;
+      } | null)
+    | ({
+        relationTo: 'frame-colors';
+        value: number | FrameColor;
+      } | null)
+    | ({
+        relationTo: 'hang-options';
+        value: number | HangOption;
       } | null)
     | ({
         relationTo: 'blogs';
@@ -950,34 +1028,57 @@ export interface ProductCategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "frame-sizes_select".
+ * via the `definition` "sizes_select".
  */
-export interface FrameSizesSelect<T extends boolean = true> {
+export interface SizesSelect<T extends boolean = true> {
   name?: T;
-  displayName?: T;
-  dimensions?:
-    | T
-    | {
-        width?: T;
-        height?: T;
-        aspectRatio?: T;
-      };
-  basePrice?: T;
-  colors?:
-    | T
-    | {
-        name?: T;
-        value?: T;
-        hexCode?: T;
-        image?: T;
-        priceModifier?: T;
-        stock?: T;
-        isDefault?: T;
-        id?: T;
-      };
-  category?: T;
-  isPopular?: T;
-  status?: T;
+  dimensions?: T;
+  aspectRatio?: T;
+  price?: T;
+  available?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "materials_select".
+ */
+export interface MaterialsSelect<T extends boolean = true> {
+  image?: T;
+  name?: T;
+  description?: T;
+  content?: T;
+  link?: T;
+  available?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "frame-colors_select".
+ */
+export interface FrameColorsSelect<T extends boolean = true> {
+  name?: T;
+  color?: T;
+  description?: T;
+  available?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hang-options_select".
+ */
+export interface HangOptionsSelect<T extends boolean = true> {
+  image?: T;
+  name?: T;
+  description?: T;
+  content?: T;
+  price?: T;
+  available?: T;
   sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -7,7 +7,10 @@ import { s3Storage } from "@payloadcms/storage-s3";
 // Import collections
 import { Products } from "./src/payload/collections/Products";
 import { ProductCategories } from "./src/payload/collections/ProductCategories";
-import { FrameSizes } from "./src/payload/collections/FrameSizes";
+import { Sizes } from "./src/payload/collections/Sizes";
+import { Materials } from "./src/payload/collections/Materials";
+import { FrameColors } from "./src/payload/collections/FrameColors";
+import { HangOptions } from "./src/payload/collections/HangOptions";
 import { Blogs } from "./src/payload/collections/Blogs";
 import { BlogCategories } from "./src/payload/collections/BlogCategories";
 import { Media } from "./src/payload/collections/Media";
@@ -24,7 +27,10 @@ export default buildConfig({
     Users,
     Products,
     ProductCategories,
-    FrameSizes,
+    Sizes,
+    Materials,
+    FrameColors,
+    HangOptions,
     Blogs,
     BlogCategories,
     Media,

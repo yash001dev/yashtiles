@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
 import { FrameColorOption, FrameCustomization } from '../types';
 
@@ -17,37 +17,69 @@ const FrameBottomSheet: React.FC<FrameBottomSheetProps> = ({
   currentFrame,
   onSelect,
 }) => {
-  const frameColors: FrameColorOption[] = [
-    {
-      id: 'black',
-      name: 'Black',
-      color: 'bg-gray-900',
-      description: 'Classic black finish',
-    },
-    {
-      id: 'white',
-      name: 'White',
-      color: 'bg-white border border-gray-200',
-      description: 'Clean white finish',
-    },
-    // {
-    //   id: 'oak',
-    //   name: 'Oak',
-    //   color: 'bg-gradient-to-br from-amber-100 to-amber-200',
-    //   description: 'Natural wood grain',
-    // },
-    {
-      id: 'brown',
-      name: 'Brown',
-      color: 'bg-amber-800', // distinct brown, not too close to black
-      description: 'Warm brown finish',
-    },
-  ];
+  const [frameColors, setFrameColors] = useState<FrameColorOption[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/frame-colors?where[available][equals]=true&sort=sortOrder`);
+        if (!res.ok) throw new Error('Failed to fetch frame colors');
+        const data = await res.json();
+        const mapped: FrameColorOption[] = (data?.docs || []).map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          color: c.color,
+          description: c.description,
+        }));
+        if (isMounted) setFrameColors(mapped);
+      } catch (e: any) {
+        if (isMounted) setError(e?.message || 'Failed to load frame colors');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleSelect = (frameId: FrameCustomization['frameColor']) => {
     onSelect(frameId);
     onClose();
-  };  return (
+  };
+  if (loading) {
+    return (
+      <ResponsiveBottomSheet 
+        isOpen={isOpen} 
+        onClose={onClose} 
+        title="Select Frame"
+        description="Loading frame colors..."    >
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+        </div>
+      </ResponsiveBottomSheet>
+    );
+  }
+
+  if (error) {
+    return (
+      <ResponsiveBottomSheet 
+        isOpen={isOpen} 
+        onClose={onClose} 
+        title="Select Frame"
+        description="Error loading frame colors"    >
+        <div className="text-center py-8">
+          <p className="text-red-500">{error}</p>
+        </div>
+      </ResponsiveBottomSheet>
+    );
+  }
+  return (
     <ResponsiveBottomSheet 
       isOpen={isOpen} 
       onClose={onClose} 
@@ -55,7 +87,7 @@ const FrameBottomSheet: React.FC<FrameBottomSheetProps> = ({
       description="Choose the perfect frame color for your photo"    >
       <div className="space-y-4">
         <div className="space-y-3">
-        {frameColors.map((frame) => (
+        {frameColors.map((frame: FrameColorOption) => (
           <button
             key={frame.id}
             onClick={() => handleSelect(frame.id)}
@@ -71,11 +103,6 @@ const FrameBottomSheet: React.FC<FrameBottomSheetProps> = ({
               <h3 className="font-medium text-gray-900">{frame.name}</h3>
               <p className="text-sm text-gray-500">{frame.description}</p>
             </div>
-
-            {/* {currentFrame === frame.id && (
-              <div className="w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center animate-pulse">                <div className="w-2 h-2 bg-white rounded-full" />
-              </div>
-            )} */}
           </button>
         ))}
         </div>

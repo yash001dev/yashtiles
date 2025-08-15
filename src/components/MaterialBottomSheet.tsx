@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
 import { MaterialOption, FrameCustomization } from '../types';
 import TooltipCard from './common/TooltipCard';
@@ -18,37 +18,73 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
   currentMaterial,
   onSelect,
 }) => {
-  const materials: MaterialOption[] = [
-    {
-      id: 'classic',
-      name: 'Classic Frame',
-      image: '/frames/classic_frame.jpg',
-      description: 'Traditional frame with mounting',
-      content: 'Timeless, premium look, printed on superios paper. Available in regular and wide frame options. ',
-      link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Classic+Frames&query=Classic+Frames',
-    },
-    {
-      id: 'frameless',
-      name: 'Frameless',
-      image: '/frames/frameless_frame.jpg',
-      description: 'Clean, modern look',
-      content: 'Clean, modern look, printed on superios paper. with easy magenetic mounting. ',
-      link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Frameless+Frames&query=Frameless+Frames',
-    },
-    {
-      id: 'canvas',
-      name: 'Canvas',
-      image: '/frames/canvas_frame.jpg',
-      description: 'Textured canvas finish',
-      content:"wooden structure used to stretch and hold a canvas taut, providing a sturdy surface for painting and a way to display your artwork.",
-      link: 'https://www.freepik.com/search?format=search&last_filter=query&last_value=Canvas+Frames&query=Canvas+Frames',
-    },
-  ];
+  const [materials, setMaterials] = useState<MaterialOption[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/materials?where[available][equals]=true&sort=sortOrder`);
+        if (!res.ok) throw new Error('Failed to fetch materials');
+        const data = await res.json();
+        const mapped: MaterialOption[] = (data?.docs || []).map((m: any) => ({
+          id: m.id,
+          name: m.name,
+          description: m.description,
+          content: m.content || '',
+          link: m.link || '',
+          image: (m as any).image || '',
+        }));
+        if (isMounted) setMaterials(mapped);
+      } catch (e: any) {
+        if (isMounted) setError(e?.message || 'Failed to load materials');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleSelect = (materialId: FrameCustomization['material']) => {
     onSelect(materialId);
     // onClose();
   };
+
+  if (loading) {
+    return (
+      <ResponsiveBottomSheet 
+        isOpen={isOpen} 
+        onClose={onClose} 
+        childClassName='!overflow-y-visible'
+        title="Select Material"
+        description="Loading materials..."    >
+        <div className="flex items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
+        </div>
+      </ResponsiveBottomSheet>
+    );
+  }
+
+  if (error) {
+    return (
+      <ResponsiveBottomSheet 
+        isOpen={isOpen} 
+        onClose={onClose} 
+        childClassName='!overflow-y-visible'
+        title="Select Material"
+        description="Error loading materials"    >
+        <div className="text-center py-8">
+          <p className="text-red-500">{error}</p>
+        </div>
+      </ResponsiveBottomSheet>
+    );
+  }
   return (
     <ResponsiveBottomSheet 
       isOpen={isOpen} 
@@ -57,7 +93,7 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
       title="Select Material"
       description="Choose the perfect material for your frame"    >
       <div className="space-y-4 mt-[0.4rem]">
-        {materials.map((material) => (
+        {materials.map((material: MaterialOption) => (
           <button
             key={material.id}
             onClick={() => handleSelect(material.id)}
@@ -69,11 +105,15 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
           >
             <div className="flex items-center space-x-4 p-4">
               <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
-                <img
-                  src={material.image}
-                  alt={material.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
+                {material.image ? (
+                  <img
+                    src={material.image}
+                    alt={material.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-100" />
+                )}
               </div>
               
               <div className="flex-1 text-left">
@@ -85,19 +125,9 @@ const MaterialBottomSheet: React.FC<MaterialBottomSheetProps> = ({
                 </p>
               </div>
 
-              {/* {currentMaterial === material.id && (
-                <div className="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center animate-pulse">
-                  <div className="w-2 h-2 bg-white rounded-full" />
-                </div>
-              )} */}
-
-              {/* <button className="p-2 bg-gray-100 rounded-full ">
-                <Info size={16} className="text-gray-600" />
-              </button> */}
               <TooltipCard
-                // title={material.name}
-                content={material?.content ?? ""}
-                link={material?.link ?? ""}
+                content={material?.content ?? ''}
+                link={material?.link ?? ''}
                 pageName="Material"
                 className="z-[9999] w-full"
                 iconClassName="text-pink-600"

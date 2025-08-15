@@ -113,11 +113,11 @@ export const Products: CollectionConfig = {
     {
       name: 'variants',
       type: 'relationship',
-      relationTo: 'frame-sizes',
+      relationTo: 'sizes' as any,
       hasMany: true,
       required: true,
       admin: {
-        description: 'Available frame sizes and colors',
+        description: 'Available frame sizes',
       },
     },
     {
