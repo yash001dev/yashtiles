@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Thumbs, Zoom } from 'swiper/modules';
+import { Navigation, Pagination, Thumbs, Zoom, EffectCoverflow, Autoplay } from 'swiper/modules';
 import { 
   Star, 
   Heart, 
@@ -74,6 +74,7 @@ interface Product {
   };
   stock: number;
   sku: string;
+  featured?: boolean;
 }
 
 interface PageContent {
@@ -101,11 +102,15 @@ export default function ProductDetailPage() {
     const fetchProduct = async () => {
       try {
         setLoading(true);
+
         
-        // Fetch product
-        const productResponse = await fetch(`/api/products?where[slug][equals]=${slug}&status=published`);
-        const productData = await productResponse.json();
+        // Fetch product - try both with and without leading slash
+        let productResponse = await fetch(`/api/products?where[slug][equals]=${encodeURIComponent(`${slug}`)}&status=published`);
+        let productData = await productResponse.json();
         
+        
+        
+
         if (productData.docs && productData.docs.length > 0) {
           const productItem = productData.docs[0];
           setProduct(productItem);
@@ -509,7 +514,7 @@ function ProductDetailsTabs({ product }: { product: Product }) {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200 mb-8">
+          <div className="flex border-b border-gray-200 mb-8 max-w-full overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -1046,5 +1051,48 @@ function RelatedProducts({ categories, currentProductId }: {
         </div>
       </div>
     </section>
+  );
+}
+
+// Simple Product Card Component
+function ProductCard({ product }: { product: Product }) {
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+    }).format(price);
+  };
+
+  return (
+    <Link href={`/products${product.slug.startsWith('/') ? product.slug : `/${product.slug}`}`}>
+      <div className="group bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow duration-300">
+        {product.images && product.images.length > 0 && (
+          <div className="aspect-square overflow-hidden rounded-t-lg">
+            <img
+              src={product.images[0].image.url}
+              alt={product.images[0].alt}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        )}
+        <div className="p-4">
+          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
+          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.shortDescription}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-gray-900">{formatPrice(product.price)}</span>
+              {product.compareAtPrice && product.compareAtPrice > product.price && (
+                <span className="text-sm text-gray-500 line-through">
+                  {formatPrice(product.compareAtPrice)}
+                </span>
+              )}
+            </div>
+            <Button size="sm" variant="outline">
+              View Details
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
