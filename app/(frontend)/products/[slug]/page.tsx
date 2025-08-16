@@ -474,10 +474,10 @@ export default function ProductDetailPage() {
                   )}
                 </AnimatePresence>
               </motion.div>
-            </div>
+          </div>
 
             {/* Right Column - Product Info (Scrollable) */}
-            <div className="w-full lg:w-1/2 lg:max-h-screen lg:overflow-y-auto lg:pr-4">
+            <div className="w-full lg:w-1/2 lg:pr-4">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
