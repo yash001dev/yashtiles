@@ -1,7 +1,7 @@
 import { useGetFrameColorsQuery } from "../redux/api/resourcesApi";
 import { FrameColorOption } from "../types";
 
-interface FrameColorData {
+export interface FrameColorData {
   id: string;
   name: string;
   color: string;
