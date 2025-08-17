@@ -20,8 +20,25 @@ export const useSizes = () => {
     refetch,
   } = useGetSizesQuery();
 
+  //Replace id with name
+  const formattedSizes = sizes.map((size: SizeData) => {
+    const id = size?.name
+      ?.replace(/"/g, "") // remove quotes
+      .replace("×", "x") // replace × with x
+      .replace(/\s+/g, " ") // normalize spaces
+      .replace(/\s+/g, "") // remove all spaces
+      .replace(/[^\dx]/g, ""); // keep only digits and x
+    return {
+      id,
+      name: size.name,
+      dimensions: size.dimensions,
+      aspectRatio: size.aspectRatio,
+      price: size.price,
+    };
+  });
+
   return {
-    data: sizes,
+    data: formattedSizes,
     isLoading,
     isError,
     error,

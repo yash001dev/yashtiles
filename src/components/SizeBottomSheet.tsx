@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Search, ChevronRight } from "lucide-react";
 import { ResponsiveBottomSheet } from "./ResponsiveBottomSheet";
 import { SizeOption, FrameCustomization } from "../types";
+import { useSizes } from "@/hooks/useSizes";
 
 interface SizeBottomSheetProps {
   isOpen: boolean;
@@ -19,37 +20,9 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
   onSelect,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sizes, setSizes] = useState<SizeOption[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
-    async function load() {
-      try {
-        setLoading(true);
-        const res = await fetch(`/api/sizes?where[available][equals]=true&sort=sortOrder`);
-        if (!res.ok) throw new Error('Failed to fetch sizes');
-        const data = await res.json();
-        const mapped: SizeOption[] = (data?.docs || []).map((s: any) => ({
-          id: s.id,
-          name: s.name,
-          dimensions: s.dimensions,
-          aspectRatio: s.aspectRatio,
-          price: s.price,
-        }));
-        if (isMounted) setSizes(mapped);
-      } catch (e: any) {
-        if (isMounted) setError(e?.message || 'Failed to load sizes');
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+
+  const { data: sizes, isLoading: loading, isError: error } = useSizes();
 
   const filteredSizes = sizes.filter(
     (size) =>
@@ -61,6 +34,8 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
     onSelect(sizeId);
     onClose();
   };
+
+  console.log("Filtered sizes:", filteredSizes);
 
   if (loading) {
     return (
