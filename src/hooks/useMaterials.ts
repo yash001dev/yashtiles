@@ -23,8 +23,20 @@ export const useMaterials = () => {
     refetch,
   } = useGetMaterialsQuery();
 
+  const formattedMaterials = materials.map((material: MaterialData) => {
+    console.log("inage:", material);
+    return {
+      id: material.name,
+      name: material.name,
+      description: material.description,
+      content: material.content,
+      link: material.link,
+      image: material.image?.url,
+    };
+  });
+
   return {
-    data: materials,
+    data: formattedMaterials,
     isLoading,
     isError,
     error,
