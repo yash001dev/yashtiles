@@ -7,6 +7,7 @@ import { s3Storage } from "@payloadcms/storage-s3";
 // Import collections
 import { Products } from "./src/payload/collections/Products";
 import { ProductCategories } from "./src/payload/collections/ProductCategories";
+import { ProductTemplates } from "./src/payload/collections/ProductTemplates";
 import { Sizes } from "./src/payload/collections/Sizes";
 import { Materials } from "./src/payload/collections/Materials";
 import { FrameColors } from "./src/payload/collections/FrameColors";
@@ -27,6 +28,7 @@ export default buildConfig({
     Users,
     Products,
     ProductCategories,
+    ProductTemplates,
     Sizes,
     Materials,
     FrameColors,

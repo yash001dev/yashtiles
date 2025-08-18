@@ -55,6 +55,15 @@ interface Product {
   price: number;
   basePrice: number;
   compareAtPrice?: number;
+  template?: {
+    id: string;
+    name: string;
+    slug: string;
+    blocks: Array<{
+      blockType: string;
+      [key: string]: any;
+    }>;
+  };
   images: Array<{
     image: {
       url: string;
@@ -224,7 +233,7 @@ export const resourcesApi = createApi({
     getProductBySlug: builder.query<Product | null, string>({
       query: (slug) => {
         // Try with slug as is first, then with leading slash
-        return `products?where[slug][equals]=${slug}&status=published`;
+        return `products?where[slug][equals]=${slug}&status=published&populate=template`;
       },
       transformResponse: (response: PayloadResponse<any>, meta, arg) => {
         if (response.docs && response.docs.length > 0) {
@@ -237,7 +246,7 @@ export const resourcesApi = createApi({
 
     // Fallback query for products with leading slash
     getProductBySlugWithSlash: builder.query<Product | null, string>({
-      query: (slug) => `products?where[slug][equals]=/${slug}&status=published`,
+      query: (slug) => `products?where[slug][equals]=/${slug}&status=published&populate=template`,
       transformResponse: (response: PayloadResponse<any>) => {
         if (response.docs && response.docs.length > 0) {
           return response.docs[0];

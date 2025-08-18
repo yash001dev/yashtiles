@@ -77,6 +77,14 @@ export const Products: CollectionConfig = {
               },
             },
             {
+              name: "template",
+              type: "relationship",
+              relationTo: "product-templates",
+              admin: {
+                description: "Select template for product page layout (default template will be used if not selected)",
+              },
+            },
+            {
               name: "status",
               type: "select",
               options: [
@@ -382,6 +390,31 @@ export const Products: CollectionConfig = {
         }
 
         return data;
+      },
+    ],
+    afterRead: [
+      async ({ doc, req }) => {
+        // If no template is selected, get the default template
+        if (!doc.template) {
+          try {
+            const defaultTemplate = await req.payload.find({
+              collection: 'product-templates',
+              where: {
+                isDefault: { equals: true },
+                status: { equals: 'active' },
+              },
+              limit: 1,
+            });
+            
+            if (defaultTemplate.docs.length > 0) {
+              doc.template = defaultTemplate.docs[0];
+            }
+          } catch (error) {
+            console.error('Error fetching default template:', error);
+          }
+        }
+        
+        return doc;
       },
     ],
   },
