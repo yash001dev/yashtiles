@@ -93,6 +93,7 @@ interface FramePreviewCanvasProps {
   backgroundImage?: string;
   wallColor?: string;
   onFrameDrag?: (pos: { x: number; y: number }) => void;
+  imageFit?: 'cover' | 'fill' | 'contain' | 'none';
 }
 
 const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
@@ -100,7 +101,8 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   uploadedImage,
   backgroundImage = "/framedecor1.png",
   wallColor = "#f3f4f6",
-  onFrameDrag
+  onFrameDrag,
+  imageFit = 'cover'
 }) => {
   const stageRef = useRef<any>(null);
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 });
@@ -219,25 +221,38 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   let offsetY = 0;
 
   if (frameImg) {
-    if (customization.material === 'frameless' || customization.material === 'canvas') {
-      if (imageAspect > areaAspect) {
-        displayHeight = availableHeight;
-        displayWidth = availableHeight * imageAspect;
-        offsetX = (availableWidth - displayWidth) / 2;
-      } else {
-        displayWidth = availableWidth;
-        displayHeight = availableWidth / imageAspect;
-        offsetY = (availableHeight - displayHeight) / 2;
-      }
+    if (imageFit === 'fill') {
+      // Fill mode: stretch to fill the available space
+      displayWidth = availableWidth;
+      displayHeight = availableHeight;
+      offsetX = 0;
+      offsetY = 0;
     } else {
-      if (imageAspect > areaAspect) {
-        displayWidth = availableWidth;
-        displayHeight = availableWidth / imageAspect;
-        offsetY = (availableHeight - displayHeight) / 2;
+      // Cover mode: maintain aspect ratio and cover the entire area
+      if (customization.material === 'frameless' || customization.material === 'canvas') {
+        if (imageAspect > areaAspect) {
+          // Image is wider than area - match height
+          displayHeight = availableHeight;
+          displayWidth = availableHeight * imageAspect;
+          offsetX = (availableWidth - displayWidth) / 2;
+        } else {
+          // Image is taller than area - match width
+          displayWidth = availableWidth;
+          displayHeight = availableWidth / imageAspect;
+          offsetY = (availableHeight - displayHeight) / 2;
+        }
       } else {
-        displayHeight = availableHeight;
-        displayWidth = availableHeight * imageAspect;
-        offsetX = (availableWidth - displayWidth) / 2;
+        if (imageAspect > areaAspect) {
+          // Image is wider than area - match height
+          displayWidth = availableWidth;
+          displayHeight = availableWidth / imageAspect;
+          offsetY = (availableHeight - displayHeight) / 2;
+        } else {
+          // Image is taller than area - match width
+          displayHeight = availableHeight;
+          displayWidth = availableHeight * imageAspect;
+          offsetX = (availableWidth - displayWidth) / 2;
+        }
       }
     }
   }
@@ -290,8 +305,8 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
              onDragStart={handleFrameDragStart}
              onDragEnd={handleFrameDragEnd}
              opacity={isDragging ? 0.8 : 1}
-             scaleX={isDragging ? 0.45 : 0.4}
-             scaleY={isDragging ? 0.45 : 0.4}
+             scaleX={isDragging ? 0.35 : 0.3}
+             scaleY={isDragging ? 0.35 : 0.3}
            >
              {/* Frame rendering (same as KonvaFrameRenderer) */}
              {customization.material === 'classic' ? (
@@ -484,13 +499,13 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
                    image={frameImg}
                    width={displayWidth}
                    height={displayHeight}
-                   x={offsetX + (transform.x || 0)}
-                   y={offsetY + (transform.y || 0)}
-                   scaleX={transform.scale}
-                   scaleY={transform.scale}
-                   rotation={transform.rotation}
+                   x={imageFit === 'fill' ? 0 : offsetX + (transform.x || 0)}
+                   y={imageFit === 'fill' ? 0 : offsetY + (transform.y || 0)}
+                   scaleX={imageFit === 'fill' ? 1 : transform.scale}
+                   scaleY={imageFit === 'fill' ? 1 : transform.scale}
+                   rotation={imageFit === 'fill' ? 0 : transform.rotation}
                    filters={[]}
-                   style={{ filter: getEffectFilter(customization.effect) }}
+                   style={{ filter: getEffectFilter(customization.effect)}}
                    listening={false}
                    perfectDrawEnabled={false}
                  />

@@ -15,6 +15,7 @@ interface FramePreviewProps {
   wallColor?: string;
   mode?: 'edit' | 'preview';
   onFrameDrag?: (pos: { x: number; y: number }) => void;
+  imageFitMode?: 'contain' | 'cover' | 'fill' | 'none';
 }
 
 const FramePreview: React.FC<FramePreviewProps> = ({
@@ -26,7 +27,8 @@ const FramePreview: React.FC<FramePreviewProps> = ({
   backgroundImage = "/framedecor1.png",
   wallColor = "#f3f4f6",
   mode = 'edit',
-  onFrameDrag
+  onFrameDrag,
+  imageFitMode
 }) => {
   if (mode === 'preview') {
     return (
@@ -36,6 +38,7 @@ const FramePreview: React.FC<FramePreviewProps> = ({
         backgroundImage={backgroundImage}
         wallColor={wallColor}
         onFrameDrag={onFrameDrag}
+        imageFit={imageFitMode}
       />
     );
   }

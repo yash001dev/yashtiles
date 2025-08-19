@@ -28,6 +28,7 @@ import FrameItFooter from '@/components/dashboard/FrameItFooter';
 import Link from 'next/link';
 import { useProductBySlug } from '@/hooks/useProductBySlug';
 import { useGetPageContentQuery, useGetProductsByCategoryQuery } from '@/redux/api/resourcesApi';
+import { useSizes } from '@/hooks/useSizes';
 import { PDPPreviewCanvas } from '@/components/PDPPreviewCanvas';
 
 // Import Swiper styles
@@ -104,6 +105,7 @@ interface Product {
     feature: string;
   }>;
   specifications: {
+    material: string;
     weight?: string;
     dimensions?: string;
     mounting: string;
@@ -128,6 +130,13 @@ export default function ProductDetailPage() {
   // Use RTK Query hooks
   const { data: product, isLoading: productLoading, isError: productError } = useProductBySlug(slug);
   const { data: pageContent } = useGetPageContentQuery('pdp');
+  const { data: sizes = [], isLoading: sizesLoading } = useSizes();
+
+  // Get selected size data from sizes hook
+  const getSelectedSizeData = () => {
+    const sizeName = selectedSize || (product?.availableSizes?.[0]?.name);
+    return sizes.find(s => s.name === sizeName) || product?.availableSizes?.find(s => s.name === sizeName);
+  };
   
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
@@ -148,7 +157,7 @@ export default function ProductDetailPage() {
     if (product) {
       // Set default size (first available size)
       if (product.availableSizes && product.availableSizes.length > 0) {
-        setSelectedSize(product.availableSizes[0].id);
+        setSelectedSize(product.availableSizes[0].name);
       }
       
       // Set default color (first default color)
@@ -282,7 +291,7 @@ export default function ProductDetailPage() {
       <FrameItHeader />
       
       {/* Breadcrumb */}
-      <nav className="bg-white border-b py-4">
+      <nav className="bg-white border-b py-3">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Link href="/" className="hover:text-pink-600">Home</Link>
@@ -295,7 +304,7 @@ export default function ProductDetailPage() {
       </nav>
 
       {/* Product Details */}
-      <section className="py-6 md:py-12 bg-white">
+      <section className="py-3 md:py-5 bg-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
             {/* Left Column - Product Gallery with View Toggle (Sticky on Desktop) */}
@@ -366,7 +375,7 @@ export default function ProductDetailPage() {
                           effect="fade"
                           fadeEffect={{ crossFade: true }}
                           onSlideChange={(swiper) => setActiveImageIndex(swiper.activeIndex)}
-                          className="aspect-square rounded-2xl overflow-hidden shadow-lg bg-gray-100"
+                          className="aspect-square rounded-2xl overflow-hidden shadow-lg bg-gray-100 max-w-[500px] max-h-[500px]"
                         >
                           {product.images.map((img, index) => (
                             <SwiperSlide key={index}>
@@ -438,9 +447,9 @@ export default function ProductDetailPage() {
                       <div className="flex justify-center">
                         <PDPPreviewCanvas
                           selectedImage={product.images[activeImageIndex]?.image.url || product.images[0]?.image.url}
-                          selectedSize={getSelectedVariants().size || { name: 'Standard', dimensions: '12x12', aspectRatio: 1 }}
+                          selectedSize={getSelectedSizeData()?.id || '12x12'}
                           selectedColor={getSelectedVariants().color?.color || '#8B4513'}
-                          selectedMaterial={getSelectedVariants().material?.name || 'Wood'}
+                          selectedMaterial={getSelectedVariants().material?.name?.split(' ')[0].toLowerCase() || 'classic'}
                           wallImage={wallImage}
                           onWallImageChange={setWallImage}
                           className="w-full max-w-md"
@@ -542,9 +551,9 @@ export default function ProductDetailPage() {
                         {product.availableSizes.slice(0, 6).map((size) => (
                           <button
                             key={size.id}
-                            onClick={() => setSelectedSize(size.id)}
+                            onClick={() => setSelectedSize(size.name)}
                             className={`p-3 border-2 rounded-lg text-center transition-all ${
-                              selectedSize === size.id
+                              selectedSize === size.name
                                 ? 'border-pink-500 bg-pink-50'
                                 : 'border-gray-200 hover:border-gray-300'
                             }`}

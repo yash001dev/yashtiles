@@ -221,7 +221,6 @@ const KonvaFrameRenderer = forwardRef<
   // --- Aspect ratio fit logic ---
   // Calculate available area for image (custom border should not affect frame structure)
   const customBorderWidth = showCustomBorder ? Math.max(customization.borderWidth! * 3, 8) : 0; // Make border more prominent
-  console.log("customBorderWidth:", customBorderWidth);
   
   // Base available area calculation (without custom border influence on frame)
   const baseAvailableWidth = customization.material === 'frameless' || customization.material === 'canvas'
@@ -359,7 +358,6 @@ const KonvaFrameRenderer = forwardRef<
         const dataUrl = targetStage.toDataURL({ pixelRatio: 2 });
         // Also store it in Redux if frameId is available
         if (frameId) {
-          console.log("frame id:",frameId)
           dispatch(setPrintReadyImage({ frameId, dataUrl }));
         }
         return dataUrl;
@@ -370,7 +368,6 @@ const KonvaFrameRenderer = forwardRef<
 
    const outline = 9;
     const translate = 8;
-      console.log("frame color:",frameColor)
 
 
   return (
@@ -832,7 +829,7 @@ const KonvaFrameRenderer = forwardRef<
     x: image.width * 0.9, // start at 90% of image width
     y: 19,
     width: image.width * 0.1, // last 10% of image width
-    height: image.height
+    height: image.height,
   }}
     />
   )}
@@ -986,8 +983,6 @@ const KonvaFrameRenderer = forwardRef<
                     onDragStart={handleImageDragStart}
                     onDragEnd={handleImageDragEnd}
                     //Add shadow
-                   
-
                   />
                 )}
                 
