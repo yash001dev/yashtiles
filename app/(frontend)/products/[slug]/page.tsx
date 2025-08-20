@@ -32,7 +32,7 @@ import Link from 'next/link';
 import { useProductBySlug } from '@/hooks/useProductBySlug';
 import { useGetPageContentQuery, useGetProductsByCategoryQuery } from '@/redux/api/resourcesApi';
 import { useSizes } from '@/hooks/useSizes';
-import { PDPPreviewCanvas } from '@/components/PDPPreviewCanvas';
+import  PDPPreviewCanvas from '@/components/PDPPreviewCanvas';
 
 // Import Swiper styles
 import 'swiper/css';

@@ -157,7 +157,8 @@ export const resourcesApi = createApi({
   endpoints: (builder) => ({
     // Materials endpoints
     getMaterials: builder.query<MaterialData[], void>({
-      query: () => "materials?where[available][equals]=true&sort=sortOrder",
+      query: () =>
+        "materials?where[available][equals]=true&sort=sortOrder&limit=100",
       transformResponse: (response: PayloadResponse<any>) =>
         response.docs.map((material: any) => ({
           id: material.id,
@@ -174,7 +175,8 @@ export const resourcesApi = createApi({
 
     // Frame Colors endpoints
     getFrameColors: builder.query<FrameColorData[], void>({
-      query: () => "frame-colors?where[available][equals]=true&sort=sortOrder",
+      query: () =>
+        "frame-colors?where[available][equals]=true&sort=sortOrder&limit=100",
       transformResponse: (response: PayloadResponse<any>) =>
         response.docs.map((color: any) => ({
           id: color.id,
@@ -189,7 +191,8 @@ export const resourcesApi = createApi({
 
     // Hang Options endpoints
     getHangOptions: builder.query<HangOptionData[], void>({
-      query: () => "hang-options?where[available][equals]=true&sort=sortOrder",
+      query: () =>
+        "hang-options?where[available][equals]=true&sort=sortOrder&limit=100",
       transformResponse: (response: PayloadResponse<any>) =>
         response.docs.map((option: any) => ({
           id: option.id,
@@ -206,7 +209,7 @@ export const resourcesApi = createApi({
 
     // Sizes endpoints
     getSizes: builder.query<SizeData[], void>({
-      query: () => "sizes?where[available][equals]=true&sort=sortOrder",
+      query: () => "sizes?where[available][equals]=true&sort=id&limit=100",
       transformResponse: (response: PayloadResponse<any>) =>
         response.docs.map((size: any) => ({
           id: size.id,

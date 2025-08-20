@@ -38,7 +38,8 @@ const FramePreview: React.FC<FramePreviewProps> = ({
         backgroundImage={backgroundImage}
         wallColor={wallColor}
         onFrameDrag={onFrameDrag}
-        imageFit={imageFitMode}
+        imageFit={"cover"}
+        fromPDP={true}
       />
     );
   }

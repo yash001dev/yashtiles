@@ -93,6 +93,8 @@ interface FramePreviewCanvasProps {
   backgroundImage?: string;
   wallColor?: string;
   onFrameDrag?: (pos: { x: number; y: number }) => void;
+  imageFit?: 'contain' | 'cover' | 'fill' | 'none';
+  fromPDP?: boolean;
 }
 
 const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
@@ -100,7 +102,8 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   uploadedImage,
   backgroundImage = "/framedecor1.png",
   wallColor = "#f3f4f6",
-  onFrameDrag
+  onFrameDrag,
+  fromPDP=false,
 }) => {
   const stageRef = useRef<any>(null);
   const [stageSize, setStageSize] = useState({ width: 800, height: 600 });
@@ -363,7 +366,9 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
                    y={frameBorder}
                    width={frameSize.width - 2 * frameBorder}
                    height={frameSize.height - 2 * frameBorder}
-                   fill={customization.borderColor ?? '#fff'}
+                   fill={
+                    fromPDP?'#fff':
+                    customization.borderColor ?? '#fff'}
                  />
                  
                  {/* Inner shadow for border thickness illusion */}
