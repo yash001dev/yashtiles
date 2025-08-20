@@ -91,12 +91,13 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
     }
   }, [isOpen]);
 
-  // Calculate total amount
-  const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
+  // Calculate totals
+  const cartTotal = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+  // const gstAmount = cartTotal * 0.12; // 12% GST
+  const shippingCharges = 59; // Fixed shipping charge
+  const totalAmount = cartTotal  + shippingCharges;
 
   if (!isOpen || items.length === 0) return null;
-
-  const cartTotal = items.reduce((sum, item) => sum + item.price, 0);
 
   // PayU integration handler
   const handleCartClick = async (shippingData: ShippingFormData) => {
@@ -352,7 +353,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
                           </p>
                         </div>
                       </div>
-                      <p className="font-semibold text-gray-900">₹{item.price}</p>
+                      <p className="font-semibold text-gray-900">₹{item.price * (item.quantity || 1)}</p>
                     </div>
                   );
                 })}
@@ -514,7 +515,23 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
               <div className="border-t border-gray-200 pt-4">
                 <div className="flex items-center justify-between text-lg font-semibold">
                   <span>Total:</span>
-                  <span>₹{totalAmount}</span>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-gray-600">
+                      <span>Sub Total</span>
+                      <span>₹{cartTotal}</span>
+                    </div>
+                   
+                    <div className="flex justify-between text-gray-600">
+                      <span>Shipping</span>
+                      <span>₹{shippingCharges}</span>
+                    </div>
+                    <div className="border-t pt-2 mt-2">
+                      <div className="flex justify-between font-semibold">
+                        <span>Grand Total</span>
+                        <span>₹{totalAmount.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 

@@ -98,10 +98,6 @@ export default function CartPage() {
                     <span>Sub Total</span>
                     <span>{formatPrice(getTotalAmount())}</span>
                   </div>
-                  <div className="flex justify-between text-gray-500">
-                    <span>GST (12%)</span>
-                    <span>{formatPrice(getTotalAmount() * 0.12)}</span>
-                  </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
                     <span>₹59</span>
@@ -109,7 +105,7 @@ export default function CartPage() {
                   <div className="border-t pt-2 mt-2">
                     <div className="flex justify-between font-semibold">
                       <span>Grand Total</span>
-                      <span>{formatPrice(getTotalAmount() * 1.12 + 59)}</span>
+                      <span>{formatPrice(getTotalAmount() + 59)}</span>
                     </div>
                   </div>
                 </div>
