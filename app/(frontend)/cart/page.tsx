@@ -84,7 +84,7 @@ export default function CartPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">{formatPrice(item.price * item.quantity)}</p>
+                    <p className="font-semibold">{formatPrice(item.price)}</p>
                   </div>
                 </div>
               ))}

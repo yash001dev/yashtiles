@@ -513,24 +513,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
 
               {/* Order Total */}
               <div className="border-t border-gray-200 pt-4">
-                <div className="flex items-center justify-between text-lg font-semibold">
-                  <span>Total:</span>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-gray-600">
-                      <span>Sub Total</span>
-                      <span>₹{cartTotal}</span>
-                    </div>
-                   
-                    <div className="flex justify-between text-gray-600">
-                      <span>Shipping</span>
-                      <span>₹{shippingCharges}</span>
-                    </div>
-                    <div className="border-t pt-2 mt-2">
-                      <div className="flex justify-between font-semibold">
-                        <span>Grand Total</span>
-                        <span>₹{totalAmount.toFixed(2)}</span>
-                      </div>
-                    </div>
+                <div className="flex flex-col space-y-3">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Shipping</span>
+                    <span>₹{shippingCharges}</span>
+                  </div>
+                  <div className="flex justify-between text-lg font-semibold">
+                    <span>Grand Total</span>
+                    <span>₹{totalAmount.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
