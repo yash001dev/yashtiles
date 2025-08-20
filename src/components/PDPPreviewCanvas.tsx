@@ -28,7 +28,7 @@ const colorMap = {
   "#964b00": "brown"
 } as Record<string,string>
 
-export const PDPPreviewCanvas: React.FC<PDPPreviewCanvasProps> = ({
+const PDPPreviewCanvas: React.FC<PDPPreviewCanvasProps> = ({
   selectedImage,
   selectedSize,
   selectedColor,
@@ -174,3 +174,5 @@ export const PDPPreviewCanvas: React.FC<PDPPreviewCanvasProps> = ({
     </div>
   );
 };
+
+export default PDPPreviewCanvas;
