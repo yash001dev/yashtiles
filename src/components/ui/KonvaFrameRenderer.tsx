@@ -146,23 +146,84 @@ const KonvaFrameRenderer = forwardRef<
 }, ref) => {
   const dispatch = useAppDispatch();
 
-  // Responsive width logic
-  const [responsiveWidth, setResponsiveWidth] = useState<number>(typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400);
+  // Viewport size tracking for responsive scaling (adapted for frame editor sidebar)
+  const [viewportSize, setViewportSize] = useState({ width: 800, height: 600 });
 
   useEffect(() => {
-    const handleResize = () => {
-      setResponsiveWidth(Math.min(400, window.innerWidth - 32));
+    const updateViewportSize = () => {
+      // For the frame editor, use a more constrained viewport calculation
+      // since this is typically shown in a sidebar, not full-screen
+      const availableWidth = Math.min(window.innerWidth * 0.4, 500); // Max 40% of screen or 500px
+      const availableHeight = Math.min(window.innerHeight * 0.8, 800); // Max 80% of screen or 800px
+      
+      const minWidth = 300;
+      const minHeight = 400;
+      setViewportSize({ 
+        width: Math.max(availableWidth, minWidth), 
+        height: Math.max(availableHeight, minHeight) 
+      });
     };
-    window.addEventListener('resize', handleResize);
-    // Set initial width
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
+
+    updateViewportSize();
+    window.addEventListener('resize', updateViewportSize);
+    return () => window.removeEventListener('resize', updateViewportSize);
   }, []);
 
-  // Calculate aspect ratio and canvas size
-  const aspect = getAspectRatio(customization.size);
-  const canvasWidth = responsiveWidth-30;
-  const canvasHeight = height || responsiveWidth / aspect;
+  // Frame size calculation - adapted from FramePreviewCanvas for sidebar context
+  const getFrameSize = () => {
+    const [frameWidth, frameHeight] = customization.size.split('x').map(Number);
+    
+    // Base size calculation (inches to pixels)
+    const pixelsPerInch = 72;
+    const baseFrameWidth = frameWidth * pixelsPerInch;
+    const baseFrameHeight = frameHeight * pixelsPerInch;
+    
+    // Calculate responsive scale based on available viewport size
+    const viewportWidth = viewportSize.width;
+    const viewportHeight = viewportSize.height;
+    
+    // Determine the maximum frame size that fits in the viewport
+    // Use different percentages based on frame size to maintain differentiation
+    // Increased percentages since this is for the frame editor (single frame focus)
+    let maxFrameWidth, maxFrameHeight;
+    
+    if (frameWidth <= 12 && frameHeight <= 12) {
+      // Small frames (8x8, 8x10, 9x12, 12x12, etc.)
+      maxFrameWidth = viewportWidth * 0.6; // 60% of viewport width
+      maxFrameHeight = viewportHeight * 0.6; // 60% of viewport height
+    } else if (frameWidth <= 18 && frameHeight <= 18) {
+      // Medium frames (12x18, 18x12, 18x18, etc.)
+      maxFrameWidth = viewportWidth * 0.75; // 75% of viewport width
+      maxFrameHeight = viewportHeight * 0.75; // 75% of viewport height
+    } else {
+      // Large frames (18x24, 24x18, 24x32, 32x24, etc.)
+      maxFrameWidth = viewportWidth * 0.9; // 90% of viewport width
+      maxFrameHeight = viewportHeight * 0.9; // 90% of viewport height
+    }
+    
+    // Calculate scale factors for both dimensions
+    const scaleX = maxFrameWidth / baseFrameWidth;
+    const scaleY = maxFrameHeight / baseFrameHeight;
+    
+    // Use the smaller scale to ensure frame fits in both dimensions
+    const responsiveScale = Math.min(scaleX, scaleY, 1.0); // Allow up to 100% scale for frame editor
+    
+    // Ensure minimum size for very small screens
+    const minWidth = 150;
+    const minHeight = 150;
+    
+    const finalWidth = Math.max(baseFrameWidth * responsiveScale, minWidth);
+    const finalHeight = Math.max(baseFrameHeight * responsiveScale, minHeight);
+    
+    return {
+      width: finalWidth,
+      height: finalHeight
+    };
+  };
+
+  const frameSize = getFrameSize();
+  const canvasWidth = frameSize.width;
+  const canvasHeight = height || frameSize.height;
 
 
   const sampleImage = 'https://picsum.photos/id/237/200/300';

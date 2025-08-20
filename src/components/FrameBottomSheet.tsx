@@ -1,10 +1,8 @@
 'use client';
 
-import React, {  } from 'react';
+import React from 'react';
 import { ResponsiveBottomSheet } from './ResponsiveBottomSheet';
-import { FrameCustomization } from '../types';
-import { FrameColorData, useFrameColors } from '@/hooks/useFrameColors';
-import _ from 'lodash';
+import { FrameColorOption, FrameCustomization } from '../types';
 
 interface FrameBottomSheetProps {
   isOpen: boolean;
@@ -19,43 +17,37 @@ const FrameBottomSheet: React.FC<FrameBottomSheetProps> = ({
   currentFrame,
   onSelect,
 }) => {
-  const { data:frameColors, isLoading: fetchingLoading, isError: fetchingError } = useFrameColors();
+  const frameColors: FrameColorOption[] = [
+    {
+      id: 'black',
+      name: 'Black',
+      color: 'bg-gray-900',
+      description: 'Classic black finish',
+    },
+    {
+      id: 'white',
+      name: 'White',
+      color: 'bg-white border border-gray-200',
+      description: 'Clean white finish',
+    },
+    // {
+    //   id: 'oak',
+    //   name: 'Oak',
+    //   color: 'bg-gradient-to-br from-amber-100 to-amber-200',
+    //   description: 'Natural wood grain',
+    // },
+    {
+      id: 'brown',
+      name: 'Brown',
+      color: 'bg-amber-800', // distinct brown, not too close to black
+      description: 'Warm brown finish',
+    },
+  ];
 
-  
   const handleSelect = (frameId: FrameCustomization['frameColor']) => {
     onSelect(frameId);
     onClose();
-  };
-  if ( fetchingLoading) {
-    return (
-      <ResponsiveBottomSheet 
-        isOpen={isOpen} 
-        onClose={onClose} 
-        title="Select Frame"
-        description="Loading frame colors..."    >
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
-        </div>
-      </ResponsiveBottomSheet>
-    );
-  }
-
-  if ( fetchingError) {
-    return (
-      <ResponsiveBottomSheet 
-        isOpen={isOpen} 
-        onClose={onClose} 
-        title="Select Frame"
-        description="Error loading frame colors"    >
-        <div className="text-center py-8">
-          <p className="text-red-500">{
-            fetchingError?.message?? 'Failed to load frame colors'
-          }</p>
-        </div>
-      </ResponsiveBottomSheet>
-    );
-  }
-  return (
+  };  return (
     <ResponsiveBottomSheet 
       isOpen={isOpen} 
       onClose={onClose} 
@@ -63,24 +55,27 @@ const FrameBottomSheet: React.FC<FrameBottomSheetProps> = ({
       description="Choose the perfect frame color for your photo"    >
       <div className="space-y-4">
         <div className="space-y-3">
-        {frameColors?.map((frame: FrameColorData) => (
+        {frameColors.map((frame) => (
           <button
             key={frame.id}
-            onClick={() => handleSelect(frame?.name)}
+            onClick={() => handleSelect(frame.id)}
             className={`w-full flex items-center space-x-4 p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
-              currentFrame === frame?.name
+              currentFrame === frame.id
                 ? 'border-pink-500 bg-pink-50 shadow-lg'
                 : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
             }`}
           >
-            <div className={`w-12 h-12 rounded-lg shadow-sm`}
-            style={{ backgroundColor: frame.color }}
-            />
+            <div className={`w-12 h-12 rounded-lg shadow-sm ${frame.color}`} />
             
             <div className="flex-1 text-left">
-              <h3 className="font-medium text-gray-900">{_.capitalize(frame.name)}</h3>
+              <h3 className="font-medium text-gray-900">{frame.name}</h3>
               <p className="text-sm text-gray-500">{frame.description}</p>
             </div>
+
+            {/* {currentFrame === frame.id && (
+              <div className="w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center animate-pulse">                <div className="w-2 h-2 bg-white rounded-full" />
+              </div>
+            )} */}
           </button>
         ))}
         </div>

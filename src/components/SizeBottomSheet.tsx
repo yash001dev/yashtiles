@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Search, ChevronRight } from "lucide-react";
 import { ResponsiveBottomSheet } from "./ResponsiveBottomSheet";
 import { SizeOption, FrameCustomization } from "../types";
-import { useSizes } from "@/hooks/useSizes";
 
 interface SizeBottomSheetProps {
   isOpen: boolean;
@@ -20,9 +19,24 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
   onSelect,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-
-
-  const { data: sizes, isLoading: loading, isError: error } = useSizes();
+  const sizes: SizeOption[] = [
+    { id: '8x8', name: '8" × 8"', dimensions: 'Square format', aspectRatio: 1, price: 299 },
+    { id: '8x10', name: '8" × 10"', dimensions: 'Portrait format', aspectRatio: 8/10, price: 404 },
+    { id: '10x8', name: '10" × 8"', dimensions: 'Landscape format', aspectRatio: 10/8, price: 404 },
+    { id: '9x12', name: '9" × 12"', dimensions: 'Portrait format', aspectRatio: 9/12, price: 582 },
+    { id: '12x9', name: '12" × 9"', dimensions: 'Landscape format', aspectRatio: 12/9, price: 582 },
+    { id: '12x12', name: '12" × 12"', dimensions: 'Large square', aspectRatio: 1, price: 797 },
+    { id: '12x18', name: '12" × 18"', dimensions: 'Portrait format', aspectRatio: 12/18, price: 1218 },
+    { id: '18x12', name: '18" × 12"', dimensions: 'Landscape format', aspectRatio: 18/12, price: 1218 },
+    { id: '18x18', name: '18" × 18"', dimensions: 'Extra large square', aspectRatio: 1, price: 1900 },
+    { id: '18x24', name: '18" × 24"', dimensions: 'Portrait format', aspectRatio: 18/24, price: 2400 },
+    { id: '24x18', name: '24" × 18"', dimensions: 'Landscape format', aspectRatio: 24/18, price: 2400 },
+    { id: '24x32', name: '24" × 32"', dimensions: 'Large portrait', aspectRatio: 24/32, price: 4200 },
+    { id: '32x24', name: '32" × 24"', dimensions: 'Large landscape', aspectRatio: 32/24, price: 4200 },
+    // { id: '8x11', name: '8" × 11"', dimensions: 'Portrait format', aspectRatio: 8/11, price: 0 },
+    // { id: '11x8', name: '11" × 8"', dimensions: 'Landscape format', aspectRatio: 11/8, price: 0 },
+    
+  ];
 
   const filteredSizes = sizes.filter(
     (size) =>
@@ -34,38 +48,6 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
     onSelect(sizeId);
     onClose();
   };
-
-  console.log("Filtered sizes:", filteredSizes);
-
-  if (loading) {
-    return (
-      <ResponsiveBottomSheet
-        isOpen={isOpen}
-        onClose={onClose}
-        title="Select Size"
-        description="Loading sizes..."
-      >
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
-        </div>
-      </ResponsiveBottomSheet>
-    );
-  }
-
-  if (error) {
-    return (
-      <ResponsiveBottomSheet
-        isOpen={isOpen}
-        onClose={onClose}
-        title="Select Size"
-        description="Error loading sizes"
-      >
-        <div className="text-center py-8">
-          <p className="text-red-500">{error}</p>
-        </div>
-      </ResponsiveBottomSheet>
-    );
-  }
   return (
     <ResponsiveBottomSheet
       isOpen={isOpen}
@@ -85,6 +67,7 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
             placeholder="Search sizes..."
             value={searchTerm}
             onChange={(e) => {
+              //allo only number to enter
               const value = e.target.value.replace(/[^0-9]/g, "");
               setSearchTerm(value);
             }}
@@ -141,6 +124,13 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
                   ₹{size.price} each
                 </p>
               </div>
+              {/* Selection Indicator */}
+              {/* {currentSize === size.id && (
+                <div className="absolute top-2 right-2 w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center animate-pulse">
+                  <div className="w-2 h-2 bg-white rounded-full" />
+                </div>
+              )} */}
+              {/* Hover Arrow */}
               <ChevronRight
                 size={16}
                 className={`absolute top-2 right-2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
@@ -152,7 +142,9 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
         </div>
         {filteredSizes.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-500">No sizes found matching your search.</p>
+            <p className="text-gray-500">
+              No sizes found matching your search.
+            </p>
           </div>
         )}
       </div>
