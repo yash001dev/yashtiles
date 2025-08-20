@@ -20,6 +20,14 @@ interface PDPPreviewCanvasProps {
   className?: string;
 }
 
+const colorMap = {
+  "#ffffff": "white",
+  "#fff": "white",
+  "#000000": "black",
+  "#000": "black",
+  "#964b00": "brown"
+} as Record<string,string>
+
 export const PDPPreviewCanvas: React.FC<PDPPreviewCanvasProps> = ({
   selectedImage,
   selectedSize,
@@ -62,7 +70,7 @@ export const PDPPreviewCanvas: React.FC<PDPPreviewCanvasProps> = ({
   // Convert the props to match FramePreview's expected customization prop
   const customization: FrameCustomization = {
     material: selectedMaterial.toLowerCase() as "classic" | "frameless" | "canvas" | "3d",
-    frameColor: selectedColor.toLowerCase() as "black" | "white" | "brown",
+    frameColor: colorMap[selectedColor.toLowerCase()] as "black" | "white" | "brown",
     size: selectedSize as "8x8" | "8x10" | "10x8" | "9x12" | "12x9" | "12x12" | "12x18" | "18x12" | "18x18" | "18x24" | "24x18" | "24x32" | "32x24" | "8x11" | "11x8",
     effect: 'original',
     border: true,
@@ -70,7 +78,6 @@ export const PDPPreviewCanvas: React.FC<PDPPreviewCanvasProps> = ({
     borderWidth: selectedMaterial.toLowerCase() === 'frameless' ? 1 : selectedMaterial.toLowerCase() === 'canvas' ? 2 : 3,
     hangType: 'stickable_tape'
   };
-
   // Create the uploaded image object with transform
   const uploadedImage: UploadedImage = {
     url: selectedImage,

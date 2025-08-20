@@ -37,6 +37,7 @@ interface CheckoutModalProps {
     price: number;
     customization: any;
     image?: string;
+    quantity: number;
   }[];
 }
 
@@ -154,13 +155,13 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       
       // 1. Generate hash using RTK Query
       const { hash } = await generatePaymentHash({ 
-        key, 
+        key: key || '', 
         txnid, 
         amount, 
         productinfo, 
         firstname, 
         email, 
-        salt, 
+        salt: salt || '', 
         udf1, 
         udf2, 
         udf3, 

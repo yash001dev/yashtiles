@@ -226,7 +226,7 @@ export default function ProductListingPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="px-4 py-2 border bg-transparent border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500"
               >
                 <option value="name">Sort by Name</option>
                 <option value="price-low">Price: Low to High</option>
@@ -515,11 +515,6 @@ function ProductCard({ product }: { product: Product }) {
               </span>
             )}
           </div>
-          
-          <Button size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <ShoppingCart className="w-4 h-4 mr-1" />
-            Add
-          </Button>
         </div>
       </div>
     </motion.div>

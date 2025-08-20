@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FrameCustomization, FrameItem } from "../types";
 import { Button } from "./ui/button";
 import {
-  ShoppingCart,
   Hash,
   Palette,
   Square,
@@ -11,6 +10,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import CheckoutModal from "@/components/checkout/CheckoutModal";
 
 interface FrameDetailsProps {
   frames: FrameItem[];
@@ -25,6 +25,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
   onAddToCart,
   className = "",
 }) => {
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   // State to track which frames are expanded
   const [expandedFrames, setExpandedFrames] = useState<Set<string>>(new Set());
 
@@ -197,11 +198,20 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
           </div>
 
           <Button
-            onClick={onAddToCart}
+            onClick={() => {
+              try {
+                if (onAddToCart) {
+                  Promise.resolve(onAddToCart()).then(() => {
+                    setIsCheckoutOpen(true);
+                  });
+                }
+              } catch (error) {
+                console.error('Error adding to cart:', error);
+              }
+            }}
             className="w-full mt-4 bg-pink-600 hover:bg-pink-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
           >
-            <ShoppingCart className="w-5 h-5" />
-            Add to Cart (1 item)
+            Buy Now (1 item)
           </Button>
         </div>
       </div>
@@ -348,12 +358,48 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
         </div>
 
         <Button
-          onClick={onAddToCart}
+          onClick={() => {
+            try {
+              if (onAddToCart) {
+                Promise.resolve(onAddToCart()).then(() => {
+                  setIsCheckoutOpen(true);
+                });
+              }
+            } catch (error) {
+              console.error('Error adding to cart:', error);
+            }
+          }}
           className="w-full mt-4 bg-pink-600 hover:bg-pink-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
         >
-          <ShoppingCart className="w-5 h-5" />
-          Add to Cart ({frames.length} {frames.length === 1 ? "item" : "items"})
+          Buy Now ({frames.length} {frames.length === 1 ? "item" : "items"})
         </Button>
+
+        {/* Checkout Modal */}
+        <CheckoutModal 
+          isOpen={isCheckoutOpen} 
+          onClose={() => setIsCheckoutOpen(false)}
+          items={frames.length > 0 ? frames.map(frame => ({
+            id: frame.id,
+            name: 'Custom Frame',
+            price: getSizePrice(frame.customization.size),
+            customization: frame.customization,
+            image: frame.image?.url || '',
+            quantity: 1
+          })) : [{
+            id: 'single-frame',
+            name: 'Custom Frame',
+            price: getSizePrice(customization?.size || '12x12'),
+            image: frames[0]?.image?.url || '',
+            quantity: 1,
+            customization: customization || {
+              size: '12x12',
+              color: 'Classic Brown',
+              material: 'Classic',
+              frameColor: 'Classic Brown',
+              hangType: 'standard_hook'
+            },
+          }]}
+        />
       </div>
     </div>
   );

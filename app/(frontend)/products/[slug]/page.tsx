@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Thumbs, Zoom, Autoplay, EffectFade } from 'swiper/modules';
+import { toast } from 'sonner';
 import { 
   Star, 
   Heart, 
@@ -22,6 +23,8 @@ import {
   Eye,
   Image as ImageIcon
 } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { formatPrice } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import FrameItHeader from '@/components/dashboard/FrameItHeader';
 import FrameItFooter from '@/components/dashboard/FrameItFooter';
@@ -39,6 +42,7 @@ import 'swiper/css/thumbs';
 import 'swiper/css/zoom';
 import 'swiper/css/effect-fade';
 import { ProductCard } from '@/components/ecommerce/ProductCard';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 interface Product {
   id: string;
@@ -125,12 +129,14 @@ interface PageContent {
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params.slug as string;
   
   // Use RTK Query hooks
   const { data: product, isLoading: productLoading, isError: productError } = useProductBySlug(slug);
   const { data: pageContent } = useGetPageContentQuery('pdp');
   const { data: sizes = [], isLoading: sizesLoading } = useSizes();
+  const { addItem } = useCart();
 
   // Get selected size data from sizes hook
   const getSelectedSizeData = () => {
@@ -146,12 +152,15 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   
   // New states for Frame/Live View toggle
   const [viewMode, setViewMode] = useState<'frame' | 'live'>('frame');
   const [isLiveViewLoading, setIsLiveViewLoading] = useState(false);
   const [wallImage, setWallImage] = useState('/framedecor1.png');
 
+    const { addNotification } = useNotifications();
+  
   // Set default selections when product loads
   useEffect(() => {
     if (product) {
@@ -178,12 +187,12 @@ export default function ProductDetailPage() {
     }
     
     // Find the size price
-    const selectedSizeObj = product.availableSizes?.find(s => s.id === selectedSize);
+    const selectedSizeObj = product.availableSizes?.find(s => s.name === selectedSize);
     const sizePrice = selectedSizeObj?.price || 0;
     
     // Find variant-specific pricing
     const variantPricing = product.variantPricing?.find(vp => 
-      vp.size.id === selectedSize && 
+      vp.size.name === selectedSize && 
       vp.color.id === selectedColor && 
       vp.material.id === selectedMaterial
     );
@@ -191,6 +200,52 @@ export default function ProductDetailPage() {
     const priceModifier = variantPricing?.priceModifier || 0;
     
     return (product.basePrice || 0) + sizePrice + priceModifier;
+  };
+
+  const handleAddToCart = (type) => {
+    if (!product || !selectedSize || !selectedColor || !selectedMaterial) {
+      toast.error('Please select all options before adding to cart');
+      return;
+    }
+
+    const selectedColorObj = product.defaultColors?.concat(product.additionalColors || [])
+      .find(c => c.id === selectedColor);
+    const selectedMaterialObj = product.defaultMaterials?.concat(product.additionalMaterials || [])
+      .find(m => m.id === selectedMaterial);
+
+    const selectedSizeObj = product.availableSizes?.find(s => s.name === selectedSize);
+    const cartItem = {
+      id: `${product.id}-${selectedSize}-${selectedColor}-${selectedMaterial}`,
+      name: product.name,
+      price: getCurrentPrice(),
+      image: product.images[0]?.image.url,
+      size: selectedSize,
+      color: selectedColorObj?.name || '',
+      material: selectedMaterialObj?.name || '',
+      quantity: quantity,
+      customization: {
+        size: selectedSize,
+        color: selectedColorObj?.name || '',
+        material: selectedMaterialObj?.name || '',
+        price: {
+          base: product.basePrice || 0,
+          size: selectedSizeObj?.price || 0,
+          total: getCurrentPrice()
+        }
+      }
+    };
+
+    addItem(cartItem);
+    type!=='buy' && addNotification({
+      type: "success",
+      title: "Added to Cart",
+      message: "Your frame has been added to cart.",
+    });
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart('buy');
+    router.push('/cart');
   };
 
   const getCurrentStock = () => {
@@ -725,20 +780,32 @@ export default function ProductDetailPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-4">
-                    <Button 
-                      className="flex-1 h-12 text-lg"
-                      disabled={!isVariantAvailable() || getCurrentStock() === 0}
-                    >
-                      <ShoppingCart className="w-5 h-5 mr-2" />
-                      Add to Cart
-                    </Button>
-                    <Button variant="outline" size="icon" className="h-12 w-12">
-                      <Heart className="w-5 h-5" />
-                    </Button>
-                    <Button variant="outline" size="icon" className="h-12 w-12">
-                      <Share2 className="w-5 h-5" />
-                    </Button>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex gap-4">
+                      <Button 
+                        className="flex-1 h-12 text-lg bg-gray-100 hover:bg-gray-200 text-gray-900"
+                        onClick={handleAddToCart}
+                        disabled={!isVariantAvailable() || getCurrentStock() === 0}
+                      >
+                        <ShoppingCart className="w-5 h-5 mr-2" />
+                        Add to Cart
+                      </Button>
+                      <Button 
+                        className="flex-1 h-12 text-lg"
+                        onClick={handleBuyNow}
+                        disabled={!isVariantAvailable() || getCurrentStock() === 0}
+                      >
+                        Buy Now
+                      </Button>
+                    </div>
+                    <div className="flex gap-4 justify-center">
+                      <Button variant="outline" size="icon" className="h-12 w-12">
+                        <Heart className="w-5 h-5" />
+                      </Button>
+                      <Button variant="outline" size="icon" className="h-12 w-12">
+                        <Share2 className="w-5 h-5" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
