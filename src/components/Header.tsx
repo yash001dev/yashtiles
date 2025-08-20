@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Frame, ShoppingCart } from "lucide-react";
 import UserMenu from "./auth/UserMenu";
+import { trackCartButtonClick } from "@/lib/analytics";
 import AuthModal from "./auth/AuthModal";
 import Link from "next/link";
 
@@ -27,6 +28,11 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const handleCartClick = () => {
+    trackCartButtonClick();
+    if (onCartClick) onCartClick();
+  };
+
   return (
     <>
       <header className="w-full bg-white shadow-sm border-b border-gray-100 relative z-50">
@@ -40,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({
             </div>
             <div className="flex items-center space-x-4">
               <button
-                onClick={onCartClick}
+                onClick={handleCartClick}
                 className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full font-medium transition-colors duration-200 flex items-center space-x-2"
               >
                 <ShoppingCart size={18} />

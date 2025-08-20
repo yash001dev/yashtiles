@@ -9,7 +9,6 @@ export const config = {
   // Feature flags
   features: {
     enableDebug: process.env.NEXT_PUBLIC_ENABLE_DEBUG === "true",
-    enableAnalytics: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === "true",
   },
 
   // Environment checks

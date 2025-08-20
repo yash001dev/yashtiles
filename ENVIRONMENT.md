@@ -41,7 +41,6 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_API_URL` | API base URL | ⚠️ |
 | `NEXT_PUBLIC_APP_VERSION` | Application version | ⚠️ |
 | `NEXT_PUBLIC_ENABLE_DEBUG` | Enable debug mode | ⚠️ |
-| `NEXT_PUBLIC_ENABLE_ANALYTICS` | Enable analytics | ⚠️ |
 
 ## Available Scripts
 

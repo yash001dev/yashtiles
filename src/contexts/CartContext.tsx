@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { trackAddToCart, trackRemoveFromCart, trackBeginCheckout } from '@/lib/analytics';
 
 interface CartItem {
   id: string;
@@ -67,13 +68,32 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         return updatedItems;
       }
 
+      // Track new item added to cart
+      trackAddToCart({
+        id: newItem.id,
+        name: newItem.name,
+        price: newItem.price,
+        quantity: newItem.quantity
+      });
+
       // Add new item if it doesn't exist
       return [...currentItems, newItem];
     });
   };
 
   const removeItem = (id: string) => {
-    setItems(currentItems => currentItems.filter(item => item.id !== id));
+    setItems(currentItems => {
+      const itemToRemove = currentItems.find(item => item.id === id);
+      if (itemToRemove) {
+        trackRemoveFromCart({
+          id: itemToRemove.id,
+          name: itemToRemove.name,
+          price: itemToRemove.price,
+          quantity: itemToRemove.quantity
+        });
+      }
+      return currentItems.filter(item => item.id !== id);
+    });
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -94,6 +114,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const proceedToCheckout = () => {
+    trackBeginCheckout(items.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity
+    })));
     router.push('/checkout');
   };
 

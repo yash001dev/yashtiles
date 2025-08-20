@@ -5,6 +5,7 @@ import WaveSeparator from "@/assets/WaveSeparator";
 import { Button } from "@/components/ui/button";
 import { Image } from "@imagekit/next";
 import { useState, useEffect } from 'react';
+import { trackStartFraming } from "@/lib/analytics";
 
 
 const FrameItHero = () => {
@@ -47,6 +48,7 @@ const FrameItHero = () => {
                   size="lg"
                   className=" text-white font-semibold px-10 py-8 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   onClick={() => {
+                    trackStartFraming();
                     if (isMounted && typeof window !== 'undefined') {
                       window.location.href = "/frame";
                     }

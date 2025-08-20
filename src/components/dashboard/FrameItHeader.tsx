@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Frame, Menu, X, ShoppingCart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import Link from 'next/link'
+import { trackCartButtonClick, trackFaqClick } from "@/lib/analytics"
 import { Drawer, DrawerContent, DrawerHeader, DrawerClose } from '@/components/ui/drawer'
 import { usePathname } from 'next/navigation'
 
@@ -69,6 +70,7 @@ function FrameItHeader({hideMenu=false}) {
                   <a
                     href="#faq"
                     className="text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => trackFaqClick('header-faq', 'FAQ Section from Header')}
                   >
                     FAQ
                   </a>
@@ -163,7 +165,10 @@ function FrameItHeader({hideMenu=false}) {
                         </button>
                         <button
                           className="text-left text-muted-foreground hover:text-foreground text-lg transition-colors"
-                          onClick={() => handleMobileMenuClick('#faq')}
+                          onClick={() => {
+                            trackFaqClick('mobile-faq', 'FAQ Section from Mobile Menu');
+                            handleMobileMenuClick('#faq');
+                          }}
                         >
                           FAQ
                         </button>

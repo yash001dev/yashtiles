@@ -15,7 +15,6 @@ const optionalEnvVars = [
   "NEXT_PUBLIC_API_URL",
   "NEXT_PUBLIC_APP_VERSION",
   "NEXT_PUBLIC_ENABLE_DEBUG",
-  "NEXT_PUBLIC_ENABLE_ANALYTICS",
 ];
 
 console.log("🔍 Checking environment variables...\n");
