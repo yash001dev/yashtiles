@@ -46,6 +46,14 @@ export const setFrameCSSVariables = (element: HTMLElement, size: string) => {
   element.style.setProperty('--frame-shadow-offset', `calc(var(--frame-edge-width) * 0.1)`);
 };
 
+// Function to format price in INR
+export const formatPrice = (amount: number): string => {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+  }).format(amount);
+};
+
 // Function to get CSS custom property value
 export const getCSSVariable = (element: HTMLElement, variableName: string): string => {
   return getComputedStyle(element).getPropertyValue(variableName);

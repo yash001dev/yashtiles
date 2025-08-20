@@ -7,6 +7,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Provider } from 'react-redux';
 import { store } from '@/redux/store';
+import { CartProvider } from '@/contexts/CartContext';
 
 
 
@@ -19,11 +20,13 @@ export function Providers({ children }: ProvidersProps) {
       <Provider store={store}>
         <NotificationProvider>
           <AuthProvider>
-            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
-              <TooltipProvider>
-                {children}
-              </TooltipProvider>
-            </GoogleOAuthProvider>
+            <CartProvider>
+              <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+                <TooltipProvider>
+                  {children}
+                </TooltipProvider>
+              </GoogleOAuthProvider>
+            </CartProvider>
           </AuthProvider>
         </NotificationProvider>
       </Provider>

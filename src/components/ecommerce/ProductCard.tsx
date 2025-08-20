@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import { Heart, ShoppingCart, Eye, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from 'sonner';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 interface ProductCardProps {
   product: {
@@ -35,6 +38,41 @@ export function ProductCard({ product, className = '' }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [autoSwipeTimer, setAutoSwipeTimer] = useState<NodeJS.Timeout | null>(null);
+  const { addItem } = useCart();
+  const { addNotification} = useNotifications()
+
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation to product detail
+    e.stopPropagation();
+    
+    // Add first variant as default
+    addItem({
+      id: `${product.id}-default`,
+      name: product.name,
+      price: product.price,
+      image: product.images[0]?.image.url,
+      size: "12x12", // Default size
+      color: "Classic Brown", // Default color
+      material: "Classic", // Default material
+      quantity: 1,
+      customization: {
+        size: "12x12",
+        color: "Classic Brown",
+        material: "Classic",
+        price: {
+          base: product.price,
+          size: 0,
+          total: product.price
+        }
+      }
+    });
+    
+       addNotification({
+      type: "success",
+      title: "Added to Cart",
+      message: "Your frame has been added to cart.",
+    });
+  };
 
   // Auto-swipe functionality on hover
   React.useEffect(() => {
@@ -159,24 +197,13 @@ export function ProductCard({ product, className = '' }: ProductCardProps) {
           </Link>
         </motion.div>
 
-        {/* Hover Overlay with Quick Add */}
+        {/* Hover Overlay */}
         <motion.div
-          className="absolute inset-0 bg-black/20 flex items-center justify-center"
+          className="absolute inset-0 bg-black/20"
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
           transition={{ duration: 0.2 }}
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: isHovered ? 1 : 0.8, opacity: isHovered ? 1 : 0 }}
-            transition={{ duration: 0.2, delay: 0.1 }}
-          >
-            <Button className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg">
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              Quick Add
-            </Button>
-          </motion.div>
-        </motion.div>
+        />
       </div>
 
       {/* Product Info */}
@@ -226,16 +253,17 @@ export function ProductCard({ product, className = '' }: ProductCardProps) {
           </div>
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
             transition={{ delay: 0.2 }}
           >
             <Button 
               size="sm" 
-              className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-105"
+              className="transition-transform duration-300 hover:scale-105"
+              onClick={handleQuickAdd}
             >
               <ShoppingCart className="w-4 h-4 mr-1" />
-              Add
+              Add to Cart
             </Button>
           </motion.div>
         </div>

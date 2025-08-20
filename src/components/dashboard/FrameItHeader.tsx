@@ -1,7 +1,8 @@
 "use client"
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { Frame, Menu, X } from 'lucide-react'
+import { Frame, Menu, X, ShoppingCart } from 'lucide-react'
+import { useCart } from '@/contexts/CartContext'
 import Link from 'next/link'
 import { Drawer, DrawerContent, DrawerHeader, DrawerClose } from '@/components/ui/drawer'
 import { usePathname } from 'next/navigation'
@@ -11,6 +12,9 @@ function FrameItHeader({hideMenu=false}) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
   const isHome = pathname === '/';
+  const { items } = useCart();
+  
+  const cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
 
   // Helper for smooth scroll and close drawer
   const handleMobileMenuClick = (selector: string) => {
@@ -47,6 +51,20 @@ function FrameItHeader({hideMenu=false}) {
                   Home
                 </Link>
               )}
+              <Link
+                href="/cart"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <div className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </div>
+                Cart
+              </Link>
               {isHome && (
                 <>
                   <Link
@@ -142,6 +160,19 @@ function FrameItHeader({hideMenu=false}) {
                     </Link>
                     <Link href="/contact" onClick={() => setOpen(false)}>
                       <span className="block text-left text-muted-foreground hover:text-foreground text-lg transition-colors py-2">Contact</span>
+                    </Link>
+                    <Link href="/cart" onClick={() => setOpen(false)}>
+                      <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-lg py-2">
+                        <div className="relative">
+                          <ShoppingCart className="h-5 w-5" />
+                          {cartItemCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                              {cartItemCount}
+                            </span>
+                          )}
+                        </div>
+                        Cart
+                      </div>
                     </Link>
                     <Link href="/frame" onClick={() => setOpen(false)}>
                       <Button className="w-full mt-2">Start Framing</Button>
