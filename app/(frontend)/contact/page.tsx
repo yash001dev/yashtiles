@@ -5,7 +5,7 @@ import FrameItHeader from "@/components/dashboard/FrameItHeader";
 import FrameItFooter from "@/components/dashboard/FrameItFooter";
 import { Input } from "@/components/ui/input";
 import dynamic from 'next/dynamic';
-const ContactForm = dynamic(() => import('@/components/common/ContactForm'), { ssr: false });
+const ContactForm = dynamic(() => import('@/components/common/ContactForm'));
 
 
 export const metadata = {

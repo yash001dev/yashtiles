@@ -74,7 +74,7 @@ export function OrdersList({ onViewOrderDetails, className = '' }: OrdersListPro
           <select
             value={pagination?.limit || 10}
             onChange={(e) => setLimit(Number(e.target.value))}
-            className="border border-gray-300 text-black rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="border border-gray-300 text-black bg-transparent rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
           >
             <option value={5}>5 per page</option>
             <option value={10}>10 per page</option>

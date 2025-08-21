@@ -202,16 +202,17 @@ export default function ProductDetailPage() {
     return (product.basePrice || 0) + sizePrice + priceModifier;
   };
 
-  const handleAddToCart = (type) => {
+  const handleAddToCart = (type?:string) => {
     if (!product || !selectedSize || !selectedColor || !selectedMaterial) {
       toast.error('Please select all options before adding to cart');
       return;
     }
 
-    const selectedColorObj = product.defaultColors?.concat(product.additionalColors || [])
+    const selectedColorObj = product?.defaultColors?.concat(product?.additionalColors || [])
       .find(c => c.id === selectedColor);
     const selectedMaterialObj = product.defaultMaterials?.concat(product.additionalMaterials || [])
       .find(m => m.id === selectedMaterial);
+
 
     const selectedSizeObj = product.availableSizes?.find(s => s.name === selectedSize);
     const cartItem = {
