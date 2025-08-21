@@ -111,6 +111,7 @@ const PDPPreviewCanvas: React.FC<PDPPreviewCanvasProps> = ({
           onFrameDrag={onFrameDrag}
           mode={previewMode}
           imageFitMode="fill"
+          fromPDP={true}
         />
         
         {/* Loading Overlay */}
