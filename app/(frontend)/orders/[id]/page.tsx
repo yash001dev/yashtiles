@@ -223,7 +223,7 @@ export default function OrderDetailsPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => copyToClipboard(order._id)}
+                        onClick={() => copyToClipboard(order.orderNumber)}
                         className="h-auto p-1"
                       >
                         <Copy className="h-3 w-3" />
@@ -305,7 +305,14 @@ export default function OrderDetailsPage() {
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Need Help?</h2>
                 
                 <div className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start"
+                  onClick={() => {
+                    //redirec to contact page
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/contact';
+                    }
+                  }}
+                  >
                     <Mail className="h-4 w-4 mr-2" />
                     Contact Support
                   </Button>
