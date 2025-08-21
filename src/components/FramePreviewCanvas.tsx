@@ -252,12 +252,20 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   const transform = uploadedImage?.transform || { scale: 1, rotation: 0, x: 0, y: 0 };
 
   // Calculate available area for image
-  const availableWidth = customization.material === 'frameless' || customization.material === 'canvas'
-    ? frameSize.width - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
-    : frameSize.width - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
-  const availableHeight = customization.material === 'frameless' || customization.material === 'canvas'
-    ? frameSize.height - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
-    : frameSize.height - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
+  const availableWidth = fromPDP 
+    ? customization.material === 'classic' 
+      ? frameSize.width - 2 * frameBorder // For classic frames, respect the frame border
+      : frameSize.width // For other frames, cover entire frame
+    : customization.material === 'frameless' || customization.material === 'canvas'
+      ? frameSize.width - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
+      : frameSize.width - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
+  const availableHeight = fromPDP 
+    ? customization.material === 'classic' 
+      ? frameSize.height - 2 * frameBorder // For classic frames, respect the frame border
+      : frameSize.height // For other frames, cover entire frame
+    : customization.material === 'frameless' || customization.material === 'canvas'
+      ? frameSize.height - 2 * (showCustomBorder ? customization.borderWidth! : 0) - 2 * (customization.material === 'canvas' ? frameBorder : 0)
+      : frameSize.height - 2 * (frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0));
 
   // Get natural image size
   const naturalWidth = frameImg?.width || 1;
@@ -271,7 +279,18 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
   let offsetY = 0;
 
   if (frameImg) {
-    if (customization.material === 'frameless' || customization.material === 'canvas') {
+    if (fromPDP) {
+      // For PDP, always cover the entire frame area
+      if (imageAspect > areaAspect) {
+        displayHeight = availableHeight;
+        displayWidth = availableHeight * imageAspect;
+        offsetX = (availableWidth - displayWidth) / 2;
+      } else {
+        displayWidth = availableWidth;
+        displayHeight = availableWidth / imageAspect;
+        offsetY = (availableHeight - displayHeight) / 2;
+      }
+    } else if (customization.material === 'frameless' || customization.material === 'canvas') {
       if (imageAspect > areaAspect) {
         displayHeight = availableHeight;
         displayWidth = availableHeight * imageAspect;
@@ -512,17 +531,25 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
              
              {/* Image group (for transform) */}
              <Group
-               x={customization.material === 'frameless' 
-                 ? (showCustomBorder ? customization.borderWidth! : 0) 
-                 : customization.material === 'canvas'
-                   ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
-                   : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
+               x={fromPDP 
+                 ? customization.material === 'classic' 
+                   ? frameBorder // Start from inside the frame border for classic frames
+                   : 0 // Start from frame edge for other frame types
+                 : customization.material === 'frameless' 
+                   ? (showCustomBorder ? customization.borderWidth! : 0) 
+                   : customization.material === 'canvas'
+                     ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
+                     : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
                }
-               y={customization.material === 'frameless' 
-                 ? (showCustomBorder ? customization.borderWidth! : 0) 
-                 : customization.material === 'canvas'
-                   ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
-                   : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
+               y={fromPDP 
+                 ? customization.material === 'classic' 
+                   ? frameBorder // Start from inside the frame border for classic frames
+                   : 0 // Start from frame edge for other frame types
+                 : customization.material === 'frameless' 
+                   ? (showCustomBorder ? customization.borderWidth! : 0) 
+                   : customization.material === 'canvas'
+                     ? frameBorder + (showCustomBorder ? customization.borderWidth! : 0)
+                     : frameBorder + matting + (showCustomBorder ? customization.borderWidth! : 0)
                }
                width={availableWidth}
                height={availableHeight}
