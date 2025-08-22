@@ -83,8 +83,8 @@ export default function CartPage() {
                       </button>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold">{formatPrice(item.price)}</p>
+                  <div className="text-right">                    
+                    <p className="font-semibold">{ formatPrice(getTotalAmount())}</p>
                   </div>
                 </div>
               ))}
