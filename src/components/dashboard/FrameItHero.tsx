@@ -60,12 +60,11 @@ const FrameItHero = () => {
                   className="border-2 border-pink-800 text-black hover:bg-pink-700 hover:text-cream-50 font-semibold px-10 py-[30px] text-lg rounded-xl transition-all duration-300"
                   onClick={() => {
                     if (isMounted && typeof window !== 'undefined' && typeof document !== 'undefined') {
-                      const element = document.querySelector("#work");
-                      element?.scrollIntoView({ behavior: "smooth" });
+                     window.location.href = "/products";
                     }
                   }}
                 >
-                  See Our Work
+                  Choose from collection
                 </Button>
               </div>
 
