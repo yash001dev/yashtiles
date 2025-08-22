@@ -322,6 +322,7 @@ function AppContent() {
         price: getSizePrice(frame.customization.size),
         customization: frame.customization,
         image: frame.image.url,
+        quantity:1
       });
     });
 
@@ -333,6 +334,7 @@ function AppContent() {
         price: getSizePrice(customization.size),
         customization,
         image: uploadedImage.url,
+        quantity:1
       });
     }
 

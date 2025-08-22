@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, User, ArrowLeft, Share2, Heart, Tag } from 'lucide-react';
+import { Calendar, Clock, User, ArrowLeft, Share2, Heart, Tag, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import FrameItHeader from '@/components/dashboard/FrameItHeader';
 import FrameItFooter from '@/components/dashboard/FrameItFooter';

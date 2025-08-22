@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, MouseEvent } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -785,7 +785,7 @@ export default function ProductDetailPage() {
                     <div className="flex gap-4">
                       <Button 
                         className="flex-1 h-12 text-lg bg-gray-100 hover:bg-gray-200 text-gray-900"
-                        onClick={handleAddToCart}
+                        onClick={()=>handleAddToCart()}
                         disabled={!isVariantAvailable() || getCurrentStock() === 0}
                       >
                         <ShoppingCart className="w-5 h-5 mr-2" />
