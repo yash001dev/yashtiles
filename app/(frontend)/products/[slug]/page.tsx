@@ -109,7 +109,6 @@ interface Product {
     feature: string;
   }>;
   specifications: {
-    material: string;
     weight?: string;
     dimensions?: string;
     mounting: string;
@@ -910,10 +909,6 @@ function ProductDetailsTabs({ product }: { product: Product }) {
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900">Technical Specifications</h3>
                     <div className="space-y-3">
-                      <div className="flex justify-between py-2 border-b border-gray-100">
-                        <span className="text-gray-600">Material</span>
-                        <span className="font-medium">{product.specifications.material}</span>
-                      </div>
                       {product.specifications.weight && (
                         <div className="flex justify-between py-2 border-b border-gray-100">
                           <span className="text-gray-600">Weight</span>

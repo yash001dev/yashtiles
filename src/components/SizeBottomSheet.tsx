@@ -10,7 +10,7 @@ interface SizeBottomSheetProps {
   isOpen: boolean;
   onClose: () => void;
   currentSize: FrameCustomization["size"];
-  onSelect: (size: FrameCustomization["size"]) => void;
+  onSelect: (size: string) => void;
 }
 
 const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
@@ -30,7 +30,7 @@ const SizeBottomSheet: React.FC<SizeBottomSheetProps> = ({
       size.dimensions.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSelect = (sizeId: FrameCustomization["size"]) => {
+  const handleSelect = (sizeId: string) => {
     onSelect(sizeId);
     onClose();
   };

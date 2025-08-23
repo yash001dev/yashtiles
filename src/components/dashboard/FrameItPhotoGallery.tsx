@@ -11,8 +11,8 @@ const FrameItPhotoGallery = () => {
   // Responsive slides calculation using Swiper's breakpoints
   // No need for manual state/effects for carousel logic
   const [isMounted, setIsMounted] = useState(false);
-  const prevRef = useRef<HTMLButtonElement | null>(null);
-  const nextRef = useRef<HTMLButtonElement | null>(null);
+  const prevRef = useRef<HTMLButtonElement>(null);
+  const nextRef = useRef<HTMLButtonElement>(null);
   const swiperRef = useRef<any>(null);
   useEffect(() => {
     setIsMounted(true);

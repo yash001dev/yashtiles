@@ -9,8 +9,8 @@ import "swiper/css/effect-coverflow";
 interface ReusableSwiperProps {
   children: React.ReactNode;
   swiperProps?: any;
-  prevButton?: React.RefObject<HTMLButtonElement>;
-  nextButton?: React.RefObject<HTMLButtonElement>;
+  prevButton?: React.RefObject<HTMLButtonElement | null>;
+  nextButton?: React.RefObject<HTMLButtonElement | null>;
   onSwiperInit?: (swiper: any) => void;
 }
 

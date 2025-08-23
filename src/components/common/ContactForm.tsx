@@ -52,8 +52,8 @@ const ContactForm = ({ className }: ContactFormProps) => {
     try {
       const res = await submitContactInquiry(data).unwrap();
       if (isSubmitError) {
-        toast.error(submitError?.error || "Failed to send message");
-        throw new Error(submitError?.error || "Failed to send message");
+        toast.error("Failed to send message");
+        throw new Error("Failed to send message");
       }
       const result = res as { ticketNumber: string; message: string };
       if (!result || !result.ticketNumber) {

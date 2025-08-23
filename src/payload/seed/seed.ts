@@ -6,7 +6,6 @@ async function seed() {
   try {
     // Initialize Payload with config
     await payload.init({
-      secret: process.env.PAYLOAD_SECRET || 'temp-secret-for-seeding',
       config,
     });
 

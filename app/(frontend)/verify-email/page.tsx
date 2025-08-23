@@ -34,7 +34,10 @@ function VerifyEmailContent() {
         }
 
         // Call the verification API
-        const result = await authService.verifyEmail(email, token);
+        const result = await authService.verifyEmail({
+          email,
+          token
+        });
         
         setVerificationState({
           status: 'success',

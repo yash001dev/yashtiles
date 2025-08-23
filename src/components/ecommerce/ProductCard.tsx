@@ -28,7 +28,7 @@ interface ProductCardProps {
       name: string;
       slug: string;
     }>;
-    featured: boolean;
+    featured?: boolean;
   };
   className?: string;
 }

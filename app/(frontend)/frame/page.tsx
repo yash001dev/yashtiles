@@ -25,6 +25,7 @@ import {
 } from "@/contexts/NotificationContext";
 import { useFrameCustomizer } from "@/hooks/useFrameCustomizer";
 import { downloadFramedImage } from "@/utils/downloadImage";
+import { FrameCustomization } from "@/types";
 import HangBottomSheet from "@/components/HangBottomSheet";
 
 function AppContent() {
@@ -422,7 +423,7 @@ function AppContent() {
           isOpen={activeModal === "size"}
           onClose={closeModal}
           currentSize={customization.size}
-          onSelect={(size) => updateCustomization({ size })}
+          onSelect={(size) => updateCustomization({ size: size as FrameCustomization["size"] })}
         />
         {/* <EffectBottomSheet
           isOpen={activeModal === "effect"}

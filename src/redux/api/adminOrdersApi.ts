@@ -255,8 +255,8 @@ export const {
   useLazySearchOrdersQuery,
   useGetAllOrdersQuery,
   useLazyGetAllOrdersQuery,
-  useGetOrderByIdQuery,
-  useLazyGetOrderByIdQuery,
+  useGetOrderByIdQuery: useGetOrderByIdAdminQuery,
+  useLazyGetOrderByIdQuery: useLazyGetOrderByIdAdminQuery,
   useUpdateOrderMutation,
   useBulkUpdateOrdersMutation,
 } = adminOrdersApi;
