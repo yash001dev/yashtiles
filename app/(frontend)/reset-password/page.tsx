@@ -3,7 +3,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Loader2, Lock, Eye, EyeOff, Home, ArrowRight, Frame, Shield } from 'lucide-react';
-import { authService } from '@/lib/auth';
+import { useResetPasswordMutation } from '@/redux/api/authApi';
 import { Input } from '@/components/ui/input';
 
 interface ResetPasswordState {
@@ -19,6 +19,7 @@ interface PasswordStrength {
 function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
   const [resetState, setResetState] = useState<ResetPasswordState>({
     status: 'validating',
     message: 'Validating reset link...'
@@ -115,11 +116,11 @@ function ResetPasswordContent() {
     });
 
     try {
-      const result = await authService.resetPassword({
+      const result = await resetPassword({
         email,
         token,
         newPassword
-      });
+      }).unwrap();
 
       setResetState({
         status: 'success',
@@ -131,10 +132,10 @@ function ResetPasswordContent() {
         router.push('/');
       }, 3000);
 
-    } catch (error) {
+    } catch (error: any) {
       setResetState({
         status: 'error',
-        message: error instanceof Error ? error.message : 'Password reset failed. Please try again.'
+        message: error?.data?.message || error?.message || 'Password reset failed. Please try again.'
       });
     }
   };
@@ -294,18 +295,22 @@ function ResetPasswordContent() {
 
                 <button
                   type="submit"
-                  disabled={!newPassword || !confirmPassword || newPassword !== confirmPassword || passwordStrength.score < 3}
+                  disabled={!newPassword || !confirmPassword || newPassword !== confirmPassword || passwordStrength.score < 3 || isLoading}
                   className="w-full bg-pink-600 text-white py-3 px-4 rounded-lg hover:bg-pink-700 focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                 >
-                  <Lock className="h-4 w-4" />
-                  <span>Reset Password</span>
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Lock className="h-4 w-4" />
+                  )}
+                  <span>{isLoading ? 'Resetting...' : 'Reset Password'}</span>
                 </button>
               </form>
             </div>
           )}
 
           {/* Resetting State */}
-          {resetState.status === 'resetting' && (
+          {(resetState.status === 'resetting' || isLoading) && (
             <div className="text-center space-y-4">
               <div className="flex justify-center">
                 <Loader2 className="h-8 w-8 text-pink-600 animate-spin" />

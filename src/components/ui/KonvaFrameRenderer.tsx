@@ -232,8 +232,8 @@ const KonvaFrameRenderer = forwardRef<
 
   // Frame style
   let frameBorder = 0;
-  let frameColor = getFrameColor(customization.frameColor);
-  let frameBorderColor = getFrameBorderColor(customization.frameColor);
+  const frameColor = getFrameColor(customization.frameColor);
+  const frameBorderColor = getFrameBorderColor(customization.frameColor);
   // Compute bevel colors based on frameBorderColor
   const bevelTop = shadeColor(frameBorderColor, 30);    // lighter
   const bevelLeft = shadeColor(frameBorderColor, -30);   // darker
@@ -1270,5 +1270,7 @@ const KonvaFrameRenderer = forwardRef<
     </div>
   );
 });
+
+KonvaFrameRenderer.displayName = 'KonvaFrameRenderer';
 
 export default KonvaFrameRenderer;

@@ -1,6 +1,3 @@
-
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import FrameItInstallation from "@/components/dashboard/FrameItInstallation";
 import FrameItFooter from "@/components/dashboard/FrameItFooter";
 import FrameItHeader from '@/components/dashboard/FrameItHeader'

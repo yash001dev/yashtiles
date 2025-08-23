@@ -48,7 +48,7 @@ export function OrdersList({ onViewOrderDetails, className = '' }: OrdersListPro
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">No Orders Found</h3>
         <p className="text-gray-600 text-center mb-4 max-w-md">
-          You haven't placed any orders yet. Start shopping to see your orders here.
+          You haven&apos;t placed any orders yet. Start shopping to see your orders here.
         </p>
         <Button onClick={() => { if (typeof window !== 'undefined') window.location.href = '/'; }}>
           Start Shopping

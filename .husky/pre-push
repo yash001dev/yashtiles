@@ -1,0 +1,12 @@
+echo "🚀 Running pre-push checks..."
+
+# Run build to ensure no build errors before pushing
+echo "🔨 Building for production..."
+npm run build
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed. Cannot push with build errors!"
+  echo "Please fix the build errors and try again."
+  exit 1
+fi
+
+echo "✅ Build successful! Push allowed."

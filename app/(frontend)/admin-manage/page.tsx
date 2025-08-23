@@ -3,6 +3,7 @@
 import React from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import Link from "next/link";
 
 export default function AdminDashboardPage() {
   return (
@@ -42,7 +43,7 @@ export default function AdminDashboardPage() {
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <a
+              <Link
                 href="/admin/orders"
                 className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all"
               >
@@ -50,9 +51,9 @@ export default function AdminDashboardPage() {
                 <p className="text-sm text-gray-500 mt-1">
                   View, search, and update order statuses
                 </p>
-              </a>
-              
-              <a
+              </Link>
+
+              <Link
                 href="/admin/users"
                 className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all"
               >
@@ -60,9 +61,9 @@ export default function AdminDashboardPage() {
                 <p className="text-sm text-gray-500 mt-1">
                   Manage customer accounts and permissions
                 </p>
-              </a>
+              </Link>
               
-              <a
+              <Link
                 href="/admin/analytics"
                 className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all"
               >
@@ -70,7 +71,7 @@ export default function AdminDashboardPage() {
                 <p className="text-sm text-gray-500 mt-1">
                   Sales reports and business insights
                 </p>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

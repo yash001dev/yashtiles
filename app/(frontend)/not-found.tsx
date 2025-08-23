@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import type { FrameCustomization } from "@/types";
 import { Frame as FrameIcon } from "lucide-react";
 
 
