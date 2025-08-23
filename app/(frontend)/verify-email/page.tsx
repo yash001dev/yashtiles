@@ -3,7 +3,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Loader2, Mail, Home, ArrowRight, Frame } from 'lucide-react';
-import { authService } from '@/lib/auth';
+import { useVerifyEmailMutation } from '@/redux/api/authApi';
 
 interface VerificationState {
   status: 'loading' | 'success' | 'error';
@@ -14,13 +14,14 @@ interface VerificationState {
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [verifyEmail, { isLoading }] = useVerifyEmailMutation();
   const [verificationState, setVerificationState] = useState<VerificationState>({
     status: 'loading',
     message: 'Verifying your email...'
   });
 
   useEffect(() => {
-    const verifyEmail = async () => {
+    const verifyEmailAddress = async () => {
       try {
         const email = searchParams.get('email');
         const token = searchParams.get('token');
@@ -33,11 +34,11 @@ function VerifyEmailContent() {
           return;
         }
 
-        // Call the verification API
-        const result = await authService.verifyEmail({
+        // Call the verification API using RTK Query
+        const result = await verifyEmail({
           email,
           token
-        });
+        }).unwrap();
         
         setVerificationState({
           status: 'success',
@@ -50,16 +51,16 @@ function VerifyEmailContent() {
           router.push('/frame');
         }, 3000);
 
-      } catch (error) {
+      } catch (error: any) {
         setVerificationState({
           status: 'error',
-          message: error instanceof Error ? error.message : 'Email verification failed. Please try again.'
+          message: error?.data?.message || error?.message || 'Email verification failed. Please try again.'
         });
       }
     };
 
-    verifyEmail();
-  }, [searchParams, router]);
+    verifyEmailAddress();
+  }, [searchParams, router, verifyEmail]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-50 flex items-center justify-center p-4">
@@ -77,7 +78,7 @@ function VerifyEmailContent() {
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
           <div className="text-center">
             {/* Loading State */}
-            {verificationState.status === 'loading' && (
+            {(verificationState.status === 'loading' || isLoading) && (
               <div className="space-y-4">
                 <div className="flex justify-center">
                   <div className="relative">

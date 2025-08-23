@@ -206,8 +206,8 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
 
   // Frame style calculations (same as KonvaFrameRenderer)
   let frameBorder = 0;
-  let frameColor = getFrameColor(customization.frameColor);
-  let frameBorderColor = getFrameBorderColor(customization.frameColor);
+  const frameColor = getFrameColor(customization.frameColor);
+  const frameBorderColor = getFrameBorderColor(customization.frameColor);
   // const bevelTop = shadeColor(frameBorderColor, 30);
   // const bevelLeft = shadeColor(frameBorderColor, -30);
   // const bevelRight = shadeColor(frameBorderColor, -15);

@@ -575,8 +575,8 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
                       <li className="text-orange-600">• Image is constrained within the custom border</li>
                     )}
                     <li>• Changes saved automatically on close</li>
-                    <li>• Click "Save Changes" to apply immediately</li>
-                    {/* <li>• Use "Download Image" to save your creation</li> */}
+                    <li>• Click &quot;Save Changes&quot; to apply immediately</li>
+                    {/* <li>• Use &quot;Download Image&quot; to save your creation</li> */}
                     {hasChanges && (
                       <li className="text-blue-600 font-medium">• You have unsaved changes</li>
                     )}

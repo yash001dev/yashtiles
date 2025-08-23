@@ -151,7 +151,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
             <div>
               <p className="text-sm text-gray-500">Size</p>
               <p className="font-semibold text-gray-900">
-                {customization.size.replace("x", '" X ')}"
+                {customization.size.replace("x", "&quot; X ")}&quot;
               </p>
             </div>
           </div>
@@ -247,7 +247,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                       Frame {index + 1}
                     </h3>
                     <p className="text-sm lg:text-[10px] text-gray-600">
-                      {getMaterialName(frame.customization.material)} • {frame.customization.size.replace("x", '" × ')}"
+                      {getMaterialName(frame.customization.material)} • {frame.customization.size.replace("x", "&quot; × ")}&quot;
                     </p>
                   </div>
                 </div>
@@ -302,7 +302,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                       <div className="flex-1">
                         <p className="text-xs text-gray-500">Size</p>
                         <p className="text-sm font-medium text-gray-900">
-                          {frame.customization.size.replace("x", '" × ')}"
+                          {frame.customization.size.replace("x", "&quot; × ")}&quot;
                         </p>
                       </div>
                     </div>

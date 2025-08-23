@@ -231,7 +231,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, items })
       
       // Log all FormData entries
       let imageCount = 0;
-      for (let [key, value] of formData.entries()) {
+      for (const [key, value] of formData.entries()) {
         if (value instanceof File) {
           imageCount++;
           console.log(`${key}:`, {

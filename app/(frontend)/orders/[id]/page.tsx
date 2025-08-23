@@ -4,7 +4,6 @@ import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Order } from '@/types';
-import { ordersService } from '@/lib/orders';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -13,8 +12,6 @@ import {
   ArrowLeft, 
   Package, 
   MapPin, 
-  CreditCard, 
-  Calendar,
   Truck,
   Phone,
   Mail,
