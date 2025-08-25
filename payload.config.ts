@@ -44,24 +44,24 @@ export default buildConfig({
         prefix:'media'
       }
     },
-    bucket:process.env.S3_BUCKET || "",
+    bucket:process.env.NEXT_S3_BUCKET || "",
     config: {
       credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
-        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+        accessKeyId: process.env.NEXT_S3_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.NEXT_S3_SECRET_ACCESS_KEY || "",
       },
-      region: process.env.S3_REGION || "",
-      // endpoint: process.env.S3_ENDPOINT || "",
+      region: process.env.NEXT_S3_REGION || "",
+      // endpoint: process.env.NEXT_S3_ENDPOINT || "",
     }
 
    })
   ],  // Your Payload secret - should be a complex and secure string, unguessable
-  secret: process.env.PAYLOAD_SECRET || "",
+  secret: process.env.NEXT_PAYLOAD_SECRET || "",
   // Whichever Database Adapter you're using should go here
   // Mongoose is shown as an example, but you can also use Postgres
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || "",
+      connectionString: process.env.NEXT_DATABASE_URI || "",
       ssl: {
         rejectUnauthorized: false, // This is important for self-signed certificates
       },
@@ -84,12 +84,12 @@ export default buildConfig({
   // CORS configuration
   cors: [
     process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001',
+    process.env.NEXT_PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001',
   ],
 
   // CSRF configuration
   csrf: [
     process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-    process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001',
+    process.env.NEXT_PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3001',
   ],
 });
