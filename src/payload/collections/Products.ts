@@ -1,6 +1,7 @@
 import { CollectionConfig } from "payload";
 import { FAQBlock } from "../blocks/FAQBlock";
 import { defaultFaqsData } from "@/lib/faq-data";
+import { FeatureBlock } from "../blocks/FeaturedBlock";
 
 export const Products: CollectionConfig = {
   slug: "products",
@@ -378,6 +379,7 @@ export const Products: CollectionConfig = {
       },
       blocks: [
         FAQBlock,
+        FeatureBlock
         // Add other blocks here if you have them (e.g., ImageBlock, CallToActionBlock)
       ],
       // This is the key part to set the default FAQ block
@@ -388,6 +390,30 @@ export const Products: CollectionConfig = {
           faqs: defaultFaqsData, // Use the prepared default data
           style: 'accordion',
           showCategories: false,
+        },
+        {
+          blockType: 'featureBlock',
+
+          items: [
+            {
+              image:9,
+              title: "We've got you covered",
+              description:
+                'With our hassle-free return policy, we guarantee quick replacements or instant refunds for damaged products or in case of incorrect product delivered.',
+            },
+            {
+              image:10,
+              title: 'Multiple Sizes',
+              description:
+                'Our versatile and diverse range of products, available in multiple sizes. From Basic to Luxury—whatever your needs may be.',
+            },
+            {
+              image:11,
+              title: 'Customer Satisfaction',
+              description:
+                'Crafted with care and attention to detail, our products deliver beyond expectations—every single time.',
+            },
+          ],
         },
       ],
     },

@@ -4,6 +4,7 @@ import { FrameSpecificationsBlock } from '../blocks/FrameSpecificationsBlock';
 import { BannerBlock } from '../blocks/BannerBlock';
 import { SliderBlock } from '../blocks/SliderBlock';
 import { CustomHTMLBlock } from '../blocks/CustomHTMLBlock';
+import { FeatureBlock } from '../blocks/FeaturedBlock';
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -63,6 +64,7 @@ export const Pages: CollectionConfig = {
       type: 'blocks',
       blocks: [
         FAQBlock,
+        FeatureBlock,
         FrameSpecificationsBlock,
         BannerBlock,
         SliderBlock,
