@@ -43,6 +43,7 @@ import 'swiper/css/zoom';
 import 'swiper/css/effect-fade';
 import { ProductCard } from '@/components/ecommerce/ProductCard';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { renderPayloadRichText } from '@/components/ui/renderPayloadRihText';
 
 interface Product {
   id: string;
@@ -921,7 +922,7 @@ function ProductDetailsTabs({ product }: { product: Product }) {
             >
               {activeTab === 'description' && (
                 <div className="prose max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                  {renderPayloadRichText(product.description)}
                 </div>
               )}
 
@@ -974,42 +975,6 @@ function ProductDetailsTabs({ product }: { product: Product }) {
     </section>
   );
 }
-
-type Node = {
-  type: string;
-  text?: string;
-  children?: Node[];
-};
-
-  function renderNode(node: Node, key: number): React.ReactNode {
-  switch (node.type) {
-    case "paragraph":
-      return (
-        <p key={key}>
-          {node.children?.map((child, i) => renderNode(child, i))}
-        </p>
-      );
-    case "text":
-      return <span key={key}>{node.text}</span>;
-    default:
-      return node.children?.map((child, i) => renderNode(child, i)) || null;
-  }
-}
-  // Helper function to render answer content
-  const renderAnswerContent = (answer: any) => {
-    if (typeof answer === 'string') {
-      return answer;
-    }
-    // If it's a complex object (lexical rich text), try to extract text
-    if (answer && typeof answer === 'object') {
-      if (answer.root && answer.root.children) {
-       return answer.root.children?.map((child: Node, i: number) => renderNode(child, i))
-      }
-      // Fallback to stringify for debugging
-      return JSON.stringify(answer);
-    }
-    return '';
-  };
 
 // Product FAQ Section
 function ProductFAQSection({ faqBlock }: { faqBlock: any }) {
@@ -1079,7 +1044,7 @@ function ProductFAQSection({ faqBlock }: { faqBlock: any }) {
                           {typeof faq.answer === 'string' ? (
                             <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
                           ) : (
-                            <div>{renderAnswerContent(faq.answer)}</div>
+                            <div>{renderPayloadRichText(faq.answer)}</div>
                           )}
                         </div>
                       </motion.div>
@@ -1105,7 +1070,7 @@ function ProductFAQSection({ faqBlock }: { faqBlock: any }) {
                     {typeof faq.answer === 'string' ? (
                       <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
                     ) : (
-                      <div>{renderAnswerContent(faq.answer)}</div>
+                      <div>{renderPayloadRichText(faq.answer)}</div>
                     )}
                   </div>
                 </motion.div>
@@ -1147,7 +1112,7 @@ function ProductFAQSection({ faqBlock }: { faqBlock: any }) {
                           {typeof faq.answer === 'string' ? (
                             <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
                           ) : (
-                            <div>{renderAnswerContent(faq.answer)}</div>
+                            <div>{renderPayloadRichText(faq.answer)}</div>
                           )}
                         </div>
                       </motion.div>
