@@ -1,4 +1,6 @@
 import { CollectionConfig } from "payload";
+import { FAQBlock } from "../blocks/FAQBlock";
+import { defaultFaqsData } from "@/lib/faq-data";
 
 export const Products: CollectionConfig = {
   slug: "products",
@@ -366,6 +368,28 @@ export const Products: CollectionConfig = {
           },
         ],
       },
+    },
+    {
+      name: 'pageLayout',
+      type: 'blocks',
+      labels: {
+        singular: 'Block',
+        plural: 'Blocks',
+      },
+      blocks: [
+        FAQBlock,
+        // Add other blocks here if you have them (e.g., ImageBlock, CallToActionBlock)
+      ],
+      // This is the key part to set the default FAQ block
+      defaultValue: [
+        {
+          blockType: 'faq',
+          title: 'Frequently Asked Questions',
+          faqs: defaultFaqsData, // Use the prepared default data
+          style: 'accordion',
+          showCategories: false,
+        },
+      ],
     },
   ],
   hooks: {

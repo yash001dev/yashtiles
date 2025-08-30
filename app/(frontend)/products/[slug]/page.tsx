@@ -117,6 +117,22 @@ interface Product {
   sku: string;
   featured?: boolean;
   status: string;
+  pageLayout?: Array<{
+    blockType: string;
+    title?: string;
+    subtitle?: string;
+    faqs?: Array<{
+      question: string;
+      answer: any;
+      category?: string;
+      sortOrder?: number;
+      id?: string;
+    }>;
+    style?: 'accordion' | 'tabs' | 'cards';
+    showCategories?: boolean;
+    id?: string;
+    blockName?: string;
+  }>;
 }
 
 interface PageContent {
@@ -847,7 +863,12 @@ export default function ProductDetailPage() {
       {pageContent && <CMSContentRenderer content={pageContent.content} />}
 
       {/* FAQ Section */}
-      <ProductFAQSection />
+      {(product as any).pageLayout && (product as any).pageLayout.map((block: any, index: number) => {
+        if (block.blockType === 'faq' && block.faqs && block.faqs.length > 0) {
+          return <ProductFAQSection key={block.id || index} faqBlock={block} />;
+        }
+        return null;
+      })}
 
       {/* Related Products */}
       <RelatedProducts categories={product.categories} currentProductId={product.id} />
@@ -954,8 +975,44 @@ function ProductDetailsTabs({ product }: { product: Product }) {
   );
 }
 
+type Node = {
+  type: string;
+  text?: string;
+  children?: Node[];
+};
+
+  function renderNode(node: Node, key: number): React.ReactNode {
+  switch (node.type) {
+    case "paragraph":
+      return (
+        <p key={key}>
+          {node.children?.map((child, i) => renderNode(child, i))}
+        </p>
+      );
+    case "text":
+      return <span key={key}>{node.text}</span>;
+    default:
+      return node.children?.map((child, i) => renderNode(child, i)) || null;
+  }
+}
+  // Helper function to render answer content
+  const renderAnswerContent = (answer: any) => {
+    if (typeof answer === 'string') {
+      return answer;
+    }
+    // If it's a complex object (lexical rich text), try to extract text
+    if (answer && typeof answer === 'object') {
+      if (answer.root && answer.root.children) {
+       return answer.root.children?.map((child: Node, i: number) => renderNode(child, i))
+      }
+      // Fallback to stringify for debugging
+      return JSON.stringify(answer);
+    }
+    return '';
+  };
+
 // Product FAQ Section
-function ProductFAQSection() {
+function ProductFAQSection({ faqBlock }: { faqBlock: any }) {
   const [openItems, setOpenItems] = useState<Set<number>>(new Set());
 
   const toggleItem = (index: number) => {
@@ -968,24 +1025,8 @@ function ProductFAQSection() {
     setOpenItems(newOpenItems);
   };
 
-  const faqs = [
-    {
-      question: "What materials are used in your frames?",
-      answer: "Our frames are crafted from premium solid wood with high-quality finishes. We use sustainable materials and ensure each frame meets our strict quality standards."
-    },
-    {
-      question: "How do I choose the right size for my space?",
-      answer: "Consider the wall space and surrounding furniture. As a general rule, artwork should take up 60-75% of the wall space above furniture. Our size guide can help you make the perfect choice."
-    },
-    {
-      question: "Can I return or exchange if I'm not satisfied?",
-      answer: "Yes! We offer a 7-day satisfaction guarantee. If you're not completely happy with your frame, contact us for a free exchange or full refund."
-    },
-    {
-      question: "How long does shipping take?",
-      answer: "Standard shipping takes 7-10 business days. We also offer express shipping (3-5 days) and rush orders (1-2 days) for faster delivery."
-    }
-  ];
+  // Use FAQs from the pageLayout block
+  const faqs = faqBlock.faqs || [];
 
   return (
     <section className="py-12 bg-white">
@@ -998,48 +1039,124 @@ function ProductFAQSection() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-            <p className="text-lg text-gray-600">Everything you need to know about this product</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{faqBlock.title || 'Frequently Asked Questions'}</h2>
+            {faqBlock.subtitle && (
+              <p className="text-lg text-gray-600">{faqBlock.subtitle}</p>
+            )}
           </motion.div>
 
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
-              <motion.div
-                key={index}
-                className="border border-gray-200 rounded-lg overflow-hidden"
-                initial={false}
-              >
-                <button
-                  onClick={() => toggleItem(index)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+          {faqBlock.style === 'accordion' && (
+            <div className="space-y-4">
+              {faqs.map((faq: any, index: number) => (
+                <motion.div
+                  key={index}
+                  className="border border-gray-200 rounded-lg overflow-hidden"
+                  initial={false}
                 >
-                  <span className="font-medium text-gray-900">{faq.question}</span>
-                  <motion.div
-                    animate={{ rotate: openItems.has(index) ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
+                  <button
+                    onClick={() => toggleItem(index)}
+                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
                   >
-                    <Plus className="w-5 h-5 text-gray-500" />
-                  </motion.div>
-                </button>
-                
-                <AnimatePresence>
-                  {openItems.has(index) && (
+                    <span className="font-medium text-gray-900">{faq.question}</span>
                     <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
+                      animate={{ rotate: openItems.has(index) ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      <div className="px-6 pb-4 text-gray-600">
-                        {faq.answer}
-                      </div>
+                      <Plus className="w-5 h-5 text-gray-500" />
                     </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
-          </div>
+                  </button>
+                  
+                  <AnimatePresence>
+                    {openItems.has(index) && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-6 pb-4 text-gray-600">
+                          {typeof faq.answer === 'string' ? (
+                            <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
+                          ) : (
+                            <div>{renderAnswerContent(faq.answer)}</div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {faqBlock.style === 'cards' && (
+            <div className="grid md:grid-cols-2 gap-6">
+              {faqs.map((faq: any, index: number) => (
+                <motion.div
+                  key={index}
+                  className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <h3 className="font-semibold text-gray-900 mb-3">{faq.question}</h3>
+                  <div className="text-gray-600">
+                    {typeof faq.answer === 'string' ? (
+                      <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
+                    ) : (
+                      <div>{renderAnswerContent(faq.answer)}</div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {faqBlock.style === 'tabs' && (
+            <div className="space-y-4">
+              {faqs.map((faq: any, index: number) => (
+                <motion.div
+                  key={index}
+                  className="border border-gray-200 rounded-lg overflow-hidden"
+                  initial={false}
+                >
+                  <button
+                    onClick={() => toggleItem(index)}
+                    className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="font-medium text-gray-900">{faq.question}</span>
+                    <motion.div
+                      animate={{ rotate: openItems.has(index) ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Plus className="w-5 h-5 text-gray-500" />
+                    </motion.div>
+                  </button>
+                  
+                  <AnimatePresence>
+                    {openItems.has(index) && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-6 pb-4 text-gray-600">
+                          {typeof faq.answer === 'string' ? (
+                            <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
+                          ) : (
+                            <div>{renderAnswerContent(faq.answer)}</div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -1101,6 +1218,7 @@ function FAQSection({ block }: { block: any }) {
                 className="border border-gray-200 rounded-lg overflow-hidden"
                 initial={false}
               >
+                
                 <button
                   onClick={() => toggleItem(index)}
                   className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
@@ -1508,7 +1626,7 @@ function RelatedProducts({ categories, currentProductId }: {
             >
               {filteredProducts.map((product) => (
                 <SwiperSlide key={product.id}>
-                  <ProductCard product={product} />
+                  <ProductCard product={product} showAddToCard={false} />
                 </SwiperSlide>
               ))}
             </Swiper>
