@@ -364,6 +364,57 @@ export interface Product {
    * Computed from base price (read-only)
    */
   price?: number | null;
+  pageLayout?:
+    | (
+        | {
+            title: string;
+            /**
+             * Optional subtitle for the FAQ section
+             */
+            subtitle?: string | null;
+            faqs: {
+              question: string;
+              answer: {
+                root: {
+                  type: string;
+                  children: {
+                    type: string;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              category?: ('general' | 'shipping' | 'returns' | 'care' | 'installation') | null;
+              sortOrder?: number | null;
+              id?: string | null;
+            }[];
+            style?: ('accordion' | 'tabs' | 'cards') | null;
+            /**
+             * Group FAQs by category
+             */
+            showCategories?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq';
+          }
+        | {
+            items: {
+              image?: (number | null) | Media;
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'featureBlock';
+          }
+      )[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -673,6 +724,17 @@ export interface Page {
             id?: string | null;
             blockName?: string | null;
             blockType: 'faq';
+          }
+        | {
+            items: {
+              image?: (number | null) | Media;
+              title: string;
+              description: string;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'featureBlock';
           }
         | {
             title: string;
@@ -1059,6 +1121,43 @@ export interface ProductsSelect<T extends boolean = true> {
         keywords?: T;
       };
   price?: T;
+  pageLayout?:
+    | T
+    | {
+        faq?:
+          | T
+          | {
+              title?: T;
+              subtitle?: T;
+              faqs?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    category?: T;
+                    sortOrder?: T;
+                    id?: T;
+                  };
+              style?: T;
+              showCategories?: T;
+              id?: T;
+              blockName?: T;
+            };
+        featureBlock?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    image?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1291,6 +1390,20 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               style?: T;
               showCategories?: T;
+              id?: T;
+              blockName?: T;
+            };
+        featureBlock?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    image?: T;
+                    title?: T;
+                    description?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };

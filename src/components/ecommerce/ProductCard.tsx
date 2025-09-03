@@ -31,9 +31,10 @@ interface ProductCardProps {
     featured?: boolean;
   };
   className?: string;
+  showAddToCard?: boolean;
 }
 
-export function ProductCard({ product, className = '' }: ProductCardProps) {
+export function ProductCard({ product, className = '', showAddToCard=true }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -240,7 +241,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps) {
         </div>
 
         {/* Price and Add to Cart */}
-        <div className="flex items-center justify-between">
+        <div className={`flex items-center justify-between`}>
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-gray-900">
               {formatPrice(product.price)}
@@ -263,7 +264,7 @@ export function ProductCard({ product, className = '' }: ProductCardProps) {
               onClick={handleQuickAdd}
             >
               <ShoppingCart className="w-4 h-4 mr-1" />
-              Add to Cart
+            {showAddToCard? ' Add to Cart' : ' '}
             </Button>
           </motion.div>
         </div>

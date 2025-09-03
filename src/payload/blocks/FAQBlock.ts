@@ -1,3 +1,5 @@
+import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { SlateToLexicalFeature } from '@payloadcms/richtext-lexical/migrate';
 import { Block } from 'payload';
 
 export const FAQBlock: Block = {
@@ -35,6 +37,13 @@ export const FAQBlock: Block = {
           name: 'answer',
           type: 'richText',
           required: true,
+            editor: lexicalEditor({
+                features: ({ defaultFeatures }) => [
+                  ...defaultFeatures,
+                  // 2. Add the SlateToLexicalFeature here
+                  SlateToLexicalFeature({}),
+                ],
+              }),
         },
         {
           name: 'category',
