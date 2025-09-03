@@ -1,0 +1,136 @@
+{
+  "family": "yashtiles-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "yashtiles-container",
+      "image": "YOUR_ECR_REPOSITORY_URI:latest",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/yashtiles",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "NEXT_PUBLIC_ENVIRONMENT",
+          "value": "production"
+        },
+        {
+          "name": "PORT",
+          "value": "3000"
+        },
+        {
+          "name": "HOSTNAME",
+          "value": "0.0.0.0"
+        },
+        {
+          "name": "NEXT_TELEMETRY_DISABLED",
+          "value": "1"
+        },
+        {
+          "name": "NEXT_PUBLIC_BASE_URL",
+          "value": "https://your-domain.com"
+        },
+        {
+          "name": "NEXT_PUBLIC_API_URL",
+          "value": "https://your-domain.com/api"
+        },
+        {
+          "name": "NEXT_PUBLIC_APP_NAME",
+          "value": "YashTiles"
+        },
+        {
+          "name": "NEXT_PUBLIC_APP_VERSION",
+          "value": "1.0.0"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URI",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/database-uri"
+        },
+        {
+          "name": "PAYLOAD_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/payload-secret"
+        },
+        {
+          "name": "S3_BUCKET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/s3-bucket"
+        },
+        {
+          "name": "S3_ACCESS_KEY_ID",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/s3-access-key"
+        },
+        {
+          "name": "S3_SECRET_ACCESS_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/s3-secret-key"
+        },
+        {
+          "name": "S3_REGION",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/s3-region"
+        },
+        {
+          "name": "S3_ENDPOINT",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/s3-endpoint"
+        },
+        {
+          "name": "CRON_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/cron-secret"
+        },
+        {
+          "name": "PREVIEW_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/preview-secret"
+        },
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/google-client-id"
+        },
+        {
+          "name": "GOOGLE_CLIENT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/google-client-secret"
+        },
+        {
+          "name": "IMAGEKIT_PUBLIC_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/imagekit-public-key"
+        },
+        {
+          "name": "IMAGEKIT_PRIVATE_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/imagekit-private-key"
+        },
+        {
+          "name": "IMAGEKIT_URL_ENDPOINT",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:YOUR_ACCOUNT_ID:secret:yashtiles/imagekit-url-endpoint"
+        }
+      ],
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:3000/api/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ]
+}

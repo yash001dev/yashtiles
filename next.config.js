@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 import { withPayload } from "@payloadcms/next/withPayload";
 const nextConfig = {
+  // Output standalone for Docker deployment
+  output: "standalone",
+
+  // Compress output for better performance
+  compress: true,
+
   // App directory is now stable in Next.js 14
   images: {
     remotePatterns: [
@@ -31,15 +37,25 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
   },
-  // Environment-specific configuration
+  // Environment-specific configuration with enhanced runtime support
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
+    // Server-side environment variables
+    DATABASE_URI: process.env.DATABASE_URI,
+    PAYLOAD_SECRET: process.env.PAYLOAD_SECRET,
+    S3_BUCKET: process.env.S3_BUCKET,
+    S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
+    S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
+    S3_REGION: process.env.S3_REGION,
   },
 
-  // Public runtime configuration
+  // Public runtime configuration - accessible on client-side
   publicRuntimeConfig: {
-    baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-    environment: process.env.NEXT_PUBLIC_ENVIRONMENT,
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
+    apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
+    environment: process.env.NEXT_PUBLIC_ENVIRONMENT || "development",
+    appName: process.env.NEXT_PUBLIC_APP_NAME || "YashTiles",
+    appVersion: process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0",
   },
 
   // Redirects based on environment

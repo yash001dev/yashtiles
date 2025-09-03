@@ -1,0 +1,48 @@
+{
+  "serviceName": "yashtiles-service",
+  "cluster": "yashtiles-cluster",
+  "taskDefinition": "yashtiles-task",
+  "desiredCount": 2,
+  "launchType": "FARGATE",
+  "platformVersion": "LATEST",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": [
+        "subnet-xxxxxxxxx",
+        "subnet-yyyyyyyyy"
+      ],
+      "securityGroups": [
+        "sg-xxxxxxxxx"
+      ],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:YOUR_ACCOUNT_ID:targetgroup/yashtiles-tg/xxxxxxxxx",
+      "containerName": "yashtiles-container",
+      "containerPort": 3000
+    }
+  ],
+  "healthCheckGracePeriodSeconds": 300,
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 50,
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    }
+  },
+  "enableExecuteCommand": true,
+  "propagateTags": "SERVICE",
+  "tags": [
+    {
+      "key": "Environment",
+      "value": "production"
+    },
+    {
+      "key": "Application",
+      "value": "yashtiles"
+    }
+  ]
+}

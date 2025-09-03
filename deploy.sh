@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# AWS ECS Deployment Script for YashTiles
+# Make sure to configure AWS CLI before running this script
+
+set -e
+
+# Configuration
+ECR_REPOSITORY_URI="YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/yashtiles"
+CLUSTER_NAME="yashtiles-cluster"
+SERVICE_NAME="yashtiles-service"
+TASK_DEFINITION_NAME="yashtiles-task"
+REGION="us-east-1"
+
+echo "🚀 Starting deployment process..."
+
+# Get AWS account ID
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+echo "Account ID: $ACCOUNT_ID"
+
+# Update ECR URI in task definition
+sed -i "s/YOUR_ACCOUNT_ID/$ACCOUNT_ID/g" ecs-task-definition.json
+sed -i "s/YOUR_ECR_REPOSITORY_URI/$ECR_REPOSITORY_URI/g" ecs-task-definition.json
+
+echo "📦 Building Docker image..."
+docker build -t yashtiles:latest .
+
+echo "🏷️ Tagging image for ECR..."
+docker tag yashtiles:latest $ECR_REPOSITORY_URI:latest
+docker tag yashtiles:latest $ECR_REPOSITORY_URI:$(date +%Y%m%d-%H%M%S)
+
+echo "🔐 Logging into ECR..."
+aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
+
+echo "⬆️ Pushing image to ECR..."
+docker push $ECR_REPOSITORY_URI:latest
+docker push $ECR_REPOSITORY_URI:$(date +%Y%m%d-%H%M%S)
+
+echo "📝 Registering new task definition..."
+TASK_DEFINITION_ARN=$(aws ecs register-task-definition \
+  --cli-input-json file://ecs-task-definition.json \
+  --region $REGION \
+  --query 'taskDefinition.taskDefinitionArn' \
+  --output text)
+
+echo "Task Definition ARN: $TASK_DEFINITION_ARN"
+
+echo "🔄 Updating ECS service..."
+aws ecs update-service \
+  --cluster $CLUSTER_NAME \
+  --service $SERVICE_NAME \
+  --task-definition $TASK_DEFINITION_ARN \
+  --region $REGION
+
+echo "⏳ Waiting for deployment to complete..."
+aws ecs wait services-stable \
+  --cluster $CLUSTER_NAME \
+  --services $SERVICE_NAME \
+  --region $REGION
+
+echo "✅ Deployment completed successfully!"
+
+# Get service status
+echo "📊 Service status:"
+aws ecs describe-services \
+  --cluster $CLUSTER_NAME \
+  --services $SERVICE_NAME \
+  --region $REGION \
+  --query 'services[0].deployments[0]' \
+  --output table
