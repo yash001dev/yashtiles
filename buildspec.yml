@@ -1,0 +1,109 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: ap-south-1
+    AWS_ACCOUNT_ID: 891377388489
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo Determining deployment configuration based on branch...
+      - | 
+        if [ "$CODEBUILD_WEBHOOK_HEAD_REF" = "refs/heads/production" ]; then
+          export ECR_REPOSITORY_NAME="photoframix-frontend-production"
+          export ECS_TASK_FAMILY="photoframix-frontend-production-task-family"
+          export ECS_CLUSTER_NAME="photoframix-frontend-production-cluster"
+          export ECS_SERVICE_NAME="photoframix-frontend-production-service"
+          export NODE_ENV="production"
+          export NEXT_PUBLIC_BASE_URL="https://stage.photoframix.com"
+          export NEXT_PUBLIC_ENVIRONMENT="production"
+          export NEXT_PUBLIC_ENABLE_DEBUG="false"
+        elif [ "$CODEBUILD_WEBHOOK_HEAD_REF" = "refs/heads/stage" ]; then
+          export ECR_REPOSITORY_NAME="photoframix-frontend-stage"
+          export ECS_TASK_FAMILY="photoframix-frontend-stage-task-family"
+          export ECS_CLUSTER_NAME="photoframix-frontend-stage-cluster"
+          export ECS_SERVICE_NAME="photoframix-frontend-stage-service"
+          export NODE_ENV="production"
+          export NEXT_PUBLIC_BASE_URL="https://stage.photoframix.com"
+          export NEXT_PUBLIC_ENVIRONMENT="development"
+          export NEXT_PUBLIC_ENABLE_DEBUG="false"
+        else
+          echo "Branch not configured for deployment: $CODEBUILD_WEBHOOK_HEAD_REF"
+          exit 1
+        fi
+      - export ECR_REPOSITORY_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME
+      - export IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}
+      - echo ECR Repository URI is $ECR_REPOSITORY_URI
+      - echo Image tag is $IMAGE_TAG
+      - echo ECS Task Family is $ECS_TASK_FAMILY
+      - echo ECS Cluster is $ECS_CLUSTER_NAME
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - |
+        docker build -t $ECR_REPOSITORY_NAME \
+          --build-arg NODE_ENV=$NODE_ENV \
+          --build-arg NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL \
+          --build-arg NEXT_PUBLIC_APP_NAME=PhotoFramix \
+          --build-arg NEXT_PUBLIC_APP_VERSION=1.0.0 \
+          --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_BASE_URL \
+          --build-arg NEXT_PUBLIC_ENVIRONMENT=$NEXT_PUBLIC_ENVIRONMENT \
+          --build-arg NEXT_PUBLIC_ENABLE_DEBUG=$NEXT_PUBLIC_ENABLE_DEBUG \
+          --build-arg NEXT_PUBLIC_ENABLE_ANALYTICS=true \
+          --build-arg NEXT_PUBLIC_GOOGLE_CLIENT_ID=829564712055-nv247pdurodv3atd4jv24rsaom8qsscm.apps.googleusercontent.com \
+          --build-arg NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/hw5gjfx78 \
+          --build-arg NEXT_PUBLIC_PAYU_KEY=rGRiaJ \
+          --build-arg NEXT_PUBLIC_PAYU_SALT=BEoQBAySdr3GiB413ZIp0ydW3UHeap8f \
+          .
+      - docker tag $ECR_REPOSITORY_NAME:latest $ECR_REPOSITORY_URI:latest
+      - docker tag $ECR_REPOSITORY_NAME:latest $ECR_REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image to ECR...
+      - docker push $ECR_REPOSITORY_URI:latest
+      - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+      - echo Creating new task definition...
+      - |
+        # Get the current task definition
+        TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $ECS_TASK_FAMILY --region $AWS_DEFAULT_REGION)
+        
+        # Create new task definition with updated image
+        NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --arg IMAGE "$ECR_REPOSITORY_URI:$IMAGE_TAG" '.taskDefinition | .containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.placementConstraints) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)')
+        
+        # Register the new task definition
+        NEW_TASK_INFO=$(aws ecs register-task-definition --region $AWS_DEFAULT_REGION --cli-input-json "$NEW_TASK_DEFINITION")
+        NEW_REVISION=$(echo $NEW_TASK_INFO | jq '.taskDefinition.revision')
+        
+        echo "New task definition revision: $NEW_REVISION"
+      - echo Updating ECS service...
+      - |
+        aws ecs update-service \
+          --region $AWS_DEFAULT_REGION \
+          --cluster $ECS_CLUSTER_NAME \
+          --service $ECS_SERVICE_NAME \
+          --task-definition $ECS_TASK_FAMILY:$NEW_REVISION \
+          --force-new-deployment
+      - echo Waiting for service to reach stable state...
+      - |
+        aws ecs wait services-stable \
+          --region $AWS_DEFAULT_REGION \
+          --cluster $ECS_CLUSTER_NAME \
+          --services $ECS_SERVICE_NAME
+      - echo Deployment completed successfully!
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: '.'
+
+cache:
+  paths:
+    - '/root/.npm/**/*'
+    - 'node_modules/**/*'
