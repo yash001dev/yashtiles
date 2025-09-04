@@ -4,6 +4,8 @@ import "./frontend.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers/Providers";
+import StructuredData from "@/components/StructuredData";
+import { isCrawlable, getCanonicalUrl } from "@/utils/seo";
 const prompt = Prompt({
   weight: [
     "100",
@@ -42,7 +44,15 @@ export const metadata: Metadata = {
   creator: process.env.NEXT_PUBLIC_APP_NAME,
   publisher: process.env.NEXT_PUBLIC_APP_NAME,
   icons: {
-    icon: '/favicon/favicon.ico',
+    icon: [
+      { url: '/favicon.ico', type: 'image/x-icon' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/favicon.svg',
+  },
+  other: {
+    'theme-color': '#166534',
+    'color-scheme': 'light dark',
   },
   openGraph: {
     title: process.env.NEXT_PUBLIC_APP_NAME + " - Transform Your Memories Into Stunning Wall Art",
@@ -68,7 +78,7 @@ export const metadata: Metadata = {
       "Upload your favorite photos and get them delivered as beautifully framed art.",
     images: ["/og-image.jpg"],
   },
-  robots: {
+  robots: isCrawlable() ? {
     index: true,
     follow: true,
     googleBot: {
@@ -78,9 +88,24 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
+  } : {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
+    noimageindex: true,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noarchive: true,
+      nosnippet: true,
+      noimageindex: true,
+      nocache: true,
+    },
   },
   alternates: {
-    canonical: "https://" + process.env.NEXT_PUBLIC_APP_NAME + ".com",
+    canonical: getCanonicalUrl(),
   },
   verification: {
     google: "your-google-verification-code",
@@ -94,45 +119,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={prompt.variable}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/favicon.svg" />
-        
-        <meta name="theme-color" content="#166534" />
-        <meta name="color-scheme" content="light dark" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "PhotoFramix",
-              "url": "https://" + process.env.NEXT_PUBLIC_APP_NAME + ".com",
-              "logo": "https://" + process.env.NEXT_PUBLIC_APP_NAME + ".com/logo.png",
-              "description": "Transform your memories into stunning wall art with premium quality, handcrafted frames.",
-              "sameAs": [
-                "https://facebook.com/" + process.env.NEXT_PUBLIC_APP_NAME,
-                "https://instagram.com/" + process.env.NEXT_PUBLIC_APP_NAME,
-                "https://twitter.com/" + process.env.NEXT_PUBLIC_APP_NAME
-              ],
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+1-555-PhotoFramix",
-                "contactType": "customer service"
-              }
-            })
-          }}
-        />
-      </head>
       <body className="font-sans" suppressHydrationWarning={true}>
         <Providers>
           {children}
           <Toaster />
           <Sonner />
         </Providers>
+        <StructuredData />
       </body>
     </html>
   );

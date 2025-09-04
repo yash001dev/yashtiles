@@ -76,7 +76,7 @@ const nextConfig = {
 
   // Headers for security and performance
   async headers() {
-    return [
+    const headers = [
       {
         source: "/(.*)",
         headers: [
@@ -130,6 +130,21 @@ const nextConfig = {
         ],
       },
     ];
+
+    // Add robots meta tag restrictions for non-production environments
+    if (process.env.NEXT_PUBLIC_ENVIRONMENT !== 'production') {
+      headers.push({
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow, noarchive, nosnippet, noimageindex, nocache",
+          },
+        ],
+      });
+    }
+
+    return headers;
   },
 };
 
