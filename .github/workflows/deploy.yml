@@ -12,7 +12,7 @@ env:
   ECS_SERVICE: ${{ vars.ECS_SERVICE_PRODUCTION }}
   ECS_CLUSTER: ${{ vars.ECS_CLUSTER_PRODUCTION }}
   ECS_TASK_DEFINITION: ${{ vars.ECS_TASK_DEFINITION_PRODUCTION }}
-  CONTAINER_NAME: photoframix-frontend-stage
+  CONTAINER_NAME: photoframix-stage
 
 permissions:
   id-token: write
