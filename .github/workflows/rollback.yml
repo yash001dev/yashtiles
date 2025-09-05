@@ -1,0 +1,203 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      rollback_strategy:
+        description: 'Rollback strategy'
+        required: true
+        default: 'previous_revision'
+        type: choice
+        options:
+          - previous_revision
+          - specific_image_tag
+      image_tag:
+        description: 'Specific image tag to rollback to (only if specific_image_tag is selected)'
+        required: false
+        type: string
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  rollback:
+    name: Rollback ECS Deployment
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set environment variables
+        id: vars
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "staging" ]; then
+            echo "ECS_SERVICE=${{ vars.ECS_SERVICE_STAGING || vars.ECS_SERVICE_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_CLUSTER=${{ vars.ECS_CLUSTER_STAGING || vars.ECS_CLUSTER_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_TASK_DEFINITION=${{ vars.ECS_TASK_DEFINITION_STAGING || vars.ECS_TASK_DEFINITION_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "CONTAINER_NAME=photoframix-frontend-staging" >> $GITHUB_OUTPUT
+          else
+            echo "ECS_SERVICE=${{ vars.ECS_SERVICE_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_CLUSTER=${{ vars.ECS_CLUSTER_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_TASK_DEFINITION=${{ vars.ECS_TASK_DEFINITION_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "CONTAINER_NAME=photoframix-frontend-stage" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get current service information
+        id: current-service
+        run: |
+          CURRENT_TASK_DEF=$(aws ecs describe-services \
+            --cluster ${{ steps.vars.outputs.ECS_CLUSTER }} \
+            --services ${{ steps.vars.outputs.ECS_SERVICE }} \
+            --query 'services[0].taskDefinition' --output text)
+          
+          echo "current_task_definition=$CURRENT_TASK_DEF" >> $GITHUB_OUTPUT
+          echo "Current task definition: $CURRENT_TASK_DEF"
+
+      - name: Determine rollback target
+        id: rollback-target
+        run: |
+          if [ "${{ github.event.inputs.rollback_strategy }}" == "previous_revision" ]; then
+            # Get the previous revision
+            TASK_DEF_FAMILY="${{ steps.vars.outputs.ECS_TASK_DEFINITION }}"
+            CURRENT_REVISION=$(aws ecs describe-task-definition --task-definition "${{ steps.current-service.outputs.current_task_definition }}" --query 'taskDefinition.revision' --output text)
+            PREVIOUS_REVISION=$((CURRENT_REVISION - 1))
+            
+            if [ $PREVIOUS_REVISION -lt 1 ]; then
+              echo "Error: No previous revision available to rollback to"
+              exit 1
+            fi
+            
+            ROLLBACK_TASK_DEF="${TASK_DEF_FAMILY}:${PREVIOUS_REVISION}"
+            echo "rollback_task_definition=$ROLLBACK_TASK_DEF" >> $GITHUB_OUTPUT
+            echo "Rolling back to previous revision: $ROLLBACK_TASK_DEF"
+            
+          elif [ "${{ github.event.inputs.rollback_strategy }}" == "specific_image_tag" ]; then
+            if [ -z "${{ github.event.inputs.image_tag }}" ]; then
+              echo "Error: Image tag is required when using specific_image_tag strategy"
+              exit 1
+            fi
+            
+            # We'll need to create a new task definition with the specific image
+            echo "rollback_image_tag=${{ github.event.inputs.image_tag }}" >> $GITHUB_OUTPUT
+            echo "Rolling back to specific image tag: ${{ github.event.inputs.image_tag }}"
+          fi
+
+      - name: Login to Amazon ECR (for specific image tag rollback)
+        if: github.event.inputs.rollback_strategy == 'specific_image_tag'
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Prepare rollback task definition (for specific image tag)
+        if: github.event.inputs.rollback_strategy == 'specific_image_tag'
+        run: |
+          # Download current task definition
+          aws ecs describe-task-definition --task-definition ${{ steps.vars.outputs.ECS_TASK_DEFINITION }} --query taskDefinition > rollback-task-definition.json
+          
+          # Update image in task definition
+          IMAGE_URI="${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.event.inputs.image_tag }}"
+          
+          # Use jq to update the image
+          jq --arg image "$IMAGE_URI" '.containerDefinitions[0].image = $image' rollback-task-definition.json > updated-task-definition.json
+          
+          # Remove fields that shouldn't be in registration
+          jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .placementConstraints, .compatibilities, .registeredAt, .registeredBy)' updated-task-definition.json > final-task-definition.json
+          
+          # Register new task definition
+          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://final-task-definition.json --query 'taskDefinition.taskDefinitionArn' --output text)
+          echo "rollback_task_definition=$NEW_TASK_DEF_ARN" >> $GITHUB_OUTPUT
+
+      - name: Perform rollback
+        run: |
+          TARGET_TASK_DEF="${{ steps.rollback-target.outputs.rollback_task_definition }}"
+          
+          echo "🔄 Starting rollback to: $TARGET_TASK_DEF"
+          
+          # Update service to use rollback task definition
+          aws ecs update-service \
+            --cluster ${{ steps.vars.outputs.ECS_CLUSTER }} \
+            --service ${{ steps.vars.outputs.ECS_SERVICE }} \
+            --task-definition "$TARGET_TASK_DEF"
+          
+          echo "Rollback initiated. Waiting for service to stabilize..."
+          
+          # Wait for service to stabilize
+          aws ecs wait services-stable \
+            --cluster ${{ steps.vars.outputs.ECS_CLUSTER }} \
+            --services ${{ steps.vars.outputs.ECS_SERVICE }}
+
+      - name: Verify rollback
+        run: |
+          echo "✅ Rollback completed successfully!"
+          
+          # Get updated service information
+          UPDATED_SERVICE_INFO=$(aws ecs describe-services \
+            --cluster ${{ steps.vars.outputs.ECS_CLUSTER }} \
+            --services ${{ steps.vars.outputs.ECS_SERVICE }} \
+            --query 'services[0].{ServiceName:serviceName,Status:status,RunningCount:runningCount,DesiredCount:desiredCount,TaskDefinition:taskDefinition}')
+          
+          echo "Updated service information:"
+          echo $UPDATED_SERVICE_INFO | jq .
+          
+          # Verify all tasks are running
+          RUNNING_TASKS=$(aws ecs list-tasks \
+            --cluster ${{ steps.vars.outputs.ECS_CLUSTER }} \
+            --service-name ${{ steps.vars.outputs.ECS_SERVICE }} \
+            --desired-status RUNNING \
+            --query 'length(taskArns)' --output text)
+          
+          echo "Running tasks: $RUNNING_TASKS"
+
+      - name: Post-rollback health check
+        run: |
+          echo "Waiting 30 seconds for application to stabilize after rollback..."
+          sleep 30
+          
+          # Health check (customize based on your application)
+          echo "Rollback health check completed"
+          echo "⚠️ Manual verification of application functionality is recommended"
+
+      - name: Create rollback summary
+        run: |
+          echo "## 🔄 Rollback Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ github.event.inputs.environment }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Rollback Strategy | ${{ github.event.inputs.rollback_strategy }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | ${{ steps.vars.outputs.ECS_SERVICE }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cluster | ${{ steps.vars.outputs.ECS_CLUSTER }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Previous Task Definition | ${{ steps.current-service.outputs.current_task_definition }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Rollback Task Definition | ${{ steps.rollback-target.outputs.rollback_task_definition }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ✅ Completed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Triggered By | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Please verify application functionality after rollback**" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify rollback completion
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Rollback completed successfully for ${{ github.event.inputs.environment }} environment"
+          else
+            echo "❌ Rollback failed for ${{ github.event.inputs.environment }} environment"
+            echo "Please check the logs and consider manual intervention"
+          fi

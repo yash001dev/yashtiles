@@ -3,16 +3,21 @@ name: Deploy to ECS
 on:
   push:
     branches:
-      - docker-konva-v3  # Deploy when pushing to your current branch
+      - stage      # Deploy to stage environment
+      - production # Deploy to production environment
   workflow_dispatch:  # Allow manual deployment
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'stage'
+        type: choice
+        options:
+          - stage
+          - production
 
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  ECS_SERVICE: ${{ vars.ECS_SERVICE_PRODUCTION }}
-  ECS_CLUSTER: ${{ vars.ECS_CLUSTER_PRODUCTION }}
-  ECS_TASK_DEFINITION: ${{ vars.ECS_TASK_DEFINITION_PRODUCTION }}
-  CONTAINER_NAME: photoframix-stage
 
 permissions:
   id-token: write
@@ -22,11 +27,40 @@ jobs:
   deploy:
     name: Deploy to ECS
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ github.ref_name == 'production' && 'production' || 'stage' }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: env-vars
+        run: |
+          if [ "${{ github.ref_name }}" == "production" ] || [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY }}" >> $GITHUB_OUTPUT
+            echo "ECS_SERVICE=${{ vars.ECS_SERVICE_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_CLUSTER=${{ vars.ECS_CLUSTER_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_TASK_DEFINITION=${{ vars.ECS_TASK_DEFINITION_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "CONTAINER_NAME=${{ vars.ECS_TASK_DEFINITION_CONTAINER_NAME_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ENVIRONMENT=production" >> $GITHUB_OUTPUT
+            echo "BASE_URL=https://photoframix.com" >> $GITHUB_OUTPUT
+            echo "API_URL=https://stage.photoframix.com" >> $GITHUB_OUTPUT
+            echo "ENABLE_DEBUG=false" >> $GITHUB_OUTPUT
+            echo "ENABLE_ANALYTICS=true" >> $GITHUB_OUTPUT
+            echo "PUBLIC_ENVIRONMENT=production" >> $GITHUB_OUTPUT
+          else
+            echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY_STAGE }}" >> $GITHUB_OUTPUT
+            echo "ECS_SERVICE=${{ vars.ECS_SERVICE_STAGE }}" >> $GITHUB_OUTPUT
+            echo "ECS_CLUSTER=${{ vars.ECS_CLUSTER_STAGE }}" >> $GITHUB_OUTPUT
+            echo "ECS_TASK_DEFINITION=${{ vars.ECS_TASK_DEFINITION_STAGE }}" >> $GITHUB_OUTPUT
+            echo "CONTAINER_NAME=${{ vars.ECS_TASK_DEFINITION_CONTAINER_NAME_STAGE }}" >> $GITHUB_OUTPUT
+            echo "ENVIRONMENT=stage" >> $GITHUB_OUTPUT
+            echo "BASE_URL=https://dev.photoframix.com" >> $GITHUB_OUTPUT
+            echo "API_URL=https://stage.photoframix.com" >> $GITHUB_OUTPUT
+            echo "ENABLE_DEBUG=true" >> $GITHUB_OUTPUT
+            echo "ENABLE_ANALYTICS=false" >> $GITHUB_OUTPUT
+            echo "PUBLIC_ENVIRONMENT=development" >> $GITHUB_OUTPUT
+          fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -46,10 +80,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ steps.env-vars.outputs.ECR_REPOSITORY }}
           tags: |
             type=ref,event=branch
-            type=sha,prefix={{branch}}-
             type=raw,value=latest
 
       - name: Build and push Docker image
@@ -65,13 +98,13 @@ jobs:
           platforms: linux/amd64
           build-args: |
             NODE_ENV=production
-            NEXT_PUBLIC_BASE_URL=https://photoframix.com
+            NEXT_PUBLIC_BASE_URL=${{ steps.env-vars.outputs.BASE_URL }}
             NEXT_PUBLIC_APP_NAME=PhotoFramix
             NEXT_PUBLIC_APP_VERSION=1.0.0
-            NEXT_PUBLIC_API_URL=https://photoframix.com
-            NEXT_PUBLIC_ENVIRONMENT=production
-            NEXT_PUBLIC_ENABLE_DEBUG=false
-            NEXT_PUBLIC_ENABLE_ANALYTICS=true
+            NEXT_PUBLIC_API_URL=${{ steps.env-vars.outputs.API_URL }}
+            NEXT_PUBLIC_ENVIRONMENT=${{ steps.env-vars.outputs.PUBLIC_ENVIRONMENT }}
+            NEXT_PUBLIC_ENABLE_DEBUG=${{ steps.env-vars.outputs.ENABLE_DEBUG }}
+            NEXT_PUBLIC_ENABLE_ANALYTICS=${{ steps.env-vars.outputs.ENABLE_ANALYTICS }}
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=829564712055-nv247pdurodv3atd4jv24rsaom8qsscm.apps.googleusercontent.com
             NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/hw5gjfx78
             NEXT_PUBLIC_PAYU_KEY=rGRiaJ
@@ -79,7 +112,7 @@ jobs:
 
       - name: Download current task definition
         run: |
-          aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --task-definition ${{ steps.env-vars.outputs.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
 
       - name: Clean task definition
         run: |
@@ -93,35 +126,37 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: cleaned-task-definition.json
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          container-name: ${{ steps.env-vars.outputs.CONTAINER_NAME }}
+          image: ${{ steps.login-ecr.outputs.registry }}/${{ steps.env-vars.outputs.ECR_REPOSITORY }}:latest
 
       - name: Deploy to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ steps.env-vars.outputs.ECS_SERVICE }}
+          cluster: ${{ steps.env-vars.outputs.ECS_CLUSTER }}
           wait-for-service-stability: true
 
       - name: Verify deployment
         run: |
           echo "Deployment completed successfully!"
-          echo "Service: ${{ env.ECS_SERVICE }}"
-          echo "Cluster: ${{ env.ECS_CLUSTER }}"
-          echo "Task Definition: ${{ env.ECS_TASK_DEFINITION }}"
+          echo "Environment: ${{ steps.env-vars.outputs.ENVIRONMENT }}"
+          echo "Service: ${{ steps.env-vars.outputs.ECS_SERVICE }}"
+          echo "Cluster: ${{ steps.env-vars.outputs.ECS_CLUSTER }}"
+          echo "Task Definition: ${{ steps.env-vars.outputs.ECS_TASK_DEFINITION }}"
+          echo "Container Name: ${{ steps.env-vars.outputs.CONTAINER_NAME }}"
           
           # Get the service status
           aws ecs describe-services \
-            --cluster ${{ env.ECS_CLUSTER }} \
-            --services ${{ env.ECS_SERVICE }} \
+            --cluster ${{ steps.env-vars.outputs.ECS_CLUSTER }} \
+            --services ${{ steps.env-vars.outputs.ECS_SERVICE }} \
             --query 'services[0].{ServiceName:serviceName,Status:status,RunningCount:runningCount,DesiredCount:desiredCount}'
 
       - name: Notify deployment status
         if: always()
         run: |
           if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ Deployment successful to ECS cluster: ${{ env.ECS_CLUSTER }}"
+            echo "✅ Deployment successful to ${{ steps.env-vars.outputs.ENVIRONMENT }} environment"
           else
-            echo "❌ Deployment failed to ECS cluster: ${{ env.ECS_CLUSTER }}"
+            echo "❌ Deployment failed to ${{ steps.env-vars.outputs.ENVIRONMENT }} environment"
           fi

@@ -1,0 +1,290 @@
+name: Build and Deploy Pipeline
+
+on:
+  push:
+    branches:
+      - docker-konva-v3
+      - main
+  pull_request:
+    branches:
+      - docker-konva-v3
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+
+permissions:
+  id-token: write
+  contents: read
+  security-events: write
+
+jobs:
+  # Build and Test Job
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci --legacy-peer-deps
+
+      - name: Run type checking
+        run: |
+          npm run type-check
+
+      - name: Run linting
+        run: |
+          npm run lint
+
+      - name: Build application
+        run: |
+          npm run build
+        env:
+          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: 1
+          NEXT_PUBLIC_BASE_URL: https://photoframix.com
+          NEXT_PUBLIC_APP_NAME: PhotoFramix
+          NEXT_PUBLIC_APP_VERSION: 1.0.0
+          NEXT_PUBLIC_API_URL: https://photoframix.com
+          NEXT_PUBLIC_ENVIRONMENT: production
+          NEXT_PUBLIC_ENABLE_DEBUG: false
+          NEXT_PUBLIC_ENABLE_ANALYTICS: true
+          NEXT_PUBLIC_GOOGLE_CLIENT_ID: 829564712055-nv247pdurodv3atd4jv24rsaom8qsscm.apps.googleusercontent.com
+          NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: https://ik.imagekit.io/hw5gjfx78
+          NEXT_PUBLIC_PAYU_KEY: rGRiaJ
+          NEXT_PUBLIC_PAYU_SALT: BEoQBAySdr3GiB413ZIp0ydW3UHeap8f
+
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+
+  # Security Scan Job
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # Deploy Job
+  deploy:
+    name: Deploy to ECS
+    runs-on: ubuntu-latest
+    needs: [build-and-test, security-scan]
+    if: github.ref == 'refs/heads/docker-konva-v3' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: ${{ github.event.inputs.environment || 'production' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set deployment variables
+        id: vars
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "staging" ] || [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "ECS_SERVICE=${{ vars.ECS_SERVICE_STAGING || vars.ECS_SERVICE_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_CLUSTER=${{ vars.ECS_CLUSTER_STAGING || vars.ECS_CLUSTER_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_TASK_DEFINITION=${{ vars.ECS_TASK_DEFINITION_STAGING || vars.ECS_TASK_DEFINITION_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "CONTAINER_NAME=photoframix-frontend-staging" >> $GITHUB_OUTPUT
+            echo "ENVIRONMENT=staging" >> $GITHUB_OUTPUT
+          else
+            echo "ECS_SERVICE=${{ vars.ECS_SERVICE_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_CLUSTER=${{ vars.ECS_CLUSTER_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "ECS_TASK_DEFINITION=${{ vars.ECS_TASK_DEFINITION_PRODUCTION }}" >> $GITHUB_OUTPUT
+            echo "CONTAINER_NAME=photoframix-frontend-stage" >> $GITHUB_OUTPUT
+            echo "ENVIRONMENT=production" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest
+            type=raw,value=${{ steps.vars.outputs.ENVIRONMENT }}-latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+          build-args: |
+            NODE_ENV=production
+            NEXT_PUBLIC_BASE_URL=https://photoframix.com
+            NEXT_PUBLIC_APP_NAME=PhotoFramix
+            NEXT_PUBLIC_APP_VERSION=1.0.0
+            NEXT_PUBLIC_API_URL=https://photoframix.com
+            NEXT_PUBLIC_ENVIRONMENT=${{ steps.vars.outputs.ENVIRONMENT }}
+            NEXT_PUBLIC_ENABLE_DEBUG=false
+            NEXT_PUBLIC_ENABLE_ANALYTICS=true
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=829564712055-nv247pdurodv3atd4jv24rsaom8qsscm.apps.googleusercontent.com
+            NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/hw5gjfx78
+            NEXT_PUBLIC_PAYU_KEY=rGRiaJ
+            NEXT_PUBLIC_PAYU_SALT=BEoQBAySdr3GiB413ZIp0ydW3UHeap8f
+
+      - name: Download current task definition
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ steps.vars.outputs.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
+
+      - name: Update task definition with new image
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ steps.vars.outputs.CONTAINER_NAME }}
+          image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.vars.outputs.ENVIRONMENT }}-latest
+
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ steps.vars.outputs.ECS_SERVICE }}
+          cluster: ${{ steps.vars.outputs.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      - name: Verify deployment and run health check
+        run: |
+          echo "Deployment completed successfully!"
+          echo "Environment: ${{ steps.vars.outputs.ENVIRONMENT }}"
+          echo "Service: ${{ steps.vars.outputs.ECS_SERVICE }}"
+          echo "Cluster: ${{ steps.vars.outputs.ECS_CLUSTER }}"
+          echo "Task Definition: ${{ steps.vars.outputs.ECS_TASK_DEFINITION }}"
+          
+          # Get the service status
+          SERVICE_INFO=$(aws ecs describe-services \
+            --cluster ${{ steps.vars.outputs.ECS_CLUSTER }} \
+            --services ${{ steps.vars.outputs.ECS_SERVICE }} \
+            --query 'services[0].{ServiceName:serviceName,Status:status,RunningCount:runningCount,DesiredCount:desiredCount,TaskDefinition:taskDefinition}')
+          
+          echo "Service Status:"
+          echo $SERVICE_INFO | jq .
+          
+          # Wait for tasks to be running
+          echo "Waiting for service to stabilize..."
+          aws ecs wait services-stable \
+            --cluster ${{ steps.vars.outputs.ECS_CLUSTER }} \
+            --services ${{ steps.vars.outputs.ECS_SERVICE }}
+          
+          # Get task public IP for health check (if using public subnets)
+          TASK_ARN=$(aws ecs list-tasks \
+            --cluster ${{ steps.vars.outputs.ECS_CLUSTER }} \
+            --service-name ${{ steps.vars.outputs.ECS_SERVICE }} \
+            --query 'taskArns[0]' --output text)
+          
+          if [ "$TASK_ARN" != "None" ] && [ "$TASK_ARN" != "" ]; then
+            echo "Latest task ARN: $TASK_ARN"
+          fi
+
+      - name: Create deployment summary
+        if: always()
+        run: |
+          echo "## Deployment Summary 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Environment | ${{ steps.vars.outputs.ENVIRONMENT }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Cluster | ${{ steps.vars.outputs.ECS_CLUSTER }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Service | ${{ steps.vars.outputs.ECS_SERVICE }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Task Definition | ${{ steps.vars.outputs.ECS_TASK_DEFINITION }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Container | ${{ steps.vars.outputs.CONTAINER_NAME }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ job.status == 'success' && '✅ Success' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+
+  # Cleanup old images
+  cleanup:
+    name: Cleanup Old Images
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: success()
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Delete old ECR images (keep last 10)
+        run: |
+          # Get list of image digests, keep last 10
+          IMAGES_TO_DELETE=$(aws ecr describe-images \
+            --repository-name ${{ env.ECR_REPOSITORY }} \
+            --query 'sort_by(imageDetails,&imagePushedAt)[:-10].[imageDigest]' \
+            --output text)
+          
+          if [ ! -z "$IMAGES_TO_DELETE" ]; then
+            echo "Deleting old images..."
+            for digest in $IMAGES_TO_DELETE; do
+              aws ecr batch-delete-image \
+                --repository-name ${{ env.ECR_REPOSITORY }} \
+                --image-ids imageDigest=$digest
+            done
+            echo "Cleanup completed."
+          else
+            echo "No images to cleanup."
+          fi
