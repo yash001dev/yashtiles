@@ -252,7 +252,10 @@ export interface VerifyEmailData {
 }
 
 export interface GoogleLoginData {
-  googleToken: string;
+  accessToken: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 }
 
 // Checkout types

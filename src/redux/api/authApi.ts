@@ -35,13 +35,13 @@ export const authApi = apiSlice.injectEndpoints({
 
     // Google Login
     googleLogin: builder.mutation<
-      { user: User; tokens: AuthTokens },
+      { user: User; accessToken: string },
       GoogleLoginData
     >({
-      query: (googleToken) => ({
+      query: (data) => ({
         url: "/api/v1/auth/google/login",
         method: "POST",
-        body: { googleToken },
+        body: data,
       }),
       invalidatesTags: ["User"],
     }),

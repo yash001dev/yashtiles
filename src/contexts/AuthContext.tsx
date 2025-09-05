@@ -12,6 +12,7 @@ import {
   useVerifyEmailMutation, 
   useLogoutMutation
 } from '@/redux/api/authApi';
+import {jwtDecode} from 'jwt-decode';
 
 // Auth state interface
 interface AuthState {
@@ -106,6 +107,20 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+interface GoogleJWTPayload {
+  email: string;
+  given_name: string;
+  family_name: string;
+  name: string;
+  picture?: string;
+  sub: string;
+  aud: string;
+  iss: string;
+  exp: number;
+  iat: number;
+}
+
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [state, dispatch] = useReducer(authReducer, initialState);
   
@@ -178,11 +193,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const googleLogin = async (googleToken: string) => {
     try {
       dispatch({ type: 'AUTH_START' });
-      const response = await googleLoginMutation({ googleToken }).unwrap();
-      
+      const decodedToken = jwtDecode<GoogleJWTPayload>(googleToken);
+      const payload = {
+        accessToken: googleToken,
+        email: decodedToken.email,
+        firstName: decodedToken.given_name,
+        lastName: decodedToken.family_name,
+      };
+      const response = await googleLoginMutation(payload).unwrap();
       // Store access token (refresh token is in HTTP-only cookie)
       if (typeof window !== 'undefined') {
-        localStorage.setItem('accessToken', response.tokens.accessToken);
+        localStorage.setItem('accessToken', response.accessToken);
         localStorage.setItem('user', JSON.stringify(response.user));
       }
       
