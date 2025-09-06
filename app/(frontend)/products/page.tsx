@@ -130,7 +130,7 @@ export default function ProductListingPage() {
       <FrameItHeader />
       
       {/* Hero Section with Categories Carousel */}
-      <section className="py-16 bg-gradient-to-br from-pink-50 via-white to-purple-50">
+      <section className="pt-16 pb-2 bg-gradient-to-br from-pink-50 via-white to-purple-50">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -152,7 +152,7 @@ export default function ProductListingPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="mb-8 relative"
+              className="mb-4 relative"
             >
               <Swiper
                 modules={[Navigation, Autoplay]}
@@ -194,11 +194,11 @@ export default function ProductListingPage() {
               </Swiper>
               
               {/* Enhanced Navigation Buttons */}
-              <button className="categories-swiper-button-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+              <button className="categories-swiper-button-prev hidden md:flex absolute -left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-lg items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
                 <ChevronLeft className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
               </button>
               
-              <button className="categories-swiper-button-next absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
+              <button className="categories-swiper-button-next hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 rounded-full shadow-lg items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group">
                 <ChevronRight className="w-5 h-5 text-white group-hover:scale-110 transition-transform" />
               </button>
             </motion.div>
@@ -222,7 +222,7 @@ export default function ProductListingPage() {
             </div>
 
             {/* Controls */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-wrap">
               {/* Sort */}
               <select
                 value={sortBy}
