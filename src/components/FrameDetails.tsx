@@ -302,7 +302,7 @@ const FrameDetails: React.FC<FrameDetailsProps> = ({
                       <div className="flex-1">
                         <p className="text-xs text-gray-500">Size</p>
                         <p className="text-sm font-medium text-gray-900">
-                          {frame.customization.size.replace("x", "&quot; × ")}&quot;
+                          {frame.customization.size.replace("x", "&quot;")}&quot;
                         </p>
                       </div>
                     </div>

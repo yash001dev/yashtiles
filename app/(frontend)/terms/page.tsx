@@ -1,10 +1,11 @@
+import FrameItFooter from '@/components/dashboard/FrameItFooter'
 import FrameItHeader from '@/components/dashboard/FrameItHeader'
 
 export default function TermsOfServicePage() {
   return (
     <>
       <FrameItHeader />
-      <main className="max-w-2xl mx-auto px-4 py-12">
+      <main className="max-w-4xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold mb-6">Terms of Service</h1>
         <p className="mb-4">These Terms of Service govern your use of our website and services. By accessing or using our site, you agree to be bound by these terms.</p>
         <h2 className="text-xl font-semibold mt-8 mb-2">Use of Our Services</h2>
@@ -28,6 +29,7 @@ export default function TermsOfServicePage() {
         <h2 className="text-xl font-semibold mt-8 mb-2">Contact Us</h2>
         <p>If you have any questions about these Terms of Service, please contact us at <a href="/contact" className="text-primary underline">our contact page</a>.</p>
       </main>
+      <FrameItFooter/>
     </>
   )
 } 

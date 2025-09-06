@@ -112,13 +112,13 @@ const FrameItFooter = () => {
                     <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-primary" />
                       <a
-                        href="mailto:hello@photoframix.com"
+                        href="mailto:photoframix@gmail.com"
                         className=" hover:text-primary transition-colors duration-300"
                       >
-                        hello@photoframix.com
+                        photoframix@gmail.com
                       </a>
                     </div>
-                    <p className="">1-555-FRAME-IT</p>
+                    <p className="">+91 9773205398</p>
                   </div>
                 </div>
               </div>

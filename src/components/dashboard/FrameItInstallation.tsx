@@ -146,7 +146,7 @@ const FrameItInstallation = () => {
             </div>
 
             {/* Installation Video CTA */}
-            <div className="text-center mt-12 bg-dark-green !text-black  rounded-2xl p-8 border border-gold-500/20">
+            {/* <div className="text-center mt-12 bg-dark-green !text-black  rounded-2xl p-8 border border-gold-500/20">
               <h3 className="text-xl font-bold  mb-4">
                 Need Visual Guidance?
               </h3>
@@ -158,7 +158,7 @@ const FrameItInstallation = () => {
                <PlayIcon/>
                 Watch Installation Video
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Care Instructions */}

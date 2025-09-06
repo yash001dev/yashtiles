@@ -1,18 +1,18 @@
-
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FrameItHeader from "@/components/dashboard/FrameItHeader";
 import FrameItFooter from "@/components/dashboard/FrameItFooter";
 import { Input } from "@/components/ui/input";
-import dynamic from 'next/dynamic';
-const ContactForm = dynamic(() => import('@/components/common/ContactForm'));
-
+import dynamic from "next/dynamic";
+const ContactForm = dynamic(() => import("@/components/common/ContactForm"));
 
 export const metadata = {
   title: "Contact Us - " + process.env.NEXT_PUBLIC_APP_NAME,
-  
+
   description:
-    "Get in touch with " + process.env.NEXT_PUBLIC_APP_NAME + ". We're here to help with your photo framing needs.",
+    "Get in touch with " +
+    process.env.NEXT_PUBLIC_APP_NAME +
+    ". We're here to help with your photo framing needs.",
 };
 
 export default function ContactPage() {
@@ -28,7 +28,8 @@ export default function ContactPage() {
             </h1>
             <p className="text-lg md:text-xl /80 max-w-2xl mx-auto">
               Have questions about our framing services? Need help with your
-              order? We&apos;re here to help you create the perfect framed memories.
+              order? We&apos;re here to help you create the perfect framed
+              memories.
             </p>
           </div>
         </div>
@@ -63,10 +64,12 @@ export default function ContactPage() {
                       <h3 className="font-semibold text-charcoal-900 mb-1">
                         Email Us
                       </h3>
-                      <p className="text-charcoal-800/70">hello@photoframix.com</p>
                       <p className="text-charcoal-800/70">
-                        support@photoframix.com
+                        photoframix@gmail.com
                       </p>
+                      {/* <p className="text-charcoal-800/70">
+                        photoframix@gmail.com
+                      </p> */}
                     </div>
                   </div>
 
@@ -78,8 +81,8 @@ export default function ContactPage() {
                       <h3 className="font-semibold text-charcoal-900 mb-1">
                         Call Us
                       </h3>
-                      <p className="text-charcoal-800/70">1-555-FRAME-IT</p>
-                      <p className="text-charcoal-800/70">(1-555-372-6348)</p>
+                      <p className="text-charcoal-800/70">+91 9773205398</p>
+                      {/* <p className="text-charcoal-800/70">(1-555-372-6348)</p> */}
                     </div>
                   </div>
 
@@ -91,9 +94,14 @@ export default function ContactPage() {
                       <h3 className="font-semibold text-charcoal-900 mb-1">
                         Visit Us
                       </h3>
-                      <p className="text-charcoal-800/70">123 Frame Street</p>
                       <p className="text-charcoal-800/70">
-                        Art District, NY 10001
+                        7 LL, Balaji Complex
+                      </p>
+                      <p className="text-charcoal-800/70">
+                        Opp. management Enclave
+                      </p>
+                      <p className="text-charcoal-800/70">
+                        Vastrapur, Ahmedabad 380015
                       </p>
                     </div>
                   </div>
@@ -178,8 +186,9 @@ export default function ContactPage() {
                   Can I track my order?
                 </h3>
                 <p className="text-charcoal-800/70">
-                  Yes! Once your order ships, you&apos;ll receive a tracking number
-                  via email to monitor your frame&apos;s journey to your door.
+                  Yes! Once your order ships, you&apos;ll receive a tracking
+                  number via email to monitor your frame&apos;s journey to your
+                  door.
                 </p>
               </div>
 
@@ -199,7 +208,8 @@ export default function ContactPage() {
                 </h3>
                 <p className="text-charcoal-800/70">
                   Our frame experts are happy to help! Send us your photo and
-                  room details, and we&apos;ll recommend the perfect frame style.
+                  room details, and we&apos;ll recommend the perfect frame
+                  style.
                 </p>
               </div>
             </div>
@@ -210,4 +220,4 @@ export default function ContactPage() {
       <FrameItFooter />
     </>
   );
-};
+}

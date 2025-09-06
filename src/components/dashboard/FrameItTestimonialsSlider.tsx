@@ -27,16 +27,16 @@ const testimonials = [
       "trip-rainforest.jpg",
     photoType: "Travel Photos",
   },
-  // {
-  //   id: 3,
-  //   name: "Emily Rodriguez",
-  //   location: "Chicago, IL",
-  //   rating: 5,
-  //   text: "The customer service was outstanding! They helped me choose the perfect frame for my wedding photos. Now our hallway looks like a professional gallery.",
-  //   image:
-  //     "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face&q=80",
-  //   photoType: "Wedding Photos",
-  // },
+  {
+    id: 3,
+    name: "Meera P",
+    location: "Ahmedabad, Gujarat",
+    rating: 5,
+    text: "I love this frame, it's great quality and makes my photo look amazing!",
+    image:
+      "happy-family.jpg",
+    photoType: "Wedding Photos",
+  },
   // {
   //   id: 4,
   //   name: "David Thompson",

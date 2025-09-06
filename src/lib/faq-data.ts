@@ -6,7 +6,7 @@ export const defaultFaqsData = [
       {
         children: [
           {
-            text: "Simply click 'Start Framing' and you'll be guided through our easy upload process. You can upload photos directly from your device, or import from social media platforms like Instagram or Facebook. We accept JPEG, PNG, and HEIC formats with high resolution for the best quality prints.",
+            text: "Simply click 'Start Framing' and you'll be guided through our easy upload process. You can upload photos directly from your device. We accept JPEG, PNG formats with high resolution for the best quality prints.",
           },
         ],
       },
@@ -34,7 +34,7 @@ export const defaultFaqsData = [
       {
         children: [
           {
-            text: "Absolutely! After uploading your photo and selecting your frame, you'll receive a detailed digital preview showing exactly how your framed photo will look. You can request adjustments to positioning, sizing, or frame selection before we start production.",
+            text: "Absolutely! After uploading your photo and selecting your frame, you'll receive a detailed digital preview showing exactly how your framed photo will look. ",
           },
         ],
       },
@@ -48,7 +48,7 @@ export const defaultFaqsData = [
       {
         children: [
           {
-            text: "We offer a 100% satisfaction guarantee. If you're not completely happy with your frame, contact us within 7 days and we'll remake it free of charge or provide a full refund. Your happiness is our top priority.",
+            text: "We offer a 100% satisfaction guarantee.If your frame arrives damaged, we will send you a replacement free of charge. Just contact us within 7 days of delivery with a photo of the issue, and we'll take care of the rest.",
           },
         ],
       },

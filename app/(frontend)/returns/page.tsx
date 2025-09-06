@@ -73,7 +73,7 @@ export default function ReturnsPage() {
                   Free Exchanges
                 </h3>
                 <p className="text-charcoal-800/70">
-                  Switch to a different frame style or size at no additional
+                  Switch to a faulty frame style or size at no additional
                   cost
                 </p>
               </div>
@@ -114,7 +114,7 @@ export default function ReturnsPage() {
                 </div>
                 <h3 className="font-bold  mb-3">Contact Us</h3>
                 <p className="text-sm ">
-                  Email us at returns@photoframix.com or call 1-555-FRAME-IT with
+                  Email us at photoframix@gmail.com or call +91 9773205398 with
                   your order number
                 </p>
               </div>
@@ -244,7 +244,7 @@ export default function ReturnsPage() {
                     </p>
                   </div>
 
-                  <div className="bg-white shadow-lg rounded-xl p-6">
+                  {/* <div className="bg-white shadow-lg rounded-xl p-6">
                     <h3 className="font-bold text-charcoal-900 mb-2">
                       Can I exchange for a different style?
                     </h3>
@@ -253,7 +253,7 @@ export default function ReturnsPage() {
                       sizes. Just let us know your preference when you contact
                       us.
                     </p>
-                  </div>
+                  </div> */}
 
                   <div className="bg-white shadow-lg rounded-xl p-6">
                     <h3 className="font-bold text-charcoal-900 mb-2">
@@ -302,7 +302,7 @@ export default function ReturnsPage() {
                 Contact Support
               </Link>
               <a
-                href="mailto:returns@photoframix.com"
+                href="mailto:photoframix@gmail.com"
                 className="inline-flex items-center justify-center px-8 py-3 bg-primary  font-semibold rounded-xl border text-white border-cream-50/20  transition-colors duration-300"
               >
                 Email Returns Team
@@ -311,8 +311,8 @@ export default function ReturnsPage() {
 
             <div className="mt-8 pt-8 border-t borderd-dark-green">
               <p className="">
-                <strong>Quick Contact:</strong> returns@photoframix.com |
-                1-555-FRAME-IT
+                <strong>Quick Contact:</strong> photoframix@gmail.com |
+                +91 9773205398
               </p>
             </div>
           </div>

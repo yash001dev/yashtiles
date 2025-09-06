@@ -408,7 +408,7 @@ const ImageEditor: React.FC<ImageEditorProps> = ({
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 min-h-0">
               {/* Preview Area */}
               <div className="flex-1 flex items-center justify-center">
-                <div className="relative shadow-2xl w-full max-w-sm ">
+                <div className="relative shadow-2xl max-w-sm ">
                   <KonvaFrameRenderer
                     ref={konvaRef}
                     customization={customization}

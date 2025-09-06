@@ -28,10 +28,10 @@ const FrameItPhotoGallery = () => {
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-charcoal-900 mb-4">
               See Photoframix in Real Action
               </h2>
-              <p className="text-lg text-charcoal-800/70 max-w-2xl mx-auto">
+              <p className="text-lg text-charcoal-800/70 max-w-3xl mx-auto">
                 Discover the beauty of your memories transformed into stunning
-                framed art. Each piece is carefully crafted to bring your photos
-                to life.
+                framed art <br/> Each piece is carefully crafted to bring your photos
+                to life
               </p>
             </div>
             <div className="animate-pulse h-96 bg-gray-200 rounded-lg"></div>
@@ -50,10 +50,10 @@ const FrameItPhotoGallery = () => {
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-charcoal-900 mb-4">
               See Photoframix in Real Action
             </h2>
-            <p className="text-lg text-charcoal-800/70 max-w-2xl mx-auto">
+            <p className="text-lg text-charcoal-800/70 max-w-3xl mx-auto">
               Discover the beauty of your memories transformed into stunning
-              framed art. Each piece is carefully crafted to bring your photos
-              to life.
+              framed art <br/> Each piece is carefully crafted to bring your photos
+              to life
             </p>
           </div>
 
@@ -156,7 +156,7 @@ const FrameItPhotoGallery = () => {
 
           {/* Call to Action */}
           <div className="text-center mt-16">
-            <div className="shadow-custom-lg  rounded-2xl p-8 border border-green-500/20 max-w-2xl mx-auto">
+            <div className="shadow-custom-lg  rounded-2xl p-8 border border-green-500/20 max-w-3xl mx-auto">
               <h3 className="text-2xl font-bold text-charcoal-900 mb-4">
                 Ready to Frame Your Photos?
               </h3>
@@ -166,7 +166,7 @@ const FrameItPhotoGallery = () => {
                 care.
               </p>
               <Button
-                className=" text-white font-semibold px-10 py-6 rounded-xl"
+                className=" text-white font-semibold px-10 py-8 rounded-xl text-lg"
                 onClick={() => {
                   if (isMounted && typeof window !== "undefined") {
                     window.location.href = "/frame";

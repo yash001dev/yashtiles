@@ -400,7 +400,7 @@ function ResetPasswordContent() {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-sm text-gray-500">
-            Need help? <a href="mailto:support@photoframix.com" className="text-pink-600 hover:text-pink-700">Contact Support</a>
+            Need help? <a href="mailto:photoframix@gmail.com" className="text-pink-600 hover:text-pink-700">Contact Support</a>
           </p>
         </div>
       </div>

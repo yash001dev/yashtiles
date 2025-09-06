@@ -9,7 +9,7 @@ const faqs = [
   {
     question: "How do I upload my photos?",
     answer:
-      "Simply click 'Start Framing' and you'll be guided through our easy upload process. You can upload photos directly from your device, or import from social media platforms like Instagram or Facebook. We accept JPEG, PNG, and HEIC formats with high resolution for the best quality prints.",
+      "Simply click 'Start Framing' and you'll be guided through our easy upload process. You can upload photos directly from your device. We accept JPEG, PNG formats with high resolution for the best quality prints.",
   },
   {
     question: "How long does delivery take?",
@@ -19,12 +19,12 @@ const faqs = [
   {
     question: "Can I preview the final product before purchase?",
     answer:
-      "Absolutely! After uploading your photo and selecting your frame, you'll receive a detailed digital preview showing exactly how your framed photo will look. You can request adjustments to positioning, sizing, or frame selection before we start production.",
+      "Absolutely! After uploading your photo and selecting your frame, you'll receive a detailed digital preview showing exactly how your framed photo will look. ",
   },
   {
     question: "What if I'm not happy with my frame?",
     answer:
-      "We offer a 100% satisfaction guarantee. If you're not completely happy with your frame, contact us within 7 daysand we'll remake it free of charge or provide a full refund. Your happiness is our top priority.",
+      "We offer a 100% satisfaction guarantee. If your frame arrives damaged, we will send you a replacement free of charge. Just contact us within 7 days of delivery with a photo of the issue, and we'll take care of the rest.",
   },
   {
     question: "Are these frames easy to hang?",
@@ -91,7 +91,7 @@ const FrameItFAQ = () => {
                 Email Us
               </a>
               <a
-                href="tel:+1-555-FRAME-IT"
+                href="tel:++91 9773205398"
                 className="inline-flex items-center justify-center px-6 py-3 bg-white text-charcoal-800 font-semibold rounded-xl border border-charcoal-800/20 hover:bg-charcoal-800 hover:text-white transition-colors duration-300"
               >
                 Call Us

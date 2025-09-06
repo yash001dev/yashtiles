@@ -20,7 +20,7 @@ export default function InstallationPage() {
               Installation & Care Guide
             </h1>
             <p className="text-lg md:text-xl /80 max-w-2xl mx-auto mb-8">
-              Everything you need to know to perfectly install your {process.env.NEXT_PUBLIC_APP_NAME}
+              Everything you need to know to perfectly install your {process.env.NEXT_PUBLIC_APP_NAME} {" "}
               frames and keep them looking beautiful for years to come.
             </p>
 

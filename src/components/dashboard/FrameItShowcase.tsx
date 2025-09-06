@@ -113,15 +113,6 @@ const FrameItShowcase = () => {
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
                           />
-
-                          {/* Hover overlay */}
-                          {hoveredItem === item.id && (
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                                <ZoomIn className="w-6 h-6 " />
-                              </div>
-                            </div>
-                          )}
                         </div>
                       </div>
 

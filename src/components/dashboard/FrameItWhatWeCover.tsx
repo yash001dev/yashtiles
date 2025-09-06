@@ -1,11 +1,11 @@
 import {
   Users,
-  Camera,
-  Heart,
   Crown,
   Instagram,
   Palette,
   Sparkles,
+  Cat,
+  Backpack,
 } from "lucide-react";
 
 const coverItems = [
@@ -15,12 +15,12 @@ const coverItems = [
     description: "Cherish your family moments",
   },
   {
-    icon: Camera,
+    icon: Backpack,
     title: "Travel Photos",
     description: "Remember your adventures",
   },
   {
-    icon: Heart,
+    icon: Cat,
     title: "Pet Photos",
     description: "Celebrate your furry friends",
   },

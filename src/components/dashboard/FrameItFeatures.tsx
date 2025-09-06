@@ -5,7 +5,7 @@ const features = [
     icon: Hammer,
     title: "Premium Solid Frames",
     description:
-      "Crafted with the highest quality wood and finishes by skilled artisans who care about every detail.",
+      "Crafted with the highest quality material and finishes by skilled artisans who care about every detail.",
   },
   {
     icon: Upload,
