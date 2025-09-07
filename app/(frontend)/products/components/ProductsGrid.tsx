@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react';
+import Link from 'next/link';
 import { getProducts } from '@/lib/payload-server';
 import ProductCardServer from './ProductCardServer';
 import ProductListItemServer from './ProductListItemServer';
@@ -76,59 +77,15 @@ export default async function ProductsGrid({
             Try adjusting your search or filter criteria
           </p>
           <div className="text-center">
-            <a 
+            <Link 
               href="/products"
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-colors"
             >
               Clear Filters
-            </a>
+            </Link>
           </div>
         </div>
       )}
     </>
-  );
-}
-
-function ProductsGridSkeleton() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      {[...Array(12)].map((_, i) => (
-        <ProductCardSkeleton key={i} />
-      ))}
-    </div>
-  );
-}
-
-function ProductCardSkeleton() {
-  return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse">
-      {/* Image Skeleton */}
-      <div className="aspect-square bg-gray-200"></div>
-      
-      {/* Content Skeleton */}
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-2">
-          <div className="h-5 w-32 bg-gray-200 rounded"></div>
-          <div className="h-4 w-4 bg-gray-200 rounded"></div>
-        </div>
-        
-        <div className="space-y-2 mb-4">
-          <div className="h-4 w-full bg-gray-200 rounded"></div>
-          <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
-        </div>
-        
-        <div className="flex gap-2 mb-4">
-          <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
-          <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <div className="flex gap-2">
-            <div className="h-6 w-16 bg-gray-200 rounded"></div>
-            <div className="h-6 w-12 bg-gray-200 rounded"></div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }

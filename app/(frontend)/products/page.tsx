@@ -13,17 +13,19 @@ import CategoriesSkeleton from './components/CategoriesSkeleton';
 import ProductsGridSkeleton from './components/ProductsGridSkeleton';
 
 interface ProductsPageProps {
-  searchParams: {
+  searchParams: Promise<{
     category?: string;
     search?: string;
     sort?: string;
     view?: 'grid' | 'list';
-  };
+  }>;
 }
 
-export default function ProductListingPage({ searchParams }: ProductsPageProps) {
+export default async function ProductListingPage({ searchParams }: ProductsPageProps) {
+  const resolvedSearchParams = await searchParams;
+  
   return (
-    <ProductsProvider initialFilters={searchParams}>
+    <ProductsProvider initialFilters={resolvedSearchParams}>
       <FrameItHeader />
       
       {/* Hero Section */}
