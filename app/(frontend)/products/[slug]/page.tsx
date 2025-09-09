@@ -66,9 +66,36 @@ interface Product {
   basePrice: number;
   compareAtPrice?: number;
   liveViewImage: {
-    image: {
-      url: string;
-      alt: string;
+    id: number;
+    url: string;
+    alt: string;
+    caption?: string;
+    filename: string;
+    mimeType: string;
+    filesize: number;
+    width: number;
+    height: number;
+    sizes?: {
+      thumbnail?: {
+        url: string;
+        width: number;
+        height: number;
+      };
+      card?: {
+        url: string;
+        width: number;
+        height: number;
+      };
+      tablet?: {
+        url: string;
+        width: number;
+        height: number;
+      };
+      desktop?: {
+        url: string;
+        width: number;
+        height: number;
+      };
     };
   };
   images: Array<{
@@ -579,26 +606,37 @@ export default function ProductDetailPage() {
                       className="space-y-4"
                     >
                       {/* Live View Canvas */}
-                      <div className="flex justify-center">
-                        <PDPPreviewCanvas
-                          selectedImage={
-                          product?.liveViewImage?.image.url 
-                            // ||
-                            // product.images[0]?.image.url
-                          }
-                          selectedSize={getSelectedSizeData()?.id || "12x12"}
-                          selectedColor={
-                            getSelectedVariants().color?.color || "#8B4513"
-                          }
-                          selectedMaterial={
-                            getSelectedVariants()
-                              .material?.name?.split(" ")[0]
-                              .toLowerCase() || "classic"
-                          }
-                          wallImage={wallImage}
-                          onWallImageChange={setWallImage}
-                          className="w-full max-w-md"
-                        />
+                      <div className="space-y-3">
+                        {/* Live View Image Indicator */}
+                        {product?.liveViewImage?.url && (
+                          <div className="text-center">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                              <Eye className="w-4 h-4" />
+                              Live View Image
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="flex justify-center">
+                          <PDPPreviewCanvas
+                            selectedImage={
+                              product?.liveViewImage?.url ||
+                              product?.images[0]?.image.url
+                            }
+                            selectedSize={getSelectedSizeData()?.id || "12x12"}
+                            selectedColor={
+                              getSelectedVariants().color?.color || "#8B4513"
+                            }
+                            selectedMaterial={
+                              getSelectedVariants()
+                                .material?.name?.split(" ")[0]
+                                .toLowerCase() || "classic"
+                            }
+                            wallImage={wallImage}
+                            onWallImageChange={setWallImage}
+                            className="w-full max-w-md"
+                          />
+                        </div>
                       </div>
 
                       {/* Product Image Selection for Live View */}

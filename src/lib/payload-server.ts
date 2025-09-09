@@ -9,6 +9,17 @@ export interface FormattedProduct {
   shortDescription: string;
   price: number;
   compareAtPrice?: number;
+  liveViewImage: {
+    id: number;
+    url: string;
+    alt: string;
+    caption?: string;
+    filename: string;
+    mimeType: string;
+    filesize: number;
+    width: number;
+    height: number;
+  };
   images: Array<{
     image: {
       url: string;
@@ -48,6 +59,29 @@ export async function getProducts(): Promise<FormattedProduct[]> {
         shortDescription: product.shortDescription || "",
         price: product.price || product.basePrice,
         compareAtPrice: product.compareAtPrice || undefined,
+        liveViewImage:
+          typeof product.liveViewImage === "object"
+            ? {
+                id: (product.liveViewImage as Media).id,
+                url: (product.liveViewImage as Media).url || "",
+                alt: (product.liveViewImage as Media).alt || product.name,
+                caption: (product.liveViewImage as Media).caption || undefined,
+                filename: (product.liveViewImage as Media).filename || "",
+                mimeType: (product.liveViewImage as Media).mimeType || "",
+                filesize: (product.liveViewImage as Media).filesize || 0,
+                width: (product.liveViewImage as Media).width || 0,
+                height: (product.liveViewImage as Media).height || 0,
+              }
+            : {
+                id: 0,
+                url: "",
+                alt: product.name,
+                filename: "",
+                mimeType: "",
+                filesize: 0,
+                width: 0,
+                height: 0,
+              },
         images: product.images.map((img: any) => ({
           image: {
             url:

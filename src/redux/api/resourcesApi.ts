@@ -55,6 +55,39 @@ interface Product {
   price: number;
   basePrice: number;
   compareAtPrice?: number;
+  liveViewImage: {
+    id: number;
+    url: string;
+    alt: string;
+    caption?: string;
+    filename: string;
+    mimeType: string;
+    filesize: number;
+    width: number;
+    height: number;
+    sizes?: {
+      thumbnail?: {
+        url: string;
+        width: number;
+        height: number;
+      };
+      card?: {
+        url: string;
+        width: number;
+        height: number;
+      };
+      tablet?: {
+        url: string;
+        width: number;
+        height: number;
+      };
+      desktop?: {
+        url: string;
+        width: number;
+        height: number;
+      };
+    };
+  };
   images: Array<{
     image: {
       url: string;
@@ -227,7 +260,7 @@ export const resourcesApi = createApi({
     getProductBySlug: builder.query<Product | null, string>({
       query: (slug) => {
         // Try with slug as is first, then with leading slash
-        return `products?where[slug][equals]=${slug}&status=published`;
+        return `products?where[slug][equals]=${slug}&status=published&depth=2`;
       },
       transformResponse: (response: PayloadResponse<any>, meta, arg) => {
         if (response.docs && response.docs.length > 0) {
@@ -240,7 +273,8 @@ export const resourcesApi = createApi({
 
     // Fallback query for products with leading slash
     getProductBySlugWithSlash: builder.query<Product | null, string>({
-      query: (slug) => `products?where[slug][equals]=/${slug}&status=published`,
+      query: (slug) =>
+        `products?where[slug][equals]=/${slug}&status=published&depth=2`,
       transformResponse: (response: PayloadResponse<any>) => {
         if (response.docs && response.docs.length > 0) {
           return response.docs[0];
@@ -256,7 +290,7 @@ export const resourcesApi = createApi({
       { categorySlug: string; limit?: number; excludeId?: string }
     >({
       query: ({ categorySlug, limit = 8, excludeId }) =>
-        `products?where[categories.slug][equals]=${categorySlug}&status=published&limit=${limit}`,
+        `products?where[categories.slug][equals]=${categorySlug}&status=published&limit=${limit}&depth=2`,
       transformResponse: (response: PayloadResponse<any>, meta, arg) => {
         let products = response.docs || [];
         if (arg.excludeId) {
