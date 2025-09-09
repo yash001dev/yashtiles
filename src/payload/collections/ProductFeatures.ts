@@ -4,18 +4,12 @@ export const ProductFeatures: CollectionConfig = {
   slug: "product-features",
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "product"],
+    defaultColumns: ["title"],
   },
   access: {
     read: () => true,
   },
   fields: [
-    {
-      name: "product",
-      type: "relationship",
-      relationTo: "products",
-      required: true,
-    },
     {
       name: "title",
       type: "text",

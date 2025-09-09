@@ -527,7 +527,6 @@ export interface Material {
  */
 export interface ProductFaq {
   id: number;
-  product: number | Product;
   title: string;
   subtitle?: string | null;
   style?: ('accordion' | 'tabs' | 'cards') | null;
@@ -562,7 +561,6 @@ export interface ProductFaq {
  */
 export interface ProductFeature {
   id: number;
-  product: number | Product;
   title: string;
   items?:
     | {
@@ -1156,7 +1154,6 @@ export interface ProductsSelect<T extends boolean = true> {
  * via the `definition` "product-faqs_select".
  */
 export interface ProductFaqsSelect<T extends boolean = true> {
-  product?: T;
   title?: T;
   subtitle?: T;
   style?: T;
@@ -1178,7 +1175,6 @@ export interface ProductFaqsSelect<T extends boolean = true> {
  * via the `definition` "product-features_select".
  */
 export interface ProductFeaturesSelect<T extends boolean = true> {
-  product?: T;
   title?: T;
   items?:
     | T
