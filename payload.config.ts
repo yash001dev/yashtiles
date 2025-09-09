@@ -16,6 +16,8 @@ import { BlogCategories } from "./src/payload/collections/BlogCategories";
 import { Media } from "./src/payload/collections/Media";
 import { Pages } from "./src/payload/collections/Pages";
 import { Users } from "./src/payload/collections/Users";
+import { ProductFAQs } from "./src/payload/collections/ProductFAQs";
+import { ProductFeatures } from "./src/payload/collections/ProductFeatures";
 
 export default buildConfig({
   // If you'd like to use Rich Text, pass your editor here
@@ -25,6 +27,8 @@ export default buildConfig({
   collections: [
     Users,
     Products,
+    ProductFAQs,
+    ProductFeatures,
     ProductCategories,
     Sizes,
     Materials,

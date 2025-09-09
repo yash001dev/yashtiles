@@ -1,13 +1,29 @@
-import type { Block } from "payload";
+import type { CollectionConfig } from "payload";
 
-export const FeatureBlock: Block = {
-  slug: "featureBlock",
-  labels: { singular: "Feature Block", plural: "Feature Blocks" },
+export const ProductFeatures: CollectionConfig = {
+  slug: "product-features",
+  admin: {
+    useAsTitle: "title",
+    defaultColumns: ["title", "product"],
+  },
+  access: {
+    read: () => true,
+  },
   fields: [
+    {
+      name: "product",
+      type: "relationship",
+      relationTo: "products",
+      required: true,
+    },
+    {
+      name: "title",
+      type: "text",
+      required: true,
+    },
     {
       name: "items",
       type: "array",
-      labels: { singular: "Feature Item", plural: "Feature Items" },
       minRows: 0,
       required: false,
       fields: [
@@ -15,7 +31,6 @@ export const FeatureBlock: Block = {
           name: "image",
           type: "upload",
           relationTo: "media",
-          required: false,
         },
         {
           name: "title",

@@ -69,6 +69,8 @@ export interface Config {
   collections: {
     users: User;
     products: Product;
+    'product-faqs': ProductFaq;
+    'product-features': ProductFeature;
     'product-categories': ProductCategory;
     sizes: Size;
     materials: Material;
@@ -86,6 +88,8 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    'product-faqs': ProductFaqsSelect<false> | ProductFaqsSelect<true>;
+    'product-features': ProductFeaturesSelect<false> | ProductFeaturesSelect<true>;
     'product-categories': ProductCategoriesSelect<false> | ProductCategoriesSelect<true>;
     sizes: SizesSelect<false> | SizesSelect<true>;
     materials: MaterialsSelect<false> | MaterialsSelect<true>;
@@ -364,57 +368,14 @@ export interface Product {
    * Computed from base price (read-only)
    */
   price?: number | null;
-  pageLayout?:
-    | (
-        | {
-            title: string;
-            /**
-             * Optional subtitle for the FAQ section
-             */
-            subtitle?: string | null;
-            faqs: {
-              question: string;
-              answer: {
-                root: {
-                  type: string;
-                  children: {
-                    type: string;
-                    version: number;
-                    [k: string]: unknown;
-                  }[];
-                  direction: ('ltr' | 'rtl') | null;
-                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-                  indent: number;
-                  version: number;
-                };
-                [k: string]: unknown;
-              };
-              category?: ('general' | 'shipping' | 'returns' | 'care' | 'installation') | null;
-              sortOrder?: number | null;
-              id?: string | null;
-            }[];
-            style?: ('accordion' | 'tabs' | 'cards') | null;
-            /**
-             * Group FAQs by category
-             */
-            showCategories?: boolean | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'faq';
-          }
-        | {
-            items: {
-              image?: (number | null) | Media;
-              title: string;
-              description: string;
-              id?: string | null;
-            }[];
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'featureBlock';
-          }
-      )[]
-    | null;
+  /**
+   * Attach one or more FAQ blocks to this product
+   */
+  faqBlocks?: (number | ProductFaq)[] | null;
+  /**
+   * Attach one or more Feature blocks to this product
+   */
+  featureBlocks?: (number | ProductFeature)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -478,7 +439,7 @@ export interface Size {
   /**
    * Aspect ratio of the size (width/height)
    */
-  aspectRatio: number;
+  aspectRatio: string;
   /**
    * Price in rupees for this size
    */
@@ -557,6 +518,60 @@ export interface Material {
    * Order in which materials should appear in the UI
    */
   sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-faqs".
+ */
+export interface ProductFaq {
+  id: number;
+  product: number | Product;
+  title: string;
+  subtitle?: string | null;
+  style?: ('accordion' | 'tabs' | 'cards') | null;
+  showCategories?: boolean | null;
+  faqs: {
+    question: string;
+    answer: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    category?: ('general' | 'shipping' | 'returns' | 'care' | 'installation') | null;
+    sortOrder?: number | null;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-features".
+ */
+export interface ProductFeature {
+  id: number;
+  product: number | Product;
+  title: string;
+  items?:
+    | {
+        image?: (number | null) | Media;
+        title: string;
+        description: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -726,12 +741,14 @@ export interface Page {
             blockType: 'faq';
           }
         | {
-            items: {
-              image?: (number | null) | Media;
-              title: string;
-              description: string;
-              id?: string | null;
-            }[];
+            items?:
+              | {
+                  image?: (number | null) | Media;
+                  title: string;
+                  description: string;
+                  id?: string | null;
+                }[]
+              | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'featureBlock';
@@ -955,6 +972,14 @@ export interface PayloadLockedDocument {
         value: number | Product;
       } | null)
     | ({
+        relationTo: 'product-faqs';
+        value: number | ProductFaq;
+      } | null)
+    | ({
+        relationTo: 'product-features';
+        value: number | ProductFeature;
+      } | null)
+    | ({
         relationTo: 'product-categories';
         value: number | ProductCategory;
       } | null)
@@ -1121,42 +1146,47 @@ export interface ProductsSelect<T extends boolean = true> {
         keywords?: T;
       };
   price?: T;
-  pageLayout?:
+  faqBlocks?: T;
+  featureBlocks?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-faqs_select".
+ */
+export interface ProductFaqsSelect<T extends boolean = true> {
+  product?: T;
+  title?: T;
+  subtitle?: T;
+  style?: T;
+  showCategories?: T;
+  faqs?:
     | T
     | {
-        faq?:
-          | T
-          | {
-              title?: T;
-              subtitle?: T;
-              faqs?:
-                | T
-                | {
-                    question?: T;
-                    answer?: T;
-                    category?: T;
-                    sortOrder?: T;
-                    id?: T;
-                  };
-              style?: T;
-              showCategories?: T;
-              id?: T;
-              blockName?: T;
-            };
-        featureBlock?:
-          | T
-          | {
-              items?:
-                | T
-                | {
-                    image?: T;
-                    title?: T;
-                    description?: T;
-                    id?: T;
-                  };
-              id?: T;
-              blockName?: T;
-            };
+        question?: T;
+        answer?: T;
+        category?: T;
+        sortOrder?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-features_select".
+ */
+export interface ProductFeaturesSelect<T extends boolean = true> {
+  product?: T;
+  title?: T;
+  items?:
+    | T
+    | {
+        image?: T;
+        title?: T;
+        description?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;
