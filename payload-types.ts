@@ -279,6 +279,10 @@ export interface Product {
    * Feature this product on homepage
    */
   featured?: boolean | null;
+  /**
+   * Real frame image used in live view/preview
+   */
+  liveViewImage: number | Media;
   images: {
     image: number | Media;
     alt: string;
@@ -1094,6 +1098,7 @@ export interface ProductsSelect<T extends boolean = true> {
   categories?: T;
   status?: T;
   featured?: T;
+  liveViewImage?: T;
   images?:
     | T
     | {

@@ -101,6 +101,15 @@ export const Products: CollectionConfig = {
           label: "Media & Images",
           fields: [
             {
+              name: "liveViewImage",
+              type: "upload",
+              relationTo: "media",
+              required: true,
+              admin: {
+                description: "Real frame image used in live view/preview",
+              },
+            },
+            {
               name: "images",
               type: "array",
               required: true,
