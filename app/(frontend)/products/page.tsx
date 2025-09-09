@@ -11,6 +11,7 @@ import { ProductsProvider } from './components/ProductsContext';
 // Loading components
 import CategoriesSkeleton from './components/CategoriesSkeleton';
 import ProductsGridSkeleton from './components/ProductsGridSkeleton';
+import CategoriesCarouselServer from './components/CategoriesCarouselServer';
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -34,28 +35,28 @@ export default async function ProductListingPage({ searchParams }: ProductsPageP
       {/* Categories with Suspense */}
       <section className="pb-2 bg-gradient-to-br from-pink-50 via-white to-purple-50">
         <div className="container mx-auto px-4">
-          <Suspense fallback={<CategoriesSkeleton />}>
-            <CategoriesCarousel />
+           <Suspense fallback={<CategoriesSkeleton />}>
+          <CategoriesCarouselServer />
           </Suspense>
         </div>
       </section>
 
       {/* Filters Section */}
-      <Suspense fallback={<div className="h-24 bg-white border-b animate-pulse" />}>
+      {/* <Suspense fallback={<div className="h-24 bg-white border-b animate-pulse" />}> */}
         <ProductsFilters />
-      </Suspense>
+      {/* </Suspense> */}
 
       {/* Products Grid with Suspense */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
-          <Suspense fallback={<ProductsGridSkeleton />}>
+          {/* <Suspense fallback={<ProductsGridSkeleton />}> */}
             <ProductsGrid />
-          </Suspense>
+          {/* </Suspense> */}
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <ProductListingFAQSection />
+      {/* FAQ - OK to wrap (secondary content) */}
+       <ProductListingFAQSection />
 
       <FrameItFooter />
     </ProductsProvider>

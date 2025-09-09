@@ -65,6 +65,12 @@ interface Product {
   price: number;
   basePrice: number;
   compareAtPrice?: number;
+  liveViewImage: {
+    image: {
+      url: string;
+      alt: string;
+    };
+  };
   images: Array<{
     image: {
       url: string;
@@ -198,6 +204,7 @@ export default function ProductDetailPage() {
   // Set default selections when product loads
   useEffect(() => {
     if (product) {
+      
       // Set default size (first available size)
       if (product.availableSizes && product.availableSizes.length > 0) {
         setSelectedSize(product.availableSizes[0].name);
@@ -214,6 +221,8 @@ export default function ProductDetailPage() {
       }
     }
   }, [product]);
+
+  // console.log("PRODUCT:",product)
 
   const getCurrentPrice = () => {
     if (!product || !selectedSize || !selectedColor || !selectedMaterial) {
@@ -573,8 +582,9 @@ export default function ProductDetailPage() {
                       <div className="flex justify-center">
                         <PDPPreviewCanvas
                           selectedImage={
-                            product.images[activeImageIndex]?.image.url ||
-                            product.images[0]?.image.url
+                          product?.liveViewImage?.image.url 
+                            // ||
+                            // product.images[0]?.image.url
                           }
                           selectedSize={getSelectedSizeData()?.id || "12x12"}
                           selectedColor={

@@ -33,7 +33,7 @@ export default function ProductsFilters() {
           </div>
 
           {/* Controls */}
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-4 flex-wrap justify-between">
             {/* Sort */}
             <select
               value={sortBy}

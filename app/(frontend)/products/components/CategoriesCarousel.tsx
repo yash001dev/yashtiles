@@ -45,6 +45,7 @@ export default function CategoriesCarousel() {
   }, []);
 
   if (loading) {
+      const skeletonWidths = [108, 95, 112, 88, 103, 115]; // Fixed widths
     return (
       <div className="mb-4 animate-pulse">
         <div className="flex gap-4 overflow-hidden">
@@ -52,7 +53,7 @@ export default function CategoriesCarousel() {
             <div 
               key={i} 
               className="h-12 bg-gray-200 rounded-full flex-shrink-0"
-              style={{ width: `${Math.random() * 40 + 80}px` }}
+              style={{ width: `${skeletonWidths[i]}px` }}
             ></div>
           ))}
         </div>
