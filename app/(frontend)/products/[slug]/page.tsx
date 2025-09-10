@@ -1058,8 +1058,13 @@ export default function ProductDetailPage() {
         </div>
       </section>
 
-      {/* Feature Block component */}
-      {(product as any).featureBlocks &&
+      {/* Product Details Tabs - Desktop */}
+      <div className="hidden lg:block">
+        <ProductDetailsTabs product={product} />
+      </div>
+
+   {/* Feature Block component */}
+   {(product as any).featureBlocks &&
         (product as any).featureBlocks.map((block: any, index: number) => {
           if (
             block.items &&
@@ -1074,11 +1079,6 @@ export default function ProductDetailPage() {
           }
           return null;
         })}
-      {/* Product Details Tabs - Desktop */}
-      <div className="hidden lg:block">
-        <ProductDetailsTabs product={product} />
-      </div>
-
       {/* CMS Content Blocks */}
       {pageContent && <CMSContentRenderer content={pageContent.content} />}
 
