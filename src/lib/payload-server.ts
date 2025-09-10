@@ -59,15 +59,13 @@ export async function getProducts(): Promise<FormattedProduct[]> {
         price:
           product.basePrice +
           Math.min(
-            ...(
-              Array.isArray(product.availableSizes)
-                ? product.availableSizes.map((size: any) =>
-                    typeof size === "object" && typeof size.price === "number"
-                      ? size.price
-                      : 0
-                  )
-                : [0]
-            )
+            ...(Array.isArray(product.availableSizes)
+              ? product.availableSizes.map((size: any) =>
+                  typeof size === "object" && typeof size.price === "number"
+                    ? size.price
+                    : 0
+                )
+              : [0])
           ),
         compareAtPrice: product.compareAtPrice || undefined,
         liveViewImage:
@@ -118,6 +116,130 @@ export async function getProducts(): Promise<FormattedProduct[]> {
     return formattedProducts;
   } catch (error) {
     console.error("Error fetching products:", error);
+    return [];
+  }
+}
+
+export async function getProductBySlug(slug: string) {
+  try {
+    const payload = await getPayloadHMR({ config });
+
+    // Try to find product with the given slug
+    let products = await payload.find({
+      collection: "products",
+      where: {
+        slug: {
+          equals: slug,
+        },
+        status: {
+          equals: "published",
+        },
+      },
+      limit: 1,
+      depth: 3, // Deep populate for all relations
+    });
+
+    // If not found, try with leading slash
+    if (!products.docs.length) {
+      products = await payload.find({
+        collection: "products",
+        where: {
+          slug: {
+            equals: `/${slug}`,
+          },
+          status: {
+            equals: "published",
+          },
+        },
+        limit: 1,
+        depth: 3,
+      });
+    }
+
+    return products.docs[0] || null;
+  } catch (error) {
+    console.error("Error fetching product by slug:", error);
+    return null;
+  }
+}
+
+export async function getPageContent(pageType: string) {
+  try {
+    const payload = await getPayloadHMR({ config });
+
+    const pages = await payload.find({
+      collection: "pages",
+      where: {
+        pageType: {
+          equals: pageType,
+        },
+        status: {
+          equals: "published",
+        },
+      },
+      limit: 1,
+      depth: 2,
+    });
+
+    return pages.docs[0] || null;
+  } catch (error) {
+    console.error("Error fetching page content:", error);
+    return null;
+  }
+}
+
+export async function getSizes() {
+  try {
+    const payload = await getPayloadHMR({ config });
+
+    const sizes = await payload.find({
+      collection: "sizes",
+      where: {
+        available: {
+          equals: true,
+        },
+      },
+      sort: "sortOrder",
+      limit: 100,
+    });
+
+    return sizes.docs || [];
+  } catch (error) {
+    console.error("Error fetching sizes:", error);
+    return [];
+  }
+}
+
+export async function getProductsByCategory(
+  categorySlug: string,
+  limit = 8,
+  excludeId?: string
+) {
+  try {
+    const payload = await getPayloadHMR({ config });
+
+    const products = await payload.find({
+      collection: "products",
+      where: {
+        "categories.slug": {
+          equals: categorySlug,
+        },
+        status: {
+          equals: "published",
+        },
+        ...(excludeId && {
+          id: {
+            not_equals: excludeId,
+          },
+        }),
+      },
+      limit,
+      depth: 2,
+    });
+
+    return products.docs || [];
+  } catch (error) {
+    console.error("Error fetching products by category:", error);
     return [];
   }
 }
