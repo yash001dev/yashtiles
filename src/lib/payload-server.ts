@@ -49,7 +49,6 @@ export async function getProducts(): Promise<FormattedProduct[]> {
       limit: 50,
       depth: 2, // This will populate related fields
     });
-
     // Transform the products to match our interface
     const formattedProducts: FormattedProduct[] = products.docs.map(
       (product: Product) => ({
@@ -57,7 +56,19 @@ export async function getProducts(): Promise<FormattedProduct[]> {
         name: product.name,
         slug: product.slug,
         shortDescription: product.shortDescription || "",
-        price: product.price || product.basePrice,
+        price:
+          product.basePrice +
+          Math.min(
+            ...(
+              Array.isArray(product.availableSizes)
+                ? product.availableSizes.map((size: any) =>
+                    typeof size === "object" && typeof size.price === "number"
+                      ? size.price
+                      : 0
+                  )
+                : [0]
+            )
+          ),
         compareAtPrice: product.compareAtPrice || undefined,
         liveViewImage:
           typeof product.liveViewImage === "object"

@@ -19,6 +19,7 @@ export default async function ProductsGrid({
 }: ProductsGridProps) {
   const products = await getProducts();
 
+  console.log(products);
   // Filter and sort products
   const filteredProducts = products
     .filter(product => {
