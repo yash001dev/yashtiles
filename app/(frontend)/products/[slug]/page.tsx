@@ -1059,10 +1059,9 @@ export default function ProductDetailPage() {
       </section>
 
       {/* Feature Block component */}
-      {(product as any).pageLayout &&
-        (product as any).pageLayout.map((block: any, index: number) => {
+      {(product as any).featureBlocks &&
+        (product as any).featureBlocks.map((block: any, index: number) => {
           if (
-            block.blockType === "featureBlock" &&
             block.items &&
             block.items.length > 0
           ) {
@@ -1089,10 +1088,9 @@ export default function ProductDetailPage() {
         currentProductId={product.id}
       />
       {/* FAQ Section */}
-      {(product as any).pageLayout &&
-        (product as any).pageLayout.map((block: any, index: number) => {
+      {(product as any).faqBlocks &&
+        (product as any).faqBlocks.map((block: any, index: number) => {
           if (
-            block.blockType === "faq" &&
             block.faqs &&
             block.faqs.length > 0
           ) {
@@ -1284,7 +1282,7 @@ function ProductFAQSection({ faqBlock }: { faqBlock: any }) {
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden"
                       >
-                        <div className="px-6 pb-4 text-gray-600">
+                        <div className="px-6 py-4 pb-0 text-gray-600">
                           {typeof faq.answer === "string" ? (
                             <div
                               dangerouslySetInnerHTML={{ __html: faq.answer }}
