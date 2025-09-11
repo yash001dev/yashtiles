@@ -302,7 +302,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
         })}
 
       {/* CMS Content Blocks */}
-      {pageContent && <CMSContentRenderer content={pageContent.content || []} />}
+      {/* {pageContent && <CMSContentRenderer content={pageContent.content || []} />} */}
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
