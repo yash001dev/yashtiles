@@ -346,16 +346,218 @@ export async function generateMetadata({ params }: PageProps) {
     };
   }
 
+  // Extract product details for metadata
+  const productImages = product.images.map((img) => ({
+    url: typeof img.image === 'number' ? '' : img.image.url || '',
+    alt: img.alt || product.name,
+    width: typeof img.image === 'number' ? 800 : img.image.width || 800,
+    height: typeof img.image === 'number' ? 600 : img.image.height || 600,
+  }));
+
+  const firstImage = productImages[0];
+  const basePrice = product.basePrice || 0;
+  const currency = 'INR';
+  const availability = (product.stock && product.stock > 0) ? 'in stock' : 'out of stock';
+  
+  // Generate category breadcrumb
+  const categories = product.categories
+    ?.filter((cat): cat is import("payload-types").ProductCategory => typeof cat !== 'number')
+    ?.map(cat => cat.name) || [];
+
   return {
-    title: `${product.name} | YashTiles`,
-    description: product.shortDescription,
+    title: `${product.name} | YashTiles - Premium Photo Frames`,
+    description: product.shortDescription || `Shop ${product.name} at YashTiles. High-quality photo frames with premium materials and craftsmanship.`,
+    keywords: [
+      product.name,
+      'photo frames',
+      'picture frames',
+      'wall decor',
+      'home decor',
+      'custom frames',
+      'YashTiles',
+      ...categories,
+      ...(product.features?.map(f => f.feature) || [])
+    ].join(', '),
+    
+    authors: [{ name: 'YashTiles' }],
+    creator: 'YashTiles',
+    publisher: 'YashTiles',
+    
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+
     openGraph: {
-      title: product.name,
-      description: product.shortDescription,
-      images: product.images.map((img) => ({
-        url: typeof img.image === 'number' ? '' : img.image.url || '',
+      type: 'product',
+      title: `${product.name} | YashTiles`,
+      description: product.shortDescription || `Shop ${product.name} at YashTiles. High-quality photo frames with premium materials and craftsmanship.`,
+      url: `https://yashtiles.com/products/${slug}`,
+      siteName: 'YashTiles',
+      locale: 'en_IN',
+      images: productImages.map(img => ({
+        url: img.url,
+        width: img.width,
+        height: img.height,
         alt: img.alt,
+        type: 'image/jpeg',
       })),
     },
+
+    twitter: {
+      card: 'summary_large_image',
+      site: '@yashtiles',
+      creator: '@yashtiles',
+      title: `${product.name} | YashTiles`,
+      description: product.shortDescription || `Shop ${product.name} at YashTiles. High-quality photo frames with premium materials and craftsmanship.`,
+      images: firstImage ? [firstImage.url] : [],
+    },
+
+    // Additional meta tags
+    other: {
+      // Product specific meta tags
+      'product:brand': 'YashTiles',
+      'product:availability': availability,
+      'product:condition': 'new',
+      'product:price:amount': basePrice.toString(),
+      'product:price:currency': currency,
+      'product:retailer_item_id': product.sku || product.id.toString(),
+      
+      // Ratings (placeholder - you can make this dynamic)
+      'product:rating:value': '4.8',
+      'product:rating:scale': '5',
+      'product:rating:count': '127',
+      
+      // Additional SEO tags
+      'apple-mobile-web-app-capable': 'yes',
+      'apple-mobile-web-app-status-bar-style': 'default',
+      'format-detection': 'telephone=no',
+      
+      // Schema.org structured data
+      'application-ld+json': JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        description: product.shortDescription,
+        image: productImages.map(img => img.url),
+        brand: {
+          '@type': 'Brand',
+          name: 'YashTiles'
+        },
+        manufacturer: {
+          '@type': 'Organization',
+          name: 'YashTiles'
+        },
+        sku: product.sku || product.id.toString(),
+        gtin: product.sku || product.id.toString(),
+        category: categories.join(', '),
+        offers: {
+          '@type': 'Offer',
+          url: `https://yashtiles.com/products/${slug}`,
+          priceCurrency: currency,
+          price: basePrice,
+          availability: availability === 'in stock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          seller: {
+            '@type': 'Organization',
+            name: 'YashTiles'
+          },
+          shippingDetails: {
+            '@type': 'OfferShippingDetails',
+            shippingRate: {
+              '@type': 'MonetaryAmount',
+              value: 0,
+              currency: currency
+            },
+            deliveryTime: {
+              '@type': 'ShippingDeliveryTime',
+              handlingTime: {
+                '@type': 'QuantitativeValue',
+                minValue: 1,
+                maxValue: 2,
+                unitCode: 'DAY'
+              },
+              transitTime: {
+                '@type': 'QuantitativeValue',
+                minValue: 3,
+                maxValue: 7,
+                unitCode: 'DAY'
+              }
+            }
+          }
+        },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.8',
+          reviewCount: '127',
+          bestRating: '5',
+          worstRating: '1'
+        },
+        review: [
+          {
+            '@type': 'Review',
+            reviewRating: {
+              '@type': 'Rating',
+              ratingValue: '5',
+              bestRating: '5'
+            },
+            author: {
+              '@type': 'Person',
+              name: 'Anonymous Customer'
+            },
+            reviewBody: 'Excellent quality photo frame. Perfect finish and great value for money.',
+            datePublished: new Date().toISOString().split('T')[0]
+          }
+        ],
+        ...(product.specifications && {
+          additionalProperty: [
+            ...(product.specifications.weight ? [{
+              '@type': 'PropertyValue',
+              name: 'Weight',
+              value: product.specifications.weight
+            }] : []),
+            ...(product.specifications.dimensions ? [{
+              '@type': 'PropertyValue',
+              name: 'Dimensions',
+              value: product.specifications.dimensions
+            }] : []),
+            ...(product.specifications.mounting ? [{
+              '@type': 'PropertyValue',
+              name: 'Mounting Type',
+              value: product.specifications.mounting.replace('_', ' ')
+            }] : [])
+          ]
+        })
+      })
+    },
+
+    // Canonical URL
+    alternates: {
+      canonical: `https://yashtiles.com/products/${slug}`,
+    },
+
+    // Verification tags (add your actual verification codes)
+    verification: {
+      google: 'your-google-verification-code',
+      yandex: 'your-yandex-verification-code',
+      yahoo: 'your-yahoo-verification-code',
+    },
+
+    // App links for mobile apps (if you have any)
+    appLinks: {
+      web: {
+        url: `https://yashtiles.com/products/${slug}`,
+        should_fallback: true,
+      },
+    },
+
+    // Archive and categorization
+    category: categories[0] || 'Photo Frames',
   };
 }

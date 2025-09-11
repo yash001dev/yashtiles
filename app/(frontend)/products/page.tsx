@@ -13,9 +13,9 @@ import { getProducts, getProductCategories } from '@/lib/payload-server';
 // Loading components
 import CategoriesSkeleton from './components/CategoriesSkeleton';
 import ProductsGridSkeleton from './components/ProductsGridSkeleton';
-import ProductsHeroSkeleton from './components/ProductsHeroSkeleton';
-import ProductsFiltersSkeleton from './components/ProductsFiltersSkeleton';
-import CategoriesCarouselServer from './components/CategoriesCarouselServer';
+// import ProductsHeroSkeleton from './components/ProductsHeroSkeleton';
+// import ProductsFiltersSkeleton from './components/ProductsFiltersSkeleton';
+import CategoriesCarouselClient from './components/CategoriesCarouselClient';
 
 // SEO and structured data
 export async function generateMetadata({
@@ -219,15 +219,15 @@ export default async function ProductListingPage({ searchParams }: ProductsPageP
         <section className="pb-2 bg-gradient-to-br from-pink-50 via-white to-purple-50">
           <div className="container mx-auto px-4">
             {/* <Suspense fallback={<CategoriesSkeleton />}> */}
-              <CategoriesCarouselServer />
+              <CategoriesCarouselClient categories={categories} />
             {/* </Suspense> */}
           </div>
         </section>
 
         {/* Filters Section with Suspense */}
-        <Suspense fallback={<ProductsFiltersSkeleton />}>
+        {/* <Suspense fallback={<ProductsFiltersSkeleton />}> */}
           <ProductsFilters />
-        </Suspense>
+        {/* </Suspense> */}
 
         {/* Products Grid with Suspense and Server-side Rendering */}
         <section className="py-12 bg-gray-50">

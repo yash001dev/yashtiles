@@ -1,52 +1,81 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
-import { getProducts } from '@/lib/payload-server';
 import ProductCardServer from './ProductCardServer';
 import ProductListItemServer from './ProductListItemServer';
+import { useProductsContext } from './ProductsContext';
+import { FormattedProduct } from '@/lib/payload-server';
 
 interface ProductsGridProps {
   selectedCategory?: string;
   searchQuery?: string;
   sortBy?: string;
   viewMode?: 'grid' | 'list';
+  initialProducts: FormattedProduct[];
+  initialCategories: any[];
 }
 
-export default async function ProductsGrid({ 
-  selectedCategory = 'all',
-  searchQuery = '',
-  sortBy = 'name',
-  viewMode = 'grid' 
+export default function ProductsGrid({ 
+  selectedCategory: initialCategory = 'all',
+  searchQuery: initialSearch = '',
+  sortBy: initialSort = 'name',
+  viewMode: initialView = 'grid',
+  initialProducts,
+  initialCategories
 }: ProductsGridProps) {
-  const products = await getProducts();
+  const {
+    selectedCategory,
+    searchQuery,
+    sortBy,
+    viewMode,
+  } = useProductsContext();
 
-  console.log(products);
-  // Filter and sort products
-  const filteredProducts = products
-    .filter(product => {
-      const matchesCategory = selectedCategory === 'all' || 
-        product.categories.some(cat => cat.slug === selectedCategory);
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.shortDescription?.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'price-low':
-          return a.price - b.price;
-        case 'price-high':
-          return b.price - a.price;
-        case 'name':
-          return a.name.localeCompare(b.name);
-        default:
-          return 0;
-      }
-    });
+  const [filteredProducts, setFilteredProducts] = useState<FormattedProduct[]>(initialProducts);
+
+  // Filter and sort products whenever context changes
+  useEffect(() => {
+    const filtered = initialProducts
+      .filter(product => {
+        const matchesCategory = selectedCategory === 'all' || 
+          product.categories.some(cat => cat.slug === selectedCategory);
+        const matchesSearch = !searchQuery || 
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.shortDescription?.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case 'price-low':
+            return (a.price || 0) - (b.price || 0);
+          case 'price-high':
+            return (b.price || 0) - (a.price || 0);
+          case 'name':
+            return a.name.localeCompare(b.name);
+          default:
+            return 0;
+        }
+      });
+
+    setFilteredProducts(filtered);
+  }, [selectedCategory, searchQuery, sortBy, initialProducts]);
 
   return (
     <>
       {/* Results Count */}
       <div className="mb-6 text-sm text-gray-600">
-        Showing {filteredProducts.length} of {products.length} frames
+        Showing {filteredProducts.length} of {initialProducts.length} frames
+        {searchQuery && (
+          <span className="ml-2">
+            for "{searchQuery}"
+          </span>
+        )}
+        {selectedCategory !== 'all' && (
+          <span className="ml-2">
+            in {initialCategories.find(cat => cat.slug === selectedCategory)?.name || selectedCategory}
+          </span>
+        )}
       </div>
 
       {viewMode === 'grid' ? (
@@ -75,7 +104,10 @@ export default async function ProductsGrid({
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No frames found</h3>
           <p className="text-gray-600 mb-4">
-            Try adjusting your search or filter criteria
+            {searchQuery || selectedCategory !== 'all' 
+              ? 'Try adjusting your search or filter criteria'
+              : 'No products available at the moment'
+            }
           </p>
           <div className="text-center">
             <Link 
