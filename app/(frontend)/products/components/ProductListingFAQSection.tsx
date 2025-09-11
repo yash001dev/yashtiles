@@ -1,22 +1,6 @@
-'use client';
-
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 export default function ProductListingFAQSection() {
-  const [openItems, setOpenItems] = useState<Set<number>>(new Set());
-
-  const toggleItem = (index: number) => {
-    const newOpenItems = new Set(openItems);
-    if (newOpenItems.has(index)) {
-      newOpenItems.delete(index);
-    } else {
-      newOpenItems.add(index);
-    }
-    setOpenItems(newOpenItems);
-  };
-
   const faqs = [
     {
       question: "How do I choose the right frame for my photo?",
@@ -44,53 +28,27 @@ export default function ProductListingFAQSection() {
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
+          <div className="text-center mb-12 animate-fade-in-up">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
             <p className="text-lg text-gray-600">Common questions about our frames and services</p>
-          </motion.div>
+          </div>
 
           <div className="space-y-4">
             {faqs.map((faq, index) => (
-              <motion.div
+              <details
                 key={index}
-                className="border border-gray-200 rounded-lg overflow-hidden"
-                initial={false}
+                className="group border border-gray-200 rounded-lg overflow-hidden animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <button
-                  onClick={() => toggleItem(index)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
-                >
+                <summary className="w-full px-6 py-4 cursor-pointer flex items-center justify-between hover:bg-gray-50 transition-colors list-none">
                   <span className="font-medium text-gray-900">{faq.question}</span>
-                  <motion.div
-                    animate={{ rotate: openItems.has(index) ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Plus className="w-5 h-5 text-gray-500" />
-                  </motion.div>
-                </button>
+                  <ChevronDown className="w-5 h-5 text-gray-500 transition-transform duration-200 group-open:rotate-180" />
+                </summary>
                 
-                <AnimatePresence>
-                  {openItems.has(index) && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-6 pb-4 text-gray-600">
-                        {faq.answer}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
+                <div className="px-6 pb-4 text-gray-600 animate-fade-in">
+                  {faq.answer}
+                </div>
+              </details>
             ))}
           </div>
         </div>
