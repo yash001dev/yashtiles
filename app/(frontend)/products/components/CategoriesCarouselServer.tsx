@@ -43,7 +43,7 @@ export default function CategoriesCarouselServer({
         {/* All Categories Link */}
         <Link
           href={buildUrl()}
-          className={`px-6 py-3 rounded-full font-medium transition-all duration-300 whitespace-nowrap ${
+          className={`px-3 py-2 md:px-6 md:py-3 text-sm md:text-lg  rounded-full font-medium transition-all duration-300 whitespace-nowrap ${
             currentCategory === 'all'
               ? 'bg-pink-600 text-white shadow-lg'
               : 'bg-white text-gray-700 hover:bg-pink-50 border border-gray-200'
@@ -57,7 +57,7 @@ export default function CategoriesCarouselServer({
           <Link
             key={category.id}
             href={buildUrl(category.slug)}
-            className={`px-6 py-3 rounded-full font-medium transition-all duration-300 whitespace-nowrap ${
+            className={`px-3 md:px-6 py-2 md:py-3 text-sm md:text-lg rounded-full font-medium transition-all duration-300 whitespace-nowrap ${
               currentCategory === category.slug
                 ? 'bg-pink-600 text-white shadow-lg'
                 : 'bg-white text-gray-700 hover:bg-pink-50 border border-gray-200'

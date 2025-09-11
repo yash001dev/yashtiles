@@ -1,5 +1,5 @@
 import React from "react";
-import { Check } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { renderPayloadRichText } from "@/components/ui/renderPayloadRihText";
 
 interface FAQ {
@@ -54,7 +54,7 @@ export default function ProductFAQSection({ faqBlock }: ProductFAQSectionProps) 
                       {faq.question}
                     </span>
                     <span className="flex-shrink-0 group-open:rotate-45 transition-transform duration-200">
-                      <Check className="w-5 h-5 text-gray-500" />
+                      <Plus className="w-5 h-5 text-gray-500" />
                     </span>
                   </summary>
                   <div className="px-6 pb-4 text-gray-600">
