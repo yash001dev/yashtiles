@@ -6,7 +6,6 @@ import ProductsHero from './components/ProductsHero';
 import ProductsFilters from './components/ProductsFilters';
 import ProductsGrid from './components/ProductsGrid';
 import ProductListingFAQSection from './components/ProductListingFAQSection';
-import CategoriesCarousel from './components/CategoriesCarousel';
 import { ProductsProvider } from './components/ProductsContext';
 import { getProducts, getProductCategories } from '@/lib/payload-server';
 
@@ -219,7 +218,8 @@ export default async function ProductListingPage({ searchParams }: ProductsPageP
         <section className="pb-2 bg-gradient-to-br from-pink-50 via-white to-purple-50">
           <div className="container mx-auto px-4">
             {/* <Suspense fallback={<CategoriesSkeleton />}> */}
-              <CategoriesCarouselClient categories={categories} />
+                        <CategoriesCarouselClient categories={categories} />
+
             {/* </Suspense> */}
           </div>
         </section>

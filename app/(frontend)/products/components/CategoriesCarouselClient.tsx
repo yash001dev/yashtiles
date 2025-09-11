@@ -1,15 +1,10 @@
 'use client';
 
 import { useProductsContext } from './ProductsContext';
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-}
+import { ProductCategory } from '../../../../payload-types';
 
 interface CategoriesCarouselClientProps {
-  categories: Category[];
+  categories: ProductCategory[];
 }
 
 export default function CategoriesCarouselClient({ categories }: CategoriesCarouselClientProps) {
