@@ -3,18 +3,15 @@ import { Metadata } from 'next';
 import FrameItHeader from '@/components/dashboard/FrameItHeader';
 import FrameItFooter from '@/components/dashboard/FrameItFooter';
 import ProductsHero from './components/ProductsHero';
-import ProductsFilters from './components/ProductsFilters';
+import ProductsFiltersServer from './components/ProductsFiltersServer';
 import ProductsGrid from './components/ProductsGrid';
 import ProductListingFAQSection from './components/ProductListingFAQSection';
-import { ProductsProvider } from './components/ProductsContext';
 import { getProducts, getProductCategories } from '@/lib/payload-server';
 
 // Loading components
 import CategoriesSkeleton from './components/CategoriesSkeleton';
 import ProductsGridSkeleton from './components/ProductsGridSkeleton';
-// import ProductsHeroSkeleton from './components/ProductsHeroSkeleton';
-// import ProductsFiltersSkeleton from './components/ProductsFiltersSkeleton';
-import CategoriesCarouselClient from './components/CategoriesCarouselClient';
+import CategoriesCarouselServer from './components/CategoriesCarouselServer';
 
 // SEO and structured data
 export async function generateMetadata({
@@ -150,6 +147,12 @@ export default async function ProductListingPage({ searchParams }: ProductsPageP
     })
   ]);
 
+  // Extract filter parameters
+  const selectedCategory = resolvedSearchParams.category || 'all';
+  const searchQuery = resolvedSearchParams.search || '';
+  const sortBy = resolvedSearchParams.sort || 'name';
+  const viewMode = (resolvedSearchParams.view as 'grid' | 'list') || 'grid';
+
   // JSON-LD structured data for SEO
   const structuredData = {
     '@context': 'https://schema.org',
@@ -206,50 +209,52 @@ export default async function ProductListingPage({ searchParams }: ProductsPageP
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       
-      <ProductsProvider initialFilters={resolvedSearchParams}>
-        <FrameItHeader />
-        
-        {/* Hero Section with Suspense */}
-        {/* <Suspense fallback={<ProductsHeroSkeleton />}> */}
-          <ProductsHero />
-        {/* </Suspense> */}
+      <FrameItHeader />
+      
+      {/* Hero Section */}
+      <ProductsHero />
 
-        {/* Categories with Suspense and Error Boundary */}
-        <section className="pb-2 bg-gradient-to-br from-pink-50 via-white to-purple-50">
-          <div className="container mx-auto px-4">
-            {/* <Suspense fallback={<CategoriesSkeleton />}> */}
-                        <CategoriesCarouselClient categories={categories} />
+      {/* Categories Carousel */}
+      <section className="pb-2 bg-gradient-to-br from-pink-50 via-white to-purple-50">
+        <div className="container mx-auto px-4">
+          <CategoriesCarouselServer 
+            categories={categories} 
+            currentCategory={selectedCategory}
+            currentSearch={searchQuery}
+            currentSort={sortBy}
+            currentView={viewMode}
+          />
+        </div>
+      </section>
 
-            {/* </Suspense> */}
-          </div>
-        </section>
+      {/* Filters Section */}
+      <ProductsFiltersServer 
+        categories={categories}
+        currentCategory={selectedCategory}
+        currentSearch={searchQuery}
+        currentSort={sortBy}
+        currentView={viewMode}
+        totalProducts={products.length}
+      />
 
-        {/* Filters Section with Suspense */}
-        {/* <Suspense fallback={<ProductsFiltersSkeleton />}> */}
-          <ProductsFilters />
-        {/* </Suspense> */}
+      {/* Products Grid */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <ProductsGrid 
+            products={products}
+            categories={categories}
+            selectedCategory={selectedCategory}
+            searchQuery={searchQuery}
+            sortBy={sortBy}
+            viewMode={viewMode}
+          />
+        </div>
+      </section>
 
-        {/* Products Grid with Suspense and Server-side Rendering */}
-        <section className="py-12 bg-gray-50">
-          <div className="container mx-auto px-4">
-            {/* <Suspense fallback={<ProductsGridSkeleton />}> */}
-              <ProductsGrid 
-                selectedCategory={resolvedSearchParams.category}
-                searchQuery={resolvedSearchParams.search}
-                sortBy={resolvedSearchParams.sort}
-                viewMode={resolvedSearchParams.view}
-                initialProducts={products}
-                initialCategories={categories}
-              />
-            {/* </Suspense> */}
-          </div>
-        </section>
+      {/* FAQ Section */}
+      <ProductListingFAQSection />
 
-        {/* FAQ Section - Secondary content, rendered normally for performance */}
-        <ProductListingFAQSection />
-
-        <FrameItFooter />
-      </ProductsProvider>
+      <FrameItFooter />
     </>
   );
 }

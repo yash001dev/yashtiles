@@ -1,103 +1,108 @@
-'use client';
 
-import { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 import ProductCardServer from './ProductCardServer';
 import ProductListItemServer from './ProductListItemServer';
-import { useProductsContext } from './ProductsContext';
 import { FormattedProduct } from '@/lib/payload-server';
 
 interface ProductsGridProps {
+  products: FormattedProduct[];
+  categories: any[];
   selectedCategory?: string;
   searchQuery?: string;
   sortBy?: string;
   viewMode?: 'grid' | 'list';
-  initialProducts: FormattedProduct[];
-  initialCategories: any[];
+}
+
+// Server-side filtering and sorting
+function filterAndSortProducts(
+  products: FormattedProduct[],
+  selectedCategory?: string,
+  searchQuery?: string,
+  sortBy?: string
+): FormattedProduct[] {
+  let filteredProducts = [...products];
+
+  // Filter by category
+  if (selectedCategory && selectedCategory !== 'all') {
+    filteredProducts = filteredProducts.filter(product =>
+      product.categories.some(cat => cat.slug === selectedCategory)
+    );
+  }
+
+  // Filter by search query
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase();
+    filteredProducts = filteredProducts.filter(product =>
+      product.name.toLowerCase().includes(query) ||
+      product.shortDescription?.toLowerCase().includes(query) ||
+      product.categories.some(cat => cat.name.toLowerCase().includes(query))
+    );
+  }
+
+  // Sort products
+  filteredProducts.sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low':
+        return (a.price || 0) - (b.price || 0);
+      case 'price-high':
+        return (b.price || 0) - (a.price || 0);
+      case 'newest':
+        // Since we don't have createdAt, we'll sort by featured first, then by name
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        return a.name.localeCompare(b.name);
+      case 'name':
+      default:
+        return a.name.localeCompare(b.name);
+    }
+  });
+
+  return filteredProducts;
 }
 
 export default function ProductsGrid({ 
-  selectedCategory: initialCategory = 'all',
-  searchQuery: initialSearch = '',
-  sortBy: initialSort = 'name',
-  viewMode: initialView = 'grid',
-  initialProducts,
-  initialCategories
+  products,
+  categories,
+  selectedCategory = 'all',
+  searchQuery = '',
+  sortBy = 'name',
+  viewMode = 'grid'
 }: ProductsGridProps) {
-  const {
-    selectedCategory,
-    searchQuery,
-    sortBy,
-    viewMode,
-  } = useProductsContext();
-
-  const [filteredProducts, setFilteredProducts] = useState<FormattedProduct[]>(initialProducts);
-
-  // Filter and sort products whenever context changes
-  useEffect(() => {
-    const filtered = initialProducts
-      .filter(product => {
-        const matchesCategory = selectedCategory === 'all' || 
-          product.categories.some(cat => cat.slug === selectedCategory);
-        const matchesSearch = !searchQuery || 
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.shortDescription?.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
-      })
-      .sort((a, b) => {
-        switch (sortBy) {
-          case 'price-low':
-            return (a.price || 0) - (b.price || 0);
-          case 'price-high':
-            return (b.price || 0) - (a.price || 0);
-          case 'name':
-            return a.name.localeCompare(b.name);
-          default:
-            return 0;
-        }
-      });
-
-    setFilteredProducts(filtered);
-  }, [selectedCategory, searchQuery, sortBy, initialProducts]);
+  
+  // Server-side filtering and sorting
+  const filteredProducts = filterAndSortProducts(products, selectedCategory, searchQuery, sortBy);
+  const categoryName = categories.find(cat => cat.slug === selectedCategory)?.name || 'All Categories';
 
   return (
-    <>
-      {/* Results Count */}
-      <div className="mb-6 text-sm text-gray-600">
-        Showing {filteredProducts.length} of {initialProducts.length} frames
-        {searchQuery && (
-          <span className="ml-2">
-            for "{searchQuery}"
-          </span>
-        )}
-        {selectedCategory !== 'all' && (
-          <span className="ml-2">
-            in {initialCategories.find(cat => cat.slug === selectedCategory)?.name || selectedCategory}
-          </span>
-        )}
+    <div className="space-y-6">
+      {/* Results Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">
+          {searchQuery 
+            ? `Search results for "${searchQuery}"` 
+            : selectedCategory !== 'all' 
+              ? categoryName
+              : 'All Products'
+          }
+        </h2>
+        <p className="text-sm text-gray-600">
+          Showing {filteredProducts.length} of {products.length} frames
+          {searchQuery && (
+            <span className="ml-2">
+              for "{searchQuery}"
+            </span>
+          )}
+          {selectedCategory !== 'all' && (
+            <span className="ml-2">
+              in {categoryName}
+            </span>
+          )}
+        </p>
       </div>
 
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="group">
-              <ProductCardServer product={product} />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {filteredProducts.map((product) => (
-            <div key={product.id}>
-              <ProductListItemServer product={product} />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Empty State */}
-      {filteredProducts.length === 0 && (
+      {/* Products Display */}
+      {filteredProducts.length === 0 ? (
         <div className="text-center py-16">
           <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search className="w-12 h-12 text-gray-400" />
@@ -118,7 +123,27 @@ export default function ProductsGrid({
             </Link>
           </div>
         </div>
+      ) : (
+        <>
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredProducts.map((product) => (
+                <div key={product.id} className="group">
+                  <ProductCardServer product={product} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {filteredProducts.map((product) => (
+                <div key={product.id}>
+                  <ProductListItemServer product={product} />
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
-    </>
+    </div>
   );
 }

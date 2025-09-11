@@ -143,7 +143,7 @@ interface PageProps {
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
-  const { slug } = params;
+  const { slug } = await params;
 
   // Fetch all data server-side
   const [product, pageContent, sizes] = await Promise.all([
@@ -337,7 +337,7 @@ export async function generateStaticParams() {
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const product = await getProductBySlug(slug);
 
   if (!product) {
@@ -365,8 +365,8 @@ export async function generateMetadata({ params }: PageProps) {
     ?.map(cat => cat.name) || [];
 
   return {
-    title: `${product.name} | YashTiles - Premium Photo Frames`,
-    description: product.shortDescription || `Shop ${product.name} at YashTiles. High-quality photo frames with premium materials and craftsmanship.`,
+    title: `${product.name} | photoframix - Premium Photo Frames`,
+    description: product.shortDescription || `Shop ${product.name} at photoframix. High-quality photo frames with premium materials and craftsmanship.`,
     keywords: [
       product.name,
       'photo frames',
@@ -374,14 +374,14 @@ export async function generateMetadata({ params }: PageProps) {
       'wall decor',
       'home decor',
       'custom frames',
-      'YashTiles',
+      'photoframix',
       ...categories,
       ...(product.features?.map(f => f.feature) || [])
     ].join(', '),
     
-    authors: [{ name: 'YashTiles' }],
-    creator: 'YashTiles',
-    publisher: 'YashTiles',
+    authors: [{ name: 'photoframix' }],
+    creator: 'photoframix',
+    publisher: 'photoframix',
     
     robots: {
       index: true,
@@ -396,11 +396,11 @@ export async function generateMetadata({ params }: PageProps) {
     },
 
     openGraph: {
-      type: 'product',
-      title: `${product.name} | YashTiles`,
-      description: product.shortDescription || `Shop ${product.name} at YashTiles. High-quality photo frames with premium materials and craftsmanship.`,
-      url: `https://yashtiles.com/products/${slug}`,
-      siteName: 'YashTiles',
+      type: 'website',
+      title: `${product.name} | photoframix`,
+      description: product.shortDescription || `Shop ${product.name} at photoframix. High-quality photo frames with premium materials and craftsmanship.`,
+      url: `https://photoframix.com/products/${slug}`,
+      siteName: 'photoframix',
       locale: 'en_IN',
       images: productImages.map(img => ({
         url: img.url,
@@ -413,17 +413,17 @@ export async function generateMetadata({ params }: PageProps) {
 
     twitter: {
       card: 'summary_large_image',
-      site: '@yashtiles',
-      creator: '@yashtiles',
-      title: `${product.name} | YashTiles`,
-      description: product.shortDescription || `Shop ${product.name} at YashTiles. High-quality photo frames with premium materials and craftsmanship.`,
+      site: '@photoframix',
+      creator: '@photoframix',
+      title: `${product.name} | photoframix`,
+      description: product.shortDescription || `Shop ${product.name} at photoframix. High-quality photo frames with premium materials and craftsmanship.`,
       images: firstImage ? [firstImage.url] : [],
     },
 
     // Additional meta tags
     other: {
       // Product specific meta tags
-      'product:brand': 'YashTiles',
+      'product:brand': 'photoframix',
       'product:availability': availability,
       'product:condition': 'new',
       'product:price:amount': basePrice.toString(),
@@ -449,24 +449,24 @@ export async function generateMetadata({ params }: PageProps) {
         image: productImages.map(img => img.url),
         brand: {
           '@type': 'Brand',
-          name: 'YashTiles'
+          name: 'photoframix'
         },
         manufacturer: {
           '@type': 'Organization',
-          name: 'YashTiles'
+          name: 'photoframix'
         },
         sku: product.sku || product.id.toString(),
         gtin: product.sku || product.id.toString(),
         category: categories.join(', '),
         offers: {
           '@type': 'Offer',
-          url: `https://yashtiles.com/products/${slug}`,
+          url: `https://photoframix.com/products/${slug}`,
           priceCurrency: currency,
           price: basePrice,
           availability: availability === 'in stock' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           seller: {
             '@type': 'Organization',
-            name: 'YashTiles'
+            name: 'photoframix'
           },
           shippingDetails: {
             '@type': 'OfferShippingDetails',
@@ -539,7 +539,7 @@ export async function generateMetadata({ params }: PageProps) {
 
     // Canonical URL
     alternates: {
-      canonical: `https://yashtiles.com/products/${slug}`,
+      canonical: `https://photoframix.com/products/${slug}`,
     },
 
     // Verification tags (add your actual verification codes)
@@ -552,7 +552,7 @@ export async function generateMetadata({ params }: PageProps) {
     // App links for mobile apps (if you have any)
     appLinks: {
       web: {
-        url: `https://yashtiles.com/products/${slug}`,
+        url: `https://photoframix.com/products/${slug}`,
         should_fallback: true,
       },
     },
