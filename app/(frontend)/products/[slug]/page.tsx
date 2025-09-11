@@ -10,6 +10,8 @@ import ProductDetailsTabs from "@/components/product/ProductDetailsTabs";
 import ProductFAQSection from "@/components/product/ProductFAQSection";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import FeatureBlockPayload from "@/components/ui/FeatureBlockPayload";
+import ShareButton from "@/components/ui/ShareButton";
+import FloatingShareButton from "@/components/ui/FloatingShareButton";
 import { 
   getProductBySlug, 
   getPageContent, 
@@ -200,15 +202,31 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 {/* Header */}
                 <div>
                   <div className="flex items-center gap-4 mb-2">
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex-1">
                       {product.name}
                     </h1>
-                    {product?.featured && (
-                      <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                        <Star className="w-4 h-4 fill-current" />
-                        Featured
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {product?.featured && (
+                        <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                          <Star className="w-4 h-4 fill-current" />
+                          Featured
+                        </div>
+                      )}
+                      <ShareButton
+                        url={`https://photoframix.com/products/${slug}`}
+                        title={product.name}
+                        description={product.shortDescription || `Shop ${product.name} at photoframix. High-quality photo frames with premium materials and craftsmanship.`}
+                        imageUrl={(() => {
+                          const firstImage = transformProductForGallery(product).images[0]?.image?.url;
+                          if (!firstImage) return undefined;
+                          return firstImage.startsWith('http') 
+                            ? firstImage 
+                            : `https://photoframix.com${firstImage.startsWith('/') ? firstImage : `/${firstImage}`}`;
+                        })()}
+                        variant="outline"
+                        size="sm"
+                      />
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-4 mb-4">
@@ -322,6 +340,20 @@ export default async function ProductDetailPage({ params }: PageProps) {
         })}
 
       <FrameItFooter />
+
+      {/* Floating Share Button for Mobile */}
+      <FloatingShareButton
+        url={`https://photoframix.com/products/${slug}`}
+        title={product.name}
+        description={product.shortDescription || `Shop ${product.name} at photoframix. High-quality photo frames with premium materials and craftsmanship.`}
+        imageUrl={(() => {
+          const firstImage = transformProductForGallery(product).images[0]?.image?.url;
+          if (!firstImage) return undefined;
+          return firstImage.startsWith('http') 
+            ? firstImage 
+            : `https://photoframix.com${firstImage.startsWith('/') ? firstImage : `/${firstImage}`}`;
+        })()}
+      />
     </>
   );
 }
@@ -344,12 +376,20 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   // Extract product details for metadata
-  const productImages = product.images.map((img) => ({
-    url: typeof img.image === 'number' ? '' : img.image.url || '',
-    alt: img.alt || product.name,
-    width: typeof img.image === 'number' ? 800 : img.image.width || 800,
-    height: typeof img.image === 'number' ? 600 : img.image.height || 600,
-  }));
+  const productImages = product.images.map((img) => {
+    const imageUrl = typeof img.image === 'number' ? '' : img.image.url || '';
+    // Ensure absolute URL for social media previews
+    const absoluteImageUrl = imageUrl.startsWith('http') 
+      ? imageUrl 
+      : `https://photoframix.com${imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`}`;
+    
+    return {
+      url: absoluteImageUrl,
+      alt: img.alt || product.name,
+      width: typeof img.image === 'number' ? 800 : img.image.width || 800,
+      height: typeof img.image === 'number' ? 600 : img.image.height || 600,
+    };
+  }).filter(img => img.url); // Filter out empty URLs
 
   const firstImage = productImages[0];
   const basePrice = product.basePrice || 0;

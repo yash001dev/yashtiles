@@ -120,6 +120,34 @@ const tailwindConfig = {
           DEFAULT: "hsl(var(--app-accent))",
           foreground: "hsl(var(--app-accent-foreground))",
         },
+        social: {
+          facebook: {
+            DEFAULT: "#1877F2",
+            hover: "#0C63D4",
+          },
+          twitter: {
+            DEFAULT: "#1DA1F2",
+            hover: "#0D8BD9",
+          },
+          linkedin: {
+            DEFAULT: "#0A66C2",
+            hover: "#004182",
+          },
+          whatsapp: {
+            DEFAULT: "#25D366",
+            hover: "#128C7E",
+          },
+          instagram: {
+            purple: "#833AB4",
+            pink: "#E1306C",
+            orange: "#FD1D1D",
+            yellow: "#F77737",
+          },
+          email: {
+            DEFAULT: "#6B7280",
+            hover: "#4B5563",
+          },
+        },
       },
       fontFamily: {
         sans: ["var(--font-prompt)"],
