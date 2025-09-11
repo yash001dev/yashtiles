@@ -1,5 +1,6 @@
-import { Search, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { Search, Grid, List } from 'lucide-react';
 import Link from 'next/link';
+import SortDropdown from './SortDropdown';
 
 interface ProductsFiltersServerProps {
   categories: any[];
@@ -36,10 +37,10 @@ export default function ProductsFiltersServer({
   return (
     <section className="bg-white border-b border-gray-200 sticky top-0 z-40">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+        <div className="flex flex-col w-full lg:flex-row gap-4 items-start lg:items-center justify-between">
           
           {/* Left side - Search and Categories */}
-          <div className="flex flex-col sm:flex-row gap-4 flex-1">
+          <div className="flex flex-col sm:flex-row gap-4 flex-1 w-full">
             
             {/* Search Form */}
             <form method="GET" action="/products" className="relative">
@@ -61,7 +62,7 @@ export default function ProductsFiltersServer({
                   name="search"
                   placeholder="Search frames..."
                   defaultValue={currentSearch}
-                  className="w-full sm:w-80 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full bg-transparent focus-visible:outline-none sm:w-80 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 />
                 <button
                   type="submit"
@@ -73,7 +74,7 @@ export default function ProductsFiltersServer({
             </form>
 
             {/* Category Pills */}
-            <div className="flex flex-wrap gap-2">
+            {/* <div className="flex flex-wrap gap-2">
               <Link
                 href={buildUrl({ 
                   search: currentSearch, 
@@ -106,43 +107,18 @@ export default function ProductsFiltersServer({
                   {category.name}
                 </Link>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* Right side - Sort and View */}
           <div className="flex items-center gap-4">
-            
             {/* Sort Dropdown */}
-            <form method="GET" action="/products" className="flex items-center gap-2">
-              {/* Preserve other params */}
-              {currentCategory !== 'all' && (
-                <input type="hidden" name="category" value={currentCategory} />
-              )}
-              {currentSearch && (
-                <input type="hidden" name="search" value={currentSearch} />
-              )}
-              {currentView !== 'grid' && (
-                <input type="hidden" name="view" value={currentView} />
-              )}
-              
-              <SlidersHorizontal className="w-4 h-4 text-gray-500" />
-              <select
-                name="sort"
-                defaultValue={currentSort}
-                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              >
-                <option value="name">Name A-Z</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="newest">Newest First</option>
-              </select>
-              <button
-                type="submit"
-                className="ml-2 bg-pink-600 text-white px-3 py-1 rounded text-sm hover:bg-pink-700 transition-colors"
-              >
-                Apply
-              </button>
-            </form>
+            <SortDropdown
+              currentSort={currentSort}
+              currentCategory={currentCategory}
+              currentSearch={currentSearch}
+              currentView={currentView}
+            />
 
             {/* View Mode Toggle */}
             <div className="flex items-center border border-gray-300 rounded-md">
