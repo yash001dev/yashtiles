@@ -6,16 +6,12 @@ import ProductsHero from './components/ProductsHero';
 import ProductsFilters from './components/ProductsFilters';
 import ProductsGrid from './components/ProductsGrid';
 import ProductListingFAQSection from './components/ProductListingFAQSection';
-import CategoriesCarousel from './components/CategoriesCarousel';
 import { ProductsProvider } from './components/ProductsContext';
 import { getProducts, getProductCategories } from '@/lib/payload-server';
 
 // Loading components
-import CategoriesSkeleton from './components/CategoriesSkeleton';
-import ProductsGridSkeleton from './components/ProductsGridSkeleton';
-import ProductsHeroSkeleton from './components/ProductsHeroSkeleton';
-import ProductsFiltersSkeleton from './components/ProductsFiltersSkeleton';
 import CategoriesCarouselServer from './components/CategoriesCarouselServer';
+import { ProductsFiltersSkeleton } from '@/components/ProductsSkeleton';
 
 // SEO and structured data
 export async function generateMetadata({
