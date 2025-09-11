@@ -1,4 +1,4 @@
-import { Search, Filter, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { Search, Grid, List, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
 
 interface ProductsFiltersServerProps {
@@ -213,7 +213,7 @@ export default function ProductsFiltersServer({
                 })}
                 className="inline-flex items-center gap-1 bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm"
               >
-                Search: "{currentSearch}"
+                Search: &quot;{currentSearch}&quot;
                 <span className="ml-1 hover:text-pink-900">×</span>
               </Link>
             )}

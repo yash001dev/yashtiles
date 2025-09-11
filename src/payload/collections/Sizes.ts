@@ -37,7 +37,7 @@ export const Sizes: CollectionConfig = {
       admin: {
         description: "Aspect ratio of the size (width/height)",
       },
-      validate: (value) => {
+      validate: (value: any) => {
         if (value === undefined || value === null || value === "")
           return "Required";
         return /^\d*(?:\.\d+)?$/.test(String(value)) || "Must be a number";

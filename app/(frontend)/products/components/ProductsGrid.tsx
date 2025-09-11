@@ -90,7 +90,7 @@ export default function ProductsGrid({
           Showing {filteredProducts.length} of {products.length} frames
           {searchQuery && (
             <span className="ml-2">
-              for "{searchQuery}"
+              for &quot;{searchQuery}&quot;
             </span>
           )}
           {selectedCategory !== 'all' && (

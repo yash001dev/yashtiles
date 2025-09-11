@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import { Metadata } from 'next';
 import FrameItHeader from '@/components/dashboard/FrameItHeader';
 import FrameItFooter from '@/components/dashboard/FrameItFooter';
@@ -7,10 +6,6 @@ import ProductsFiltersServer from './components/ProductsFiltersServer';
 import ProductsGrid from './components/ProductsGrid';
 import ProductListingFAQSection from './components/ProductListingFAQSection';
 import { getProducts, getProductCategories } from '@/lib/payload-server';
-
-// Loading components
-import CategoriesSkeleton from './components/CategoriesSkeleton';
-import ProductsGridSkeleton from './components/ProductsGridSkeleton';
 import CategoriesCarouselServer from './components/CategoriesCarouselServer';
 
 // SEO and structured data

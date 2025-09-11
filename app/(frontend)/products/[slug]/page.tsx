@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, Truck, Shield, RotateCcw, ArrowLeft } from "lucide-react";
+import { Star, Truck, Shield, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import FrameItHeader from "@/components/dashboard/FrameItHeader";
@@ -8,7 +8,6 @@ import ProductGallery from "@/components/product/ProductGallery";
 import ProductControls from "@/components/product/ProductControls";
 import ProductDetailsTabs from "@/components/product/ProductDetailsTabs";
 import ProductFAQSection from "@/components/product/ProductFAQSection";
-import CMSContentRenderer from "@/components/product/CMSContentRenderer";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import FeatureBlockPayload from "@/components/ui/FeatureBlockPayload";
 import { 
@@ -137,19 +136,17 @@ function transformCategoriesForRelated(categories: (number | ProductCategory)[])
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
   // Fetch all data server-side
-  const [product, pageContent, sizes] = await Promise.all([
+  const [product] = await Promise.all([
     getProductBySlug(slug),
-    getPageContent("pdp"),
-    getSizes(),
   ]);
 
   // Fetch related products if we have categories
