@@ -17,7 +17,7 @@
     "type-check": "tsc --noEmit",
     "pre-commit-check": "npm run type-check && npm run build",
     "env:check": "node scripts/check-env.js",
-    "seed": "tsx src/payload/seed/seed.ts",
+    "seed": "tsx src/payload/seed/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
