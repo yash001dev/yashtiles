@@ -1,6 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 import { Star, Heart, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { FormattedProduct } from '@/lib/payload-server';
+import Image from 'next/image';
 
 interface ProductCardServerProps {
   product: FormattedProduct;
@@ -20,13 +22,14 @@ const calculateDiscount = (price: number, comparePrice?: number) => {
 
 export default function ProductCardServer({ product }: ProductCardServerProps) {
   const discount = calculateDiscount(product.price, product.compareAtPrice);
+  console.log('Rendering ProductCardServer for:', product.images);
 
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300 h-full hover:transform hover:-translate-y-1">
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden">
         <img
-          src={product.images[0]?.image.url}
+          src={'https://d3eklbyrx2lntp.cloudfront.net'+ product.images[0]?.image.url.replace('/api/media/file','') +'?format=webp' || '/placeholder.png'}
           alt={product.images[0]?.alt || product.name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
