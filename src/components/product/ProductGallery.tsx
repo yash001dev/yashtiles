@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState } from "react";
@@ -168,7 +169,7 @@ export default function ProductGallery({
                     <SwiperSlide key={index}>
                       <div className="swiper-zoom-container">
                         <img
-                          src={img.image.url}
+                          src={'https://d3eklbyrx2lntp.cloudfront.net'+ img.image.url.replace('/api/media/file','') +'?format=webp' || '/placeholder.png'}
                           alt={img.alt}
                           className="w-full h-full object-cover"
                         />
@@ -213,7 +214,7 @@ export default function ProductGallery({
                         }`}
                       >
                         <img
-                          src={img.image.url}
+                          src={'https://d3eklbyrx2lntp.cloudfront.net'+ img.image.url.replace('/api/media/file','') +'?format=webp' || '/placeholder.png'}
                           alt={img.alt}
                           className="w-full h-full object-cover"
                         />
@@ -285,7 +286,7 @@ export default function ProductGallery({
                         }`}
                       >
                         <img
-                          src={img.image.url}
+                          src={'https://d3eklbyrx2lntp.cloudfront.net'+ img.image.url.replace('/api/media/file','') +'?format=webp' || '/placeholder.png'}
                           alt={img.alt}
                           className="w-full h-full object-cover"
                         />
