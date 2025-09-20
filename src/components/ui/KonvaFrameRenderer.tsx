@@ -1029,8 +1029,8 @@ const KonvaFrameRenderer = forwardRef<
                 {image && (
                   <KonvaImage
                     image={image}
-                    width={displayWidth}
-                    height={displayHeight}
+                    width={Number(displayWidth)}
+                    height={Number(displayHeight)}
                     x={offsetX + (transform.x || 0)}
                     y={offsetY + (transform.y || 0)}
                     scaleX={transform.scale}
@@ -1248,8 +1248,8 @@ const KonvaFrameRenderer = forwardRef<
                   >
                     <KonvaImage
                       image={image}
-                      width={downloadDisplayWidth}
-                      height={downloadDisplayHeight}
+                      width={Number(downloadDisplayWidth)}
+                      height={Number(downloadDisplayHeight)}
                       x={downloadOffsetX + (transform.x || 0)}
                       y={downloadOffsetY + (transform.y || 0)}
                       scaleX={transform.scale}

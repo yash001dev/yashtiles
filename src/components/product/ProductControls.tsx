@@ -7,6 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useProduct } from "@/contexts/ProductContext";
 
 interface Size {
   id: string;
@@ -69,9 +70,14 @@ const formatPrice = (price: number) => {
 export default function ProductControls({
   product,
 }: ProductControlsProps) {
-  const [selectedSize, setSelectedSize] = useState<string>("");
-  const [selectedColor, setSelectedColor] = useState<string>("");
-  const [selectedMaterial, setSelectedMaterial] = useState<string>("");
+  const { 
+    selectedSize, 
+    selectedColor, 
+    selectedMaterial,
+    setSelectedSize,
+    setSelectedColor,
+    setSelectedMaterial 
+  } = useProduct();
   const [showAllColors, setShowAllColors] = useState(false);
   const [showAllMaterials, setShowAllMaterials] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -90,15 +96,15 @@ export default function ProductControls({
 
       // Set default color (first default color)
       if (product.defaultColors && product.defaultColors.length > 0) {
-        setSelectedColor(product.defaultColors[0].id);
+        setSelectedColor(product.defaultColors[0].name);
       }
 
       // Set default material (first default material)
       if (product.defaultMaterials && product.defaultMaterials.length > 0) {
-        setSelectedMaterial(product.defaultMaterials[0].id);
+        setSelectedMaterial('classic'); // Set to 'classic' by default
       }
     }
-  }, [product]);
+  }, [product, setSelectedSize, setSelectedColor, setSelectedMaterial]);
 
   const getCurrentPrice = () => {
     if (!product || !selectedSize || !selectedColor || !selectedMaterial) {
@@ -170,7 +176,7 @@ export default function ProductControls({
       .find((m) => m.id === selectedMaterial);
 
     const selectedSizeObj = product.availableSizes?.find(
-      (s) => s.name === selectedSize
+      (s) => s.id === selectedSize
     );
 
     const cartItem = {
@@ -178,7 +184,7 @@ export default function ProductControls({
       name: product.name,
       price: getCurrentPrice(),
       image: product.images[0]?.image.url,
-      size: selectedSize,
+      size: selectedSizeObj?.name || '',
       color: selectedColorObj?.name || "",
       material: selectedMaterialObj?.name || "",
       quantity: quantity,
@@ -230,7 +236,9 @@ export default function ProductControls({
               {product.availableSizes.slice(0, 6).map((size) => (
                 <button
                   key={size.id}
-                  onClick={() => setSelectedSize(size.name)}
+                  onClick={() => {
+                    setSelectedSize(size.name);
+                  }}
                   className={`p-3 border-2 rounded-lg text-center transition-all ${
                     selectedSize === size.name
                       ? "border-pink-500 bg-pink-50"
@@ -263,9 +271,9 @@ export default function ProductControls({
                 {product.defaultColors.map((color) => (
                   <button
                     key={color.id}
-                    onClick={() => setSelectedColor(color.id)}
+                    onClick={() => setSelectedColor(color.name)}
                     className={`relative w-12 h-12 rounded-full border-4 transition-all ${
-                      selectedColor === color.id
+                      selectedColor === color.name
                         ? "border-pink-500 scale-110"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
@@ -283,9 +291,9 @@ export default function ProductControls({
                       {product.additionalColors.map((color) => (
                         <button
                           key={color.id}
-                          onClick={() => setSelectedColor(color.id)}
+                          onClick={() => setSelectedColor(color.name)}
                           className={`relative w-12 h-12 rounded-full border-4 transition-all ${
-                            selectedColor === color.id
+                            selectedColor === color.name
                               ? "border-pink-500 scale-110"
                               : "border-gray-200 hover:border-gray-300"
                           }`}
@@ -316,7 +324,7 @@ export default function ProductControls({
               Material:{" "}
               {product.defaultMaterials
                 .concat(product.additionalMaterials || [])
-                .find((m) => m.id === selectedMaterial)?.name ||
+                .find((m) => m.name === selectedMaterial)?.name ||
                 "Select Material"}
             </h3>
             <div className="space-y-3">
@@ -325,9 +333,9 @@ export default function ProductControls({
                 {product.defaultMaterials.map((material) => (
                   <button
                     key={material.id}
-                    onClick={() => setSelectedMaterial(material.id)}
+                    onClick={() => setSelectedMaterial(material.name)}
                     className={`p-3 border-2 rounded-lg text-left transition-all ${
-                      selectedMaterial === material.id
+                      selectedMaterial === material.name
                         ? "border-pink-500 bg-pink-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}

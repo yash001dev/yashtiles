@@ -194,7 +194,6 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
     if (stageSize.width > 0 && stageSize.height > 0) {
       // Recalculate frame size based on new viewport
       const newFrameSize = getFrameSize();
-      
       // Only update position if not dragged yet
       if (!hasBeenDragged) {
         const centerX = (stageSize.width - newFrameSize.width) / 2;
@@ -567,8 +566,8 @@ const FramePreviewCanvas: React.FC<FramePreviewCanvasProps> = ({
                {frameImg && (
                  <KonvaImage
                    image={frameImg}
-                   width={displayWidth}
-                   height={displayHeight}
+                   width={Number(displayWidth)}
+                   height={Number(displayHeight)}
                    x={offsetX + (transform.x || 0)}
                    y={offsetY + (transform.y || 0)}
                    scaleX={transform.scale}

@@ -70,8 +70,8 @@ const PDPPreviewCanvas: React.FC<PDPPreviewCanvasProps> = ({
   // Convert the props to match FramePreview's expected customization prop
   const customization: FrameCustomization = {
     material: selectedMaterial.toLowerCase() as "classic" | "frameless" | "canvas" | "3d",
-    frameColor: colorMap[selectedColor.toLowerCase()] as "black" | "white" | "brown",
-    size: selectedSize as "8x8" | "8x10" | "10x8" | "9x12" | "12x9" | "12x12" | "12x18" | "18x12" | "18x18" | "18x24" | "24x18" | "24x32" | "32x24" | "8x11" | "11x8",
+    frameColor: colorMap[selectedColor.toLowerCase()] || selectedColor.toLowerCase() as "black" | "white" | "brown" | string,
+    size: selectedSize.replace(/[" ]/g,'').replace(/×/g,'x') as "8x8" | "8x10" | "10x8" | "9x12" | "12x9" | "12x12" | "12x18" | "18x12" | "18x18" | "18x24" | "24x18" | "24x32" | "32x24" | "8x11" | "11x8",
     effect: 'original',
     border: true,
     borderColor: selectedColor.toLowerCase(), // Using the selected color as border color

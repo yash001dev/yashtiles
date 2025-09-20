@@ -14,10 +14,9 @@ import ShareButton from "@/components/ui/ShareButton";
 import FloatingShareButton from "@/components/ui/FloatingShareButton";
 import { 
   getProductBySlug, 
-  getPageContent, 
-  getSizes,
   getProductsByCategory 
 } from "@/lib/payload-server";
+import { ProductProvider } from "@/contexts/ProductContext";
 import type { Product, ProductCategory } from "payload-types";
 
 // Type transformation helpers
@@ -186,75 +185,82 @@ export default async function ProductDetailPage({ params }: PageProps) {
       </nav>
 
       {/* Product Details */}
-      <section className="py-3 md:py-5 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
-            {/* Left Column - Product Gallery */}
-            <ProductGallery
-              images={transformProductForGallery(product).images}
-              liveViewImage={transformProductForGallery(product).liveViewImage}
-              productName={product.name}
-            />
+      <ProductProvider>
+        <section className="py-3 md:py-5 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
+              {/* Left Column - Product Gallery */}
+              <ProductGallery
+                images={transformProductForGallery(product).images}
+                liveViewImage={transformProductForGallery(product).liveViewImage}
+                productName={product.name}
+              />
 
-            {/* Right Column - Product Info */}
-            <div className="w-full lg:w-1/2 lg:pr-4">
-              <div className="space-y-6">
-                {/* Header */}
-                <div>
-                  <div className="flex items-center gap-4 mb-2">
-                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex-1">
-                      {product.name}
-                    </h1>
-                    <div className="flex items-center gap-2">
-                      {product?.featured && (
-                        <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
-                          <Star className="w-4 h-4 fill-current" />
-                          Featured
-                        </div>
-                      )}
-                      <ShareButton
-                        url={`https://photoframix.com/products/${slug}`}
-                        title={product.name}
-                        description={product.shortDescription || `Shop ${product.name} at photoframix. High-quality photo frames with premium materials and craftsmanship.`}
-                        imageUrl={(() => {
-                          const firstImage = transformProductForGallery(product).images[0]?.image?.url;
-                          if (!firstImage) return undefined;
-                          return firstImage.startsWith('http') 
-                            ? firstImage 
-                            : `https://photoframix.com${firstImage.startsWith('/') ? firstImage : `/${firstImage}`}`;
-                        })()}
-                        variant="outline"
-                        size="sm"
-                      />
+              {/* Right Column - Product Info */}
+              <div className="w-full lg:w-1/2 lg:pr-4">
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div>
+                    <div className="flex items-center gap-4 mb-2">
+                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex-1">
+                        {product.name}
+                      </h1>
+                      <div className="flex items-center gap-2">
+                        {product?.featured && (
+                          <div className="flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                            <Star className="w-4 h-4 fill-current" />
+                            Featured
+                          </div>
+                        )}
+                        <ShareButton
+                          url={`https://photoframix.com/products/${slug}`}
+                          title={product.name}
+                          description={product.shortDescription || `Shop ${product.name} at photoframix. High-quality photo frames with premium materials and craftsmanship.`}
+                          imageUrl={(() => {
+                            const firstImage = transformProductForGallery(product).images[0]?.image?.url;
+                            if (!firstImage) return undefined;
+                            return firstImage.startsWith('http') 
+                              ? firstImage 
+                              : `https://photoframix.com${firstImage.startsWith('/') ? firstImage : `/${firstImage}`}`;
+                          })()}
+                          variant="outline"
+                          size="sm"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className="w-4 h-4 text-yellow-400 fill-current"
-                          />
-                        ))}
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className="w-4 h-4 text-yellow-400 fill-current"
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-600">
+                          (4.8) • 127 reviews
+                        </span>
                       </div>
                       <span className="text-sm text-gray-600">
-                        (4.8) • 127 reviews
+                        SKU: {product.sku}
                       </span>
                     </div>
-                    <span className="text-sm text-gray-600">
-                      SKU: {product.sku}
-                    </span>
+
+                    <p className="text-gray-600 leading-relaxed">
+                      {product.shortDescription}
+                    </p>
                   </div>
 
-                  <p className="text-gray-600 leading-relaxed">
-                    {product.shortDescription}
-                  </p>
+                  {/* Product Controls (Client Component) */}
+                  <ProductControls product={transformProductForControls(product)} />
                 </div>
-
-                {/* Product Controls (Client Component) */}
-                <ProductControls product={transformProductForControls(product)} />
+              </div>
+            </div>
+          </div>
+        </section>
+      </ProductProvider>
 
                 {/* Features */}
                 <div className="grid grid-cols-3 gap-4 py-6 border-t">
@@ -291,12 +297,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 <div className="lg:hidden">
                   <ProductDetailsTabs product={transformProductForTabs(product)} />
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
+            
+                              
       {/* Product Details Tabs - Desktop */}
       <div className="hidden lg:block">
         <ProductDetailsTabs product={transformProductForTabs(product)} />

@@ -43,11 +43,12 @@ interface LiveViewImage {
   height: number;
 }
 
+import { useProduct } from "@/contexts/ProductContext";
+
 interface ProductGalleryProps {
   images: ProductImage[];
   liveViewImage?: LiveViewImage;
   productName: string;
-  selectedSize?: string;
   selectedColor?: string;
   selectedMaterial?: string;
 }
@@ -56,10 +57,8 @@ export default function ProductGallery({
   images,
   liveViewImage,
   productName,
-  selectedSize,
-  selectedColor,
-  selectedMaterial,
 }: ProductGalleryProps) {
+  const { selectedSize, selectedColor, selectedMaterial } = useProduct();
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [viewMode, setViewMode] = useState<"frame" | "live">("frame");
