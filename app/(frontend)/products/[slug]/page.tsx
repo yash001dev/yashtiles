@@ -12,6 +12,7 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 import FeatureBlockPayload from "@/components/ui/FeatureBlockPayload";
 import ShareButton from "@/components/ui/ShareButton";
 import FloatingShareButton from "@/components/ui/FloatingShareButton";
+import WishlistButton from "@/components/wishlist/WishlistButton";
 import { 
   getProductBySlug, 
   getProductsByCategory 
@@ -212,6 +213,24 @@ export default async function ProductDetailPage({ params }: PageProps) {
                             Featured
                           </div>
                         )}
+                        <WishlistButton
+                          product={{
+                            id: product.id.toString(),
+                            name: product.name,
+                            slug: product.slug,
+                            price: product.basePrice || 0,
+                            compareAtPrice: product.compareAtPrice || undefined,
+                            image: (() => {
+                              const firstImage = transformProductForGallery(product).images[0]?.image?.url;
+                              return firstImage;
+                            })(),
+                            shortDescription: product.shortDescription || undefined,
+                            featured: product.featured || undefined,
+                            categories: transformCategoriesForRelated(product.categories)
+                          }}
+                          variant="icon-only"
+                          size="md"
+                        />
                         <ShareButton
                           url={`https://photoframix.com/products/${slug}`}
                           title={product.name}
@@ -355,6 +374,26 @@ export default async function ProductDetailPage({ params }: PageProps) {
             ? firstImage 
             : `https://photoframix.com${firstImage.startsWith('/') ? firstImage : `/${firstImage}`}`;
         })()}
+      />
+
+      {/* Floating Wishlist Button for Mobile */}
+      <WishlistButton
+        product={{
+          id: product.id.toString(),
+          name: product.name,
+          slug: product.slug,
+          price: product.basePrice || 0,
+          compareAtPrice: product.compareAtPrice || undefined,
+          image: (() => {
+            const firstImage = transformProductForGallery(product).images[0]?.image?.url;
+            return firstImage;
+          })(),
+          shortDescription: product.shortDescription || undefined,
+          featured: product.featured || undefined,
+          categories: transformCategoriesForRelated(product.categories)
+        }}
+        variant="floating"
+        className="bottom-32"
       />
     </>
   );

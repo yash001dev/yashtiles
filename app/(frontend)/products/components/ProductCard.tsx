@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Heart, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import WishlistButton from '@/components/wishlist/WishlistButton';
 
 interface Product {
   id: string;
@@ -120,34 +121,46 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
 
-        {/* Quick Actions */}
-        <motion.div
-          className="absolute top-4 right-4 flex flex-col gap-2"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 20 }}
-          transition={{ duration: 0.2 }}
-        >
-          <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
-            <Heart className="w-4 h-4 text-gray-600" />
-          </button>
-          <Link href={`/products/${product.slug}`}>
-            <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
-              <Eye className="w-4 h-4 text-gray-600" />
-            </button>
-          </Link>
-        </motion.div>
-
         {/* Hover Overlay */}
         <motion.div
-          className="absolute inset-0 bg-black/20 flex items-center justify-center"
+          className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: isHovered ? 1 : 0 }}
           transition={{ duration: 0.2 }}
         >
           <Link href={`/products/${product.slug}`}>
-            <Button className="bg-white text-gray-900 hover:bg-gray-100">
+            <Button className="bg-white text-gray-900 hover:bg-gray-100 pointer-events-auto">
               View Details
             </Button>
+          </Link>
+        </motion.div>
+
+        {/* Quick Actions */}
+        <motion.div
+          className="absolute top-4 right-4 flex flex-col gap-2 z-10"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 20 }}
+          transition={{ duration: 0.2 }}
+        >
+          <WishlistButton
+            product={{
+              id: product.id,
+              name: product.name,
+              slug: product.slug,
+              price: product.price,
+              compareAtPrice: product.compareAtPrice,
+              image: product.images[0]?.image.url,
+              shortDescription: product.shortDescription,
+              featured: product.featured,
+              categories: product.categories
+            }}
+            variant="icon-only"
+            size="sm"
+          />
+          <Link href={`/products/${product.slug}`}>
+            <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
+              <Eye className="w-4 h-4 text-gray-600" />
+            </button>
           </Link>
         </motion.div>
       </div>

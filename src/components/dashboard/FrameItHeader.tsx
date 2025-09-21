@@ -1,8 +1,9 @@
 "use client"
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { Frame, Menu, X, ShoppingCart } from 'lucide-react'
+import { Frame, Menu, X, ShoppingCart, Heart } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
+import { useWishlist } from '@/contexts/WishlistContext'
 import Link from 'next/link'
 import { Drawer, DrawerContent, DrawerHeader, DrawerClose } from '@/components/ui/drawer'
 import { usePathname } from 'next/navigation'
@@ -13,8 +14,10 @@ function FrameItHeader({hideMenu=false}) {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const { items } = useCart();
+  const { getItemCount } = useWishlist();
   
   const cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
+  const wishlistItemCount = getItemCount();
 
   // Helper for smooth scroll and close drawer
   const handleMobileMenuClick = (selector: string) => {
@@ -86,6 +89,20 @@ function FrameItHeader({hideMenu=false}) {
               >
                 Contact
               </Link>
+              <Link
+                href="/wishlist"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <div className="relative">
+                  <Heart className="h-5 w-5" />
+                  {wishlistItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                      {wishlistItemCount}
+                    </span>
+                  )}
+                </div>
+                Wishlist
+              </Link>
                  <Link
                 href="/cart"
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -108,6 +125,19 @@ function FrameItHeader({hideMenu=false}) {
           {/* Mobile Menu Trigger */}
           {!hideMenu && (
             <div className="md:hidden flex items-center">
+                <Link href="/wishlist" onClick={() => setOpen(false)}>
+                      <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-md py-2 mr-2">
+                        <div className="relative">
+                          <Heart className="h-4 w-4" />
+                          {wishlistItemCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                              {wishlistItemCount}
+                            </span>
+                          )}
+                        </div>
+                        Wishlist
+                      </div>
+                    </Link>
                 <Link href="/cart" onClick={() => setOpen(false)}>
                       <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-md py-2 mr-2">
                         <div className="relative">
@@ -174,6 +204,19 @@ function FrameItHeader({hideMenu=false}) {
                     </Link>
                     <Link href="/contact" onClick={() => setOpen(false)}>
                       <span className="block text-left text-muted-foreground hover:text-foreground text-lg transition-colors py-2">Contact</span>
+                    </Link>
+                    <Link href="/wishlist" onClick={() => setOpen(false)}>
+                      <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-lg transition-colors py-2">
+                        <div className="relative">
+                          <Heart className="h-5 w-5" />
+                          {wishlistItemCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                              {wishlistItemCount}
+                            </span>
+                          )}
+                        </div>
+                        Wishlist
+                      </div>
                     </Link>
                   
                     <Link href="/frame" onClick={() => setOpen(false)}>

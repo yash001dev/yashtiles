@@ -56,7 +56,7 @@ export default function ProductCardServer({ product }: ProductCardServerProps) {
         )}
 
         {/* Quick Actions */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-200">
+        <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-200 z-10">
           <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
             <Heart className="w-4 h-4 text-gray-600" />
           </button>
