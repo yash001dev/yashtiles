@@ -1,8 +1,11 @@
+'use client';
+
 /* eslint-disable @next/next/no-img-element */
 import { Star, Heart, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { FormattedProduct } from '@/lib/payload-server';
 import Image from 'next/image';
+import WishlistButtonServer from '@/components/wishlist/WishlistButtonServer';
 
 interface ProductCardServerProps {
   product: FormattedProduct;
@@ -57,9 +60,17 @@ export default function ProductCardServer({ product }: ProductCardServerProps) {
 
         {/* Quick Actions */}
         <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-200 z-10">
-          <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
-            <Heart className="w-4 h-4 text-gray-600" />
-          </button>
+          <WishlistButtonServer
+            productId={product.id}
+            productName={product.name}
+            productSlug={product.slug}
+            productPrice={product.price}
+            compareAtPrice={product.compareAtPrice}
+            imageUrl={product.images[0]?.image.url}
+            shortDescription={product.shortDescription}
+            featured={product.featured}
+            categories={product.categories}
+          />
           <Link href={`/products/${product.slug}`}>
             <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-colors">
               <Eye className="w-4 h-4 text-gray-600" />
