@@ -135,7 +135,7 @@ function FrameItHeader({hideMenu=false}) {
                             </span>
                           )}
                         </div>
-                        Wishlist
+                        <span className="hidden lg:block">Wishlist</span>
                       </div>
                     </Link>
                 <Link href="/cart" onClick={() => setOpen(false)}>
