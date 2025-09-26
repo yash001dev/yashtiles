@@ -13,6 +13,7 @@ function FrameItHeader({hideMenu=false}) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
   const isHome = pathname === '/';
+  const isProductPage = pathname.startsWith('/products');
   const { items } = useCart();
   const { getItemCount } = useWishlist();
   
@@ -45,7 +46,7 @@ function FrameItHeader({hideMenu=false}) {
           </div>
           {/* Desktop Menu */}
           {!hideMenu && (
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden lg:flex items-center space-x-8">
               {!isHome && (
                 <Link
                   href="/"
@@ -89,7 +90,7 @@ function FrameItHeader({hideMenu=false}) {
               >
                 Contact
               </Link>
-              <Link
+             {isProductPage && <Link
                 href="/wishlist"
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
               >
@@ -102,7 +103,7 @@ function FrameItHeader({hideMenu=false}) {
                   )}
                 </div>
                 Wishlist
-              </Link>
+              </Link>}
                  <Link
                 href="/cart"
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -124,20 +125,20 @@ function FrameItHeader({hideMenu=false}) {
           )}
           {/* Mobile Menu Trigger */}
           {!hideMenu && (
-            <div className="md:hidden flex items-center">
-                <Link href="/wishlist" onClick={() => setOpen(false)}>
-                      <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-md py-2 mr-2">
-                        <div className="relative">
-                          <Heart className="h-4 w-4" />
-                          {wishlistItemCount > 0 && (
-                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+            <div className="lg:hidden flex items-center">
+              {isProductPage && <Link href="/wishlist" onClick={() => setOpen(false)}>
+                  <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-md py-2 mr-2">
+                    <div className="relative">
+                      <Heart className="h-4 w-4" />
+                      {wishlistItemCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                               {wishlistItemCount}
                             </span>
                           )}
                         </div>
                         Wishlist
                       </div>
-                    </Link>
+                    </Link>}
                 <Link href="/cart" onClick={() => setOpen(false)}>
                       <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-md py-2 mr-2">
                         <div className="relative">
@@ -205,7 +206,7 @@ function FrameItHeader({hideMenu=false}) {
                     <Link href="/contact" onClick={() => setOpen(false)}>
                       <span className="block text-left text-muted-foreground hover:text-foreground text-lg transition-colors py-2">Contact</span>
                     </Link>
-                    <Link href="/wishlist" onClick={() => setOpen(false)}>
+                  {isProductPage && <Link href="/wishlist" onClick={() => setOpen(false)}>
                       <div className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-lg transition-colors py-2">
                         <div className="relative">
                           <Heart className="h-5 w-5" />
@@ -217,7 +218,7 @@ function FrameItHeader({hideMenu=false}) {
                         </div>
                         Wishlist
                       </div>
-                    </Link>
+                    </Link>}
                   
                     <Link href="/frame" onClick={() => setOpen(false)}>
                       <Button className="w-full mt-2">Start Framing</Button>
