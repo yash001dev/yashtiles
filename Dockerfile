@@ -24,7 +24,7 @@ RUN apk add --no-cache \
 COPY package.json package-lock.json* ./
 
 # Install dependencies with legacy peer deps for compatibility
-RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+RUN npm install --legacy-peer-deps --no-audit --prefer-offline
 
 # Stage 2: Builder
 FROM base AS builder
