@@ -109,6 +109,7 @@ jobs:
             NEXT_PUBLIC_ENVIRONMENT=production
             NEXT_PUBLIC_ENABLE_DEBUG=false
             NEXT_PUBLIC_ENABLE_ANALYTICS=true
+            NEXT_PUBLIC_GA_MEASUREMENT_ID=G-E2RLKP3404
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=829564712055-nv247pdurodv3atd4jv24rsaom8qsscm.apps.googleusercontent.com
             NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/hw5gjfx78
             NEXT_PUBLIC_PAYU_KEY=rGRiaJ

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers/Providers";
 import StructuredData from "@/components/StructuredData";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { isCrawlable, getCanonicalUrl } from "@/utils/seo";
 const prompt = Prompt({
   weight: [
@@ -119,6 +120,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={prompt.variable}>
+      <head>
+        <GoogleAnalytics />
+      </head>
       <body className="font-sans" suppressHydrationWarning={true}>
         <Providers>
           {children}

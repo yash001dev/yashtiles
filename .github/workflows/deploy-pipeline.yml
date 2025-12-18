@@ -74,6 +74,7 @@ jobs:
           NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT: https://ik.imagekit.io/hw5gjfx78
           NEXT_PUBLIC_PAYU_KEY: rGRiaJ
           NEXT_PUBLIC_PAYU_SALT: BEoQBAySdr3GiB413ZIp0ydW3UHeap8f
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: G-E2RLKP3404
 
       - name: Cache build artifacts
         uses: actions/cache@v4
@@ -184,6 +185,7 @@ jobs:
             NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/hw5gjfx78
             NEXT_PUBLIC_PAYU_KEY=rGRiaJ
             NEXT_PUBLIC_PAYU_SALT=BEoQBAySdr3GiB413ZIp0ydW3UHeap8f
+            NEXT_PUBLIC_GA_MEASUREMENT_ID=G-E2RLKP3404
 
       - name: Download current task definition
         run: |

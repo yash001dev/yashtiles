@@ -143,6 +143,8 @@ interface PageProps {
   }>;
 }
 
+export const revalidate=300; // Revalidate every 5 minutes
+
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
