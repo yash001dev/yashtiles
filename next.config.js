@@ -27,7 +27,7 @@ const nextConfig = {
         hostname: "d3eklbyrx2lntp.cloudfront.net",
         port: "",
         pathname: "/**",
-      }
+      },
     ],
     formats: ["image/webp", "image/avif"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -37,6 +37,31 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
   },
+
+  // Webpack configuration to handle canvas and native modules
+  webpack: (config, { isServer }) => {
+    // Handle canvas module for Konva - exclude from both client and server bundles during build
+    config.externals = config.externals || [];
+
+    if (isServer) {
+      // For server-side, externalize canvas completely
+      if (Array.isArray(config.externals)) {
+        config.externals.push("canvas");
+      } else {
+        config.externals = ["canvas", config.externals];
+      }
+    } else {
+      // For client-side, alias canvas to false to prevent bundling
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        canvas: false,
+        "konva/lib/index-node": false,
+      };
+    }
+
+    return config;
+  },
+
   // Environment-specific configuration with enhanced runtime support
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
@@ -132,13 +157,14 @@ const nextConfig = {
     ];
 
     // Add robots meta tag restrictions for non-production environments
-    if (process.env.NEXT_PUBLIC_ENVIRONMENT !== 'production') {
+    if (process.env.NEXT_PUBLIC_ENVIRONMENT !== "production") {
       headers.push({
         source: "/(.*)",
         headers: [
           {
             key: "X-Robots-Tag",
-            value: "noindex, nofollow, noarchive, nosnippet, noimageindex, nocache",
+            value:
+              "noindex, nofollow, noarchive, nosnippet, noimageindex, nocache",
           },
         ],
       });

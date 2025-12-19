@@ -1,50 +1,47 @@
 # Multi-stage Docker build for Next.js with Payload CMS
-FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat
+FROM node:20-slim AS base
 WORKDIR /app
 
 # Stage 1: Dependencies
 FROM base AS deps
 # Install build dependencies for native packages (like canvas)
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     make \
     g++ \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    musl-dev \
-    giflib-dev \
-    pixman-dev \
-    pangomm-dev \
-    libjpeg-turbo-dev \
-    freetype-dev
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    libpixman-1-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Clean npm cache and install dependencies
-RUN npm cache clean --force && \
-    npm install --legacy-peer-deps --loglevel verbose
+# Install dependencies with legacy peer deps for compatibility
+# Use npm install (not frozen-lockfile which is a Yarn flag)
+RUN npm install --legacy-peer-deps
 
 # Stage 2: Builder
 FROM base AS builder
 WORKDIR /app
 
 # Install build dependencies for native packages (like canvas)
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     make \
     g++ \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    musl-dev \
-    giflib-dev \
-    pixman-dev \
-    pangomm-dev \
-    libjpeg-turbo-dev \
-    freetype-dev
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
@@ -82,8 +79,8 @@ ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ENV NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=$NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT
 ENV NEXT_PUBLIC_PAYU_KEY=$NEXT_PUBLIC_PAYU_KEY
 ENV NEXT_PUBLIC_PAYU_SALT=$NEXT_PUBLIC_PAYU_SALT
-
-# Build the application
+ENV NEXT_PUBLIC_GA_MEASUREMENT_ID=$NEXT_PUBLIC_GA_MEASUREMENT_ID
+# Build the application (canvas will be externalized by webpack config)
 RUN npm run build
 
 # Stage 3: Runner (production)
@@ -91,18 +88,17 @@ FROM base AS runner
 WORKDIR /app
 
 # Install runtime dependencies for canvas and curl for health checks
-RUN apk add --no-cache \
-    cairo \
-    jpeg \
-    pango \
-    musl \
-    giflib \
-    pixman \
-    pangomm \
-    libjpeg-turbo \
-    freetype \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libjpeg62-turbo \
+    libgif7 \
+    librsvg2-2 \
+    libpixman-1-0 \
     dumb-init \
-    curl
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs
