@@ -105,7 +105,7 @@ jobs:
             NEXT_PUBLIC_ENVIRONMENT=${{ steps.env-vars.outputs.PUBLIC_ENVIRONMENT }}
             NEXT_PUBLIC_ENABLE_DEBUG=${{ steps.env-vars.outputs.ENABLE_DEBUG }}
             NEXT_PUBLIC_ENABLE_ANALYTICS=${{ steps.env-vars.outputs.ENABLE_ANALYTICS }}
-            NEXT_PUBLIC_GA_MEASUREMENT_ID=${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}
+            NEXT_PUBLIC_GA_MEASUREMENT_ID=G-E2RLKP3404
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=829564712055-nv247pdurodv3atd4jv24rsaom8qsscm.apps.googleusercontent.com
             NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/hw5gjfx78
             NEXT_PUBLIC_PAYU_KEY=rGRiaJ

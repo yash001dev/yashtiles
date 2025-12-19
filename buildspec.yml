@@ -59,6 +59,7 @@ phases:
           --build-arg NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/hw5gjfx78 \
           --build-arg NEXT_PUBLIC_PAYU_KEY=rGRiaJ \
           --build-arg NEXT_PUBLIC_PAYU_SALT=BEoQBAySdr3GiB413ZIp0ydW3UHeap8f \
+          --build-arg NEXT_PUBLIC_GA_MEASUREMENT_ID=G-E2RLKP3404 \
           .
       - docker tag $ECR_REPOSITORY_NAME:latest $ECR_REPOSITORY_URI:latest
       - docker tag $ECR_REPOSITORY_NAME:latest $ECR_REPOSITORY_URI:$IMAGE_TAG
